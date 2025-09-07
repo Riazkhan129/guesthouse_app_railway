@@ -1,0 +1,14 @@
+__pycache__/
+.env
+google_creds.json
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+*.log
+*.DS_Store
+venv/
+.idea/
+.vscode/
+
+rm 'lucid-shuttle-457710-e3-f80b8df2c4dd.json'

@@ -1,0 +1,22 @@
+fastapi
+uvicorn
+sqlalchemy
+pydantic==1.10.13
+pydantic[email]==1.10.13
+python-jose[cryptography]
+passlib[bcrypt]
+databases
+sqlite-utils
+httpx
+python-multipart
+passlib[bcrypt]
+python-jose
+cryptography
+
+streamlit
+requests
+pandas
+plotly
+streamlit-authenticator  # If you plan to add login in frontend
+xhtml2pdf
+Pillow>=9.0.0
