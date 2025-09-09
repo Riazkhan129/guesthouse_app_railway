@@ -1,11 +1,15 @@
 # db.py
 
 import os
-import sys
 import sqlite3
-# from .crypto_utils import encrypt_password
-import string
+import psycopg2  
+from contextlib import contextmanager
 from cryptography.fernet import Fernet
+import sys
+import string
+
+# ---------- 🧠 Environment Mode Detection ----------
+DB_MODE = os.getenv("DB_MODE", "local")  # ✅ 'local' or 'cloud'
 
 # ---------- Get Available Drives ----------
 def get_available_drives():
@@ -20,7 +24,6 @@ def get_available_drives():
 # ---------- Create or Find ghms Folder ----------
 def find_or_create_ghms_folder():
     drives = get_available_drives()
-
     for drive in drives:
         ghms_path = os.path.join(drive, "ghms")
         try:
@@ -35,33 +38,36 @@ def find_or_create_ghms_folder():
 
 # ---------- Get DB Connection ----------
 def get_connection():
-    ghms_folder = find_or_create_ghms_folder()
-    db_path = os.path.join(ghms_folder, "guesthouse.sqlite")
+    if DB_MODE == "cloud":
+        db_url = os.getenv("DB_URL")  # ✅ Railway PostgreSQL URL
+        if not db_url:
+            raise RuntimeError("❌ DB_URL environment variable not set")
+        try:
+            conn = psycopg2.connect(db_url)
+            print("✅ Connected to Railway PostgreSQL")
+            return conn
+        except Exception as e:
+            raise RuntimeError(f"❌ Failed to connect to Railway DB: {e}")
+    else:
+        ghms_folder = find_or_create_ghms_folder()  # ✅ Use client drive logic
+        db_path = os.path.join(ghms_folder, "guesthouse.sqlite")  # ✅ Fixed local path
+        if not os.path.exists(db_path):
+            print("⚠️ Local DB not found. Creating it...")
+            initialize_database(db_path)
+        conn = sqlite3.connect(db_path)
+        conn.execute("PRAGMA foreign_keys = ON")
+        print(f"✅ Connected to local SQLite at {db_path}")
+        return conn
 
-    print("📌 Checking DB at:", db_path)
-
-    if not os.path.exists(db_path):
-        print("⚠️ DB not found. Creating it...")
-        initialize_database(db_path)  
-
-    try:
-        with open(db_path, 'rb') as f:
-            f.read(1)
-        print("✅ DB file is readable")
-    except Exception as e:
-        raise RuntimeError(f"❌ Cannot read DB file: {e}")
-    
-    conn = sqlite3.connect(db_path)
-    conn.execute("PRAGMA foreign_keys = ON")
-    return conn
-
+# ---------- FastAPI Dependency ----------
+@contextmanager
 def get_db():
-    print("IN GET_DB")
     db = get_connection()
     try:
         yield db
     finally:
         db.close()
+
 
 # 🆕 ADDED: Encrypt password using client-specific key
 def encrypt_password(password: str, key: str) -> str:
@@ -69,19 +75,18 @@ def encrypt_password(password: str, key: str) -> str:
     return fernet.encrypt(password.encode()).decode()
 
 # ---------- Create Tables & Insert Default Data ----------
-def initialize_database(db_path):
-    if not os.path.exists(db_path):
-        print(" DB file not found. Creating a new one...")
-    else:
-        print(" DB file found.")
-        
-    conn = sqlite3.connect(db_path)
+def initialize_database():    
+    conn = sqlite3.connect()
     cursor = conn.cursor()
+
+    # ✅ Use correct placeholder syntax
+    placeholder = "%s" if DB_MODE == "cloud" else "?"
 
     # -------- Tables --------
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS client_keys (
+            client_id TEXT PRIMARY KEY,
             encryption_key TEXT NOT NULL
         )
     """)
@@ -89,9 +94,9 @@ def initialize_database(db_path):
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS users (
-            user_id INTEGER,
+            user_id {"SERIAL PRIMARY KEY" if DB_MODE == "cloud" else "INTEGER PRIMARY KEY AUTOINCREMENT"},
             name TEXT,
-            username TEXT NOT NULL UNIQUE,
+            username TEXT UNIQUE NOT NULL,
             password TEXT NOT NULL,
             role TEXT NOT NULL
         )
@@ -172,10 +177,9 @@ def initialize_database(db_path):
 
     # -------- Insert Default Users --------
 
-    # 🆕 ADDED: Generate or fetch encryption key for this client
-    # client_id = "ngh"
-    cursor.execute("SELECT encryption_key FROM client_keys LIMIT 1")
-
+    # ---------- Insert Encryption Key ----------
+    cursor.execute(f"SELECT encryption_key FROM client_keys LIMIT 1")
+    result = cursor.fetchone()
     # cursor.execute("SELECT encryption_key FROM client_keys WHERE client_id = ?", (client_id,))
     result = cursor.fetchone()
 
@@ -184,26 +188,28 @@ def initialize_database(db_path):
         print(f"🔐 Existing encryption key found")
     else:
         encryption_key = Fernet.generate_key().decode()
-        cursor.execute("INSERT INTO client_keys (encryption_key) VALUES (?)", (encryption_key,))
+        cursor.execute(
+            f"INSERT INTO client_keys (client_id, encryption_key) VALUES ({placeholder}, {placeholder})",
+            ("default_client", encryption_key)
         print(f"🆕 New encryption key generated and saved")
 
     conn.commit()  # ✅ Commit the key insert immediately
 
     # -------- Insert Default Users --------
-    cursor.execute("SELECT COUNT(*) FROM users WHERE username = 'admin1'")
+    cursor.execute(f"SELECT COUNT(*) FROM users WHERE username = {placeholder}", ("admin1",))
     if cursor.fetchone()[0] == 0:
         encrypted_pw = encrypt_password('admin1', encryption_key)  # 🔄 CHANGED
         cursor.execute(
-            "INSERT INTO users (username, password, role, name) VALUES (?, ?, ?, ?)",
-            ('admin1', encrypted_pw, 'Front Desk', 'Admin One')
+            f"INSERT INTO users (username, password, role, name) VALUES ({placeholder}, {placeholder}, {placeholder}, {placeholder})",
+            ("admin1", encrypted_pw, "Front Desk", "Admin One")
         )
 
-    cursor.execute("SELECT COUNT(*) FROM users WHERE username = 'admin2'")
+    cursor.execute(f"SELECT COUNT(*) FROM users WHERE username = {placeholder}", ("admin2",))
     if cursor.fetchone()[0] == 0:
         encrypted_pw = encrypt_password('admin2', encryption_key)  # 🔄 CHANGED
         cursor.execute(
-            "INSERT INTO users (username, password, role, name) VALUES (?, ?, ?, ?)",
-            ('admin2', encrypted_pw, 'Management', 'Admin Two')
+            f"INSERT INTO users (username, password, role, name) VALUES ({placeholder}, {placeholder}, {placeholder}, {placeholder})",
+            ("admin2", encrypted_pw, "Management", "Admin Two")
         )
 
 
@@ -214,7 +220,9 @@ def initialize_database(db_path):
 
 # ---------- Run only once to initialize ----------
 if __name__ == "__main__":
-    ghms_folder = find_or_create_ghms_folder()
-    db_path = os.path.join(ghms_folder, "guesthouse.sqlite")
-    initialize_database(db_path)
-    
+    if DB_MODE == "cloud":
+        initialize_database()  # ✅ No path needed for Railway
+    else:
+        ghms_folder = find_or_create_ghms_folder()  # ✅ Use local drive logic
+        db_path = os.path.join(ghms_folder, "guesthouse.sqlite")
+        initialize_database(db_path)    

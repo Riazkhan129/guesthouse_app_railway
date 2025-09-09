@@ -1,43 +1,35 @@
 from fastapi import APIRouter, Depends, HTTPException, Form, status
 from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-# from .crypto_utils import decrypt_password
-from .crud import verify_password
-from .crud import get_encryption_key
+from .crud import verify_password, get_encryption_key
 from .models import Client_keysBase
 from .db import get_connection, get_db
 import sqlite3
 from cryptography.fernet import Fernet
-
-#from routers.auth import auth_router
-#from db.key_store import get_encryption_key  # ✅ NEW: Import your key fetcher
 
 auth_router = APIRouter()
 
 # For protected endpoints
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token")
 
-client_id = "ngh"
-#key = get_encryption_key(client_id)
-
-#if not key:
-#    raise Exception("Encryption key not found for client")
-
-#fernet = Fernet(key.encode())
+# client_id = "ngh"
 
 # --------- Login: Verify Encrypted Password ---------
 
 @auth_router.post("/token")
 def login(
-    form_data: OAuth2PasswordRequestForm = Depends(),
+    username: str = Form(...),  # ✅ NEW: Accept username from form
+    password: str = Form(...),  # ✅ NEW: Accept password from form
+    client_id: str = Form(...),  # ✅ NEW: Accept client_id from form
     db: sqlite3.Connection = Depends(get_db)
 ):
     print("Login request received")
     print("Username:", form_data.username)
     print("Password:", form_data.password)
-    
-    username = form_data.username
-    password = form_data.password
+    print("Client ID:", client_id)
+
+    if not client_id:
+        raise HTTPException(status_code=400, detail="Missing client_id")
 
     cursor = db.cursor()
     user = cursor.execute(
@@ -51,7 +43,8 @@ def login(
         db_username, db_encrypted_password, db_role = user  # ✅ UPDATED: Unpack client_id
 
         # ✅ NEW: Fetch encryption key for this client
-        key = get_encryption_key()
+        key = get_encryption_key(client_id)
+        
         if not key:
             raise HTTPException(status_code=500, detail="Encryption key not found")
 
@@ -68,7 +61,8 @@ def login(
                     "access_token": f"{db_username}_token",
                     "token_type": "bearer",
                     "username": db_username,
-                    "role": db_role
+                    "role": db_role,
+                    "client_id": client_id
                 }
         except Exception as e:
             print("Decryption failed:", e)
@@ -92,24 +86,3 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
     return {"username": username}
 
 
-# --------- (Optional) Register New User ---------
-# You can uncomment this if you want to enable registration
-# from app.models import UserCreate, UserOut
-# from app.crud import encrypt_password
-
-# @auth_router.post("/register", response_model=UserOut)
-# def register(user: UserCreate):
-#     conn = get_connection()
-#     cursor = conn.cursor()
-#     try:
-#         encrypted_pwd = encrypt_password(user.password)
-#         cursor.execute(
-#             "INSERT INTO users (username, password, role) VALUES (?, ?, ?)",
-#             (user.username, encrypted_pwd, user.role)
-#         )
-#         conn.commit()
-#         return {"username": user.username, "role": user.role}
-#     except:
-#         raise HTTPException(status_code=400, detail="Username already exists")
-#     finally:
-#         conn.close()

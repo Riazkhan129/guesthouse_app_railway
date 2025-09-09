@@ -16,12 +16,14 @@ import sqlite3
 #------------- encryption Key ------------
 
 
-def get_encryption_key() -> str:
+def get_encryption_key(client_id: str) -> str:
     conn = get_connection()
-    # conn = sqlite3.connect("guesthouse.db")
     cursor = conn.cursor()
 
-    cursor.execute("SELECT encryption_key FROM client_keys LIMIT 1")
+    cursor.execute(
+        "SELECT encryption_key FROM client_keys WHERE client_id = ?",
+        (client_id,)
+    )
     result = cursor.fetchone()
     conn.close()
 
