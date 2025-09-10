@@ -40,5 +40,9 @@ with open(f"keys/{guesthouse_name}.key", "wb") as f:
 print(f"✅ License saved to licenses/{guesthouse_name}.key")
 print(f"🔐 Secret key saved to keys/{guesthouse_name}.key")
 
-# python generate_license.py
+# Command Prompt : python generate_license.py
+# Created liceses/demo.key
+
+
+
 

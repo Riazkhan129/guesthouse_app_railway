@@ -11,5 +11,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy your app code
 COPY . .
 
+# ✅ Explicitly copy license package folder
+COPY package/ /app/package/
+
 # Start FastAPI app
 CMD ["uvicorn", "fastapi_main:app", "--host", "0.0.0.0", "--port", "8000"]
