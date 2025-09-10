@@ -191,6 +191,7 @@ def initialize_database():
         cursor.execute(
             f"INSERT INTO client_keys (client_id, encryption_key) VALUES ({placeholder}, {placeholder})",
             ("default_client", encryption_key)
+        )
         print(f"🆕 New encryption key generated and saved")
 
     conn.commit()  # ✅ Commit the key insert immediately
