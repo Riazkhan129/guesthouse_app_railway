@@ -1,0 +1,18 @@
+{
+  "services": {
+    "backend": {
+      "root": ".",
+      "build": {
+        "dockerfile": "Dockerfile"
+      }
+    },
+    "frontend": {
+      "root": "react_frontend",
+      "build": {
+        "installCommand": "npm install",
+        "buildCommand": "npm run build",
+        "outputDirectory": "build"
+      }
+    }
+  }
+}
