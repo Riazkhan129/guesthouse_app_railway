@@ -12,11 +12,4 @@ python-multipart
 passlib[bcrypt]
 python-jose
 cryptography
-
-streamlit
-requests
-pandas
-plotly
-streamlit-authenticator  # If you plan to add login in frontend
-xhtml2pdf
-Pillow>=9.0.0
+python-dotenv
