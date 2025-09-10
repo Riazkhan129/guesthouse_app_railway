@@ -1,0 +1,23 @@
+name: Deploy Backend to Railway
+
+on:
+  push:
+    paths:
+      - "app/**"
+      - "fastapi_main.py"
+      - "package/**"
+      - "Dockerfile"
+      - "requirements.txt"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy to Railway
+        uses: railwayapp/railway-action@v2
+        with:
+          serviceId: ${{ secrets.RAILWAY_BACKEND_SERVICE_ID }}
+          token: ${{ secrets.RAILWAY_API_TOKEN }}
