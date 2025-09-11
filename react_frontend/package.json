@@ -1,0 +1,62 @@
+{
+  "name": "guesthouse-app",
+  "version": "1.0.0",
+  "description": "React + Electron based Guest House Frontend",
+  "author": "Riaz",
+  "private": true,
+  "main": "main.js",
+  "scripts": {
+    "build": "vite build",
+    "electron:start": "electron .",
+    "electron:build": "electron-builder",
+    "start": "react-scripts start"
+  },
+  "dependencies": {
+    "axios": "^1.11.0",
+    "date-fns": "^4.1.0",
+    "dayjs": "^1.11.13",
+    "express": "^5.1.0",
+    "open": "^10.2.0",
+    "react": "^19.1.0",
+    "react-datepicker": "^8.4.0",
+    "react-dom": "^19.1.0",
+    "react-router-dom": "^7.8.0",
+    "react-toastify": "^11.0.5"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.6.0",
+    "electron": "^37.2.5",
+    "electron-builder": "^26.0.12",
+    "tailwindcss": "^4.1.11",
+    "vite": "^7.0.4"
+  },
+  "build": {
+    "appId": "com.riaz.guesthouse.app",
+    "directories": {
+      "buildResources": "assets",
+      "app": "./",
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "main.js"
+    ],
+    "win": {
+      "target": "nsis"
+    }
+  },
+  "keywords": [],
+  "license": "ISC",
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

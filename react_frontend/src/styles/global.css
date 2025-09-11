@@ -1,0 +1,82 @@
+.guest-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+/* Typography */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f5f5f5;
+  margin: 0;
+  padding: 0;
+}
+
+/* Wrapper */
+.wrapper {
+  max-width: 1000px;
+  margin: auto;
+  padding: 20px;
+}
+
+/* Headings */
+h1, h2, h3 {
+  color: #1a237e;
+}
+
+/* Buttons */
+button {
+  padding: 8px 14px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  margin-top: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+/* Form elements */
+input, select, textarea {
+  padding: 8px;
+  margin: 5px 0;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Card layout */
+.card {
+  background: #fff;
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 6px;
+}
+
+/* Grid for two-column layout */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.input-full {
+  grid-column: span 2;
+}
+
+/* Add this to your main CSS file */
+.row {
+  display: flex;
+  min-width: 250px;
+  gap: 10px;
+}
+
+.label {
+  font-weight: bold;
+  width: 120px;
+}
+
