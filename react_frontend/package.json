@@ -9,7 +9,9 @@
     "build": "vite build",
     "electron:start": "electron .",
     "electron:build": "electron-builder",
-    "start": "react-scripts start"
+
+    // 🔧 UPDATED: Smart start script for local vs cloud
+    "start": "node scripts/start.js"
   },
   "dependencies": {
     "axios": "^1.11.0",
@@ -21,7 +23,10 @@
     "react-datepicker": "^8.4.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.8.0",
-    "react-toastify": "^11.0.5"
+    "react-toastify": "^11.0.5",
+
+    // 🔧 ADDED: Serve for Railway static hosting
+    "serve": "^14.2.0"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.6.0",
