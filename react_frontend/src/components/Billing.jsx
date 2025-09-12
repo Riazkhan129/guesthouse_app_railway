@@ -2,7 +2,7 @@
 import React, { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import API from "../api";
-import '../../styles/global.css';
+import '../styles/global.css';
 // import 'D:/guesthouse_app_Cleaned/react_frontend/my-react-web-app/src/styles/global.css';
 import axios from "axios";
 
