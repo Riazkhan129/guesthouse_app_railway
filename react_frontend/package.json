@@ -6,11 +6,11 @@
   "private": true,
   "main": "main.js",
   "scripts": {
-    "build": "vite build",
-    "electron:start": "electron .",
-    "electron:build": "electron-builder",
-    "start": "serve -s dist"
-  },
+     "build": "vite build",
+     "electron:start": "electron .",
+     "electron:build": "electron-builder",
+     "start": "serve -s dist -l $PORT"
+   },
   "dependencies": {
     "axios": "^1.11.0",
     "date-fns": "^4.1.0",
@@ -22,7 +22,7 @@
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.8.0",
     "react-toastify": "^11.0.5",
-    "serve": "^14.2.5"
+    "serve": "^14.2.0"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.6.0",
