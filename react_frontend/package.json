@@ -9,8 +9,6 @@
     "build": "vite build",
     "electron:start": "electron .",
     "electron:build": "electron-builder",
-
-    // 🔧 UPDATED: Smart start script for local vs cloud
     "start": "node scripts/start.js"
   },
   "dependencies": {
