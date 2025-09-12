@@ -5,12 +5,10 @@
   "author": "Riaz",
   "private": true,
   "main": "main.js",
-  "scripts": {
-     "build": "vite build",
-     "electron:start": "electron .",
-     "electron:build": "electron-builder",
-     "start": "serve -s dist -l tcp://0.0.0.0:${PORT}"
-   },
+  ""scripts": {
+  "build": "vite build",
+  "start": "node scripts/start.js"
+},
   "dependencies": {
     "axios": "^1.11.0",
     "date-fns": "^4.1.0",
