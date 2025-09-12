@@ -5,7 +5,7 @@ const port = process.env.PORT || 3000;
 
 if (isRailway) {
   console.log(`🚀 Starting in Railway cloud on port ${port}...`);
-  execSync(`npx serve -s dist -l ${port}`, { stdio: 'inherit' }); });
+  execSync(`npx serve -s dist -l ${port}`, { stdio: 'inherit' });
 } else {
   console.log('🧪 Starting in local dev mode...');
   execSync('react-scripts start', { stdio: 'inherit' });
