@@ -35,8 +35,8 @@ def login(
     
 ):
     print("Login request received")
-    print("Username:", form_data.username)
-    print("Password:", form_data.password)
+    print("Username:", username)
+    print("Password:", password)
     print("Client ID:", client_id)
 
     if not client_id:

@@ -106,8 +106,8 @@ def encrypt_password(password: str, key: str) -> str:
     return fernet.encrypt(password.encode()).decode()
 
 # ---------- Create Tables & Insert Default Data ----------
-def initialize_database():    
-    conn = sqlite3.connect()
+def initialize_database(conn):    
+    # conn = sqlite3.connect()
     cursor = conn.cursor()
 
     # ✅ Use correct placeholder syntax
