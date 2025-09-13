@@ -21,7 +21,7 @@ function Login() {
   setLoading(true);
   setError("");
 
-  const API_URL = process.env.REACT_APP_API_BASE_URL;
+  const API_URL = import.meta.env.VITE_API_BASE_URL;
   console.log("🔍 API Base URL:", API_URL);
   console.log("📡 Sending login request to:", `${API_URL}/token`);
   console.log("📝 Login payload:", { username, password, client_id: clientId });
