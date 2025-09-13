@@ -107,7 +107,6 @@ def encrypt_password(password: str, key: str) -> str:
 
 # ---------- Create Tables & Insert Default Data ----------
 def initialize_database(conn):    
-    # conn = sqlite3.connect()
     cursor = conn.cursor()
 
     # ✅ Use correct placeholder syntax
