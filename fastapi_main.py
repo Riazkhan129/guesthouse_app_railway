@@ -196,5 +196,5 @@ def validate_license():
 if __name__ == "__main__":
     import uvicorn
     print("Starting FastAPI app from executable...")
-    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=True)
+    uvicorn.run("fastapi_main:app", host="0.0.0.0", port=port, reload=True)
 
