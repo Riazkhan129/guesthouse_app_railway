@@ -3,8 +3,18 @@ from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from .crud import verify_password, get_encryption_key
 from .models import Client_keysBase
-from .db import get_connection, get_db
+# from .db import get_connection, get_db
+# 🔧 ADDED: Import full DB logic
+from .db import (
+    DB_MODE,
+    create_postgres_database,
+    get_client_connection,
+    find_or_create_ghms_folder,
+    initialize_database
+)
 import sqlite3
+import psycopg2
+import os
 from cryptography.fernet import Fernet
 
 auth_router = APIRouter()
@@ -21,7 +31,8 @@ def login(
     username: str = Form(...),  # ✅ NEW: Accept username from form
     password: str = Form(...),  # ✅ NEW: Accept password from form
     client_id: str = Form(...),  # ✅ NEW: Accept client_id from form
-    db: sqlite3.Connection = Depends(get_db)
+    # db: sqlite3.Connection = Depends(get_db)
+    
 ):
     print("Login request received")
     print("Username:", form_data.username)
@@ -31,11 +42,45 @@ def login(
     if not client_id:
         raise HTTPException(status_code=400, detail="Missing client_id")
 
-    cursor = db.cursor()
-    user = cursor.execute(
-        "SELECT username, password, role FROM users WHERE username = ?",  
-        (username,)
-    ).fetchone()
+    # ---------- 🔧 ADDED: Create or connect to client DB ----------
+    try:
+        if DB_MODE == "cloud":
+            try:
+                create_postgres_database(client_id)
+            except Exception as e:
+                print(f"⚠️ Database may already exist: {e}")
+            conn = get_client_connection(client_id)
+        else:
+            ghms_folder = find_or_create_ghms_folder()
+            db_path = os.path.join(ghms_folder, f"{client_id}.sqlite")
+            conn = sqlite3.connect(db_path)
+            conn.execute("PRAGMA foreign_keys = ON")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"❌ Failed to connect to client DB: {e}")
+
+     # ---------- 🔧 ADDED: Initialize DB if needed ----------
+    try:
+        initialize_database(conn)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"❌ Failed to initialize DB: {e}")
+    # cursor = db.cursor()
+    cursor = conn.cursor()
+
+    try:
+        placeholder = "%s" if DB_MODE == "cloud" else "?"
+        query = f"SELECT username, password, role FROM users WHERE username = {placeholder}"
+        cursor.execute(query, (username,))
+        user = cursor.fetchone()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"❌ Query failed: {e}")
+
+    print("User fetched from DB:", user)
+
+    # -----------
+    #user = cursor.execute(
+    #    "SELECT username, password, role FROM users WHERE username = ?",  
+    #    (username,)
+    #).fetchone()
 
     print("User fetched from DB:", user)
     

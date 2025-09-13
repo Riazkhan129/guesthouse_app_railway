@@ -11,6 +11,37 @@ import string
 # ---------- 🧠 Environment Mode Detection ----------
 DB_MODE = os.getenv("DB_MODE", "local")  # ✅ 'local' or 'cloud'
 
+# ---------- 🔧 ADDED: Create PostgreSQL DB for client ----------
+def create_postgres_database(client_code):
+    admin_url = os.getenv("DB_ADMIN_URL")  # Connects to Railway's default 'postgres' DB
+    if not admin_url:
+        raise RuntimeError("❌ DB_ADMIN_URL not set")
+
+    try:
+        admin_conn = psycopg2.connect(admin_url)
+        admin_conn.autocommit = True
+        cursor = admin_conn.cursor()
+        cursor.execute(f"CREATE DATABASE {client_code}")
+        cursor.close()
+        admin_conn.close()
+        print(f"✅ Created PostgreSQL database: {client_code}")
+    except Exception as e:
+        raise RuntimeError(f"❌ Failed to create database {client_code}: {e}")
+
+# ---------- 🔧 ADDED: Connect to client-specific PostgreSQL DB ----------
+def get_client_connection(client_code):
+    template = os.getenv("DB_URL_TEMPLATE")  # e.g. postgresql://user:pass@host:port/{client}
+    if not template:
+        raise RuntimeError("❌ DB_URL_TEMPLATE not set")
+    
+    db_url = template.replace("{client}", client_code)
+    try:
+        conn = psycopg2.connect(db_url)
+        print(f"✅ Connected to client DB: {client_code}")
+        return conn
+    except Exception as e:
+        raise RuntimeError(f"❌ Failed to connect to client DB: {e}")
+
 # ---------- Get Available Drives ----------
 def get_available_drives():
     drives = []
@@ -221,9 +252,15 @@ def initialize_database():
 
 # ---------- Run only once to initialize ----------
 if __name__ == "__main__":
+    client_code = input("Enter client code: ")
+
     if DB_MODE == "cloud":
-        initialize_database()  # ✅ No path needed for Railway
+        create_postgres_database(client_code)
+        conn = get_client_connection(client_code)
+        initialize_database(conn)
     else:
-        ghms_folder = find_or_create_ghms_folder()  # ✅ Use local drive logic
-        db_path = os.path.join(ghms_folder, "guesthouse.sqlite")
-        initialize_database(db_path)    
+        ghms_folder = find_or_create_ghms_folder()
+        db_path = os.path.join(ghms_folder, f"{client_code}.sqlite")
+        conn = sqlite3.connect(db_path)
+        conn.execute("PRAGMA foreign_keys = ON")
+        initialize_database(conn)
