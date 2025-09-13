@@ -106,7 +106,7 @@ def encrypt_password(password: str, key: str) -> str:
     return fernet.encrypt(password.encode()).decode()
 
 # ---------- Create Tables & Insert Default Data ----------
-def initialize_database(conn):    
+def initialize_database(conn, client_id):    
     cursor = conn.cursor()
 
     # ✅ Use correct placeholder syntax
@@ -220,7 +220,7 @@ def initialize_database(conn):
         encryption_key = Fernet.generate_key().decode()
         cursor.execute(
             f"INSERT INTO client_keys (client_id, encryption_key) VALUES ({placeholder}, {placeholder})",
-            ("default_client", encryption_key)
+            (client_id, encryption_key)
         )
         print(f"🆕 New encryption key generated and saved")
 
