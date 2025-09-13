@@ -60,7 +60,7 @@ def login(
 
      # ---------- 🔧 ADDED: Initialize DB if needed ----------
     try:
-        initialize_database(conn)
+        initialize_database(conn, client_id)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"❌ Failed to initialize DB: {e}")
     # cursor = db.cursor()
