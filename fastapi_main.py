@@ -5,6 +5,8 @@ from datetime import datetime
 from cryptography.fernet import Fernet
 from dotenv import load_dotenv  # ✅ NEW: Load .env for local testing
 
+port = int(os.getenv("PORT", 8000))
+
 # ✅ Load environment variables from .env (only works locally)
 load_dotenv()
 
@@ -194,5 +196,5 @@ def validate_license():
 if __name__ == "__main__":
     import uvicorn
     print("Starting FastAPI app from executable...")
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=True)
 
