@@ -9,7 +9,6 @@ function Login() {
   const [clientId, setClientId] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
   const usernameRef = useRef(null);
 
   useEffect(() => {
@@ -24,7 +23,7 @@ function Login() {
 
     try {
       const res = await axios.post(
-        "http://localhost:8000/token",
+        `${process.env.REACT_APP_API_BASE_URL}/token`,
         qs.stringify({
           username: username,
           password: password,
@@ -36,6 +35,7 @@ function Login() {
           },
         }
       );
+
 
       login(res.data.access_token, username, res.data.role);
     } catch (err) {
