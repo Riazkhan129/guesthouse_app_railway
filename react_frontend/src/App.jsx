@@ -28,7 +28,7 @@ import Billing from "./components/Billing";
 import Guestreport from "./components/guestreport";
 // import Footer from "./components/Footer";
 
-const API_URL = "http://localhost:8000";
+const API_URL = process.env.REACT_APP_API_URL;
 
 // 🏢 Top header with company name
 function CompanyHeader() {
