@@ -5,7 +5,6 @@ from datetime import datetime
 from cryptography.fernet import Fernet
 from dotenv import load_dotenv  # ✅ NEW: Load .env for local testing
 
-port = int(os.getenv("PORT", 8000))
 
 # ✅ Load environment variables from .env (only works locally)
 load_dotenv()
@@ -37,6 +36,8 @@ from app.routes import (
 
 # Initialize FastAPI app
 app = FastAPI(title="Guest House Management System")
+port = int(os.getenv("PORT", 8000))
+
 
 # Allow CORS for frontend
 app.add_middleware(
