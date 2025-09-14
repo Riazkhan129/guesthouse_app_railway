@@ -4,6 +4,8 @@ import json
 from datetime import datetime
 from cryptography.fernet import Fernet
 from dotenv import load_dotenv  # ✅ NEW: Load .env for local testing
+from fastapi.middleware.cors import CORSMiddleware
+
 
 
 # ✅ Load environment variables from .env (only works locally)
@@ -38,6 +40,11 @@ from app.routes import (
 app = FastAPI(title="Guest House Management System")
 port = int(os.getenv("PORT", 8000))
 
+# ✅ Allow your frontend domain
+origins = [
+    "https://lodgecontrol.up.railway.app",  # ✅ Your deployed frontend
+    "http://localhost:3000",                # ✅ For local development
+]
 
 # Allow CORS for frontend
 app.add_middleware(
