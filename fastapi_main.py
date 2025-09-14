@@ -49,7 +49,10 @@ origins = [
 # Allow CORS for frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # ⚠️ Use specific domain in production
+    allow_origins=[
+        "https://lodgecontrol.up.railway.app",
+        "http://localhost:3000"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
