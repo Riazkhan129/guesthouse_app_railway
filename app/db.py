@@ -181,24 +181,24 @@ def initialize_database(conn, client_id):
         booking_id_column = "booking_id INTEGER PRIMARY KEY AUTOINCREMENT"
 
     sql = f"""
-    CREATE TABLE IF NOT EXISTS bookings (
+        CREATE TABLE IF NOT EXISTS bookings (
         {booking_id_column},
-            nic_passport_number TEXT,
-            room_number TEXT,
-            checkin_date TEXT,
-            checkout_date TEXT,
-            status TEXT,
-            notes TEXT,
-            actual_checkin_time TEXT,
-            advance_payment REAL,
-            actual_checkout_time TEXT,
-            total_payment REAL,
-            invoice_id int,
-            FOREIGN KEY (nic_passport_number) REFERENCES guests(nic_passport_number)
-        )
-    """)
-
+        nic_passport_number TEXT,
+        room_number TEXT,
+        checkin_date TEXT,
+        checkout_date TEXT,
+        status TEXT,
+        notes TEXT,
+        actual_checkin_time TEXT,
+        advance_payment REAL,
+        actual_checkout_time TEXT,
+        total_payment REAL,
+        invoice_id INTEGER,
+        FOREIGN KEY (nic_passport_number) REFERENCES guests(nic_passport_number)
+    )
+    """
     cursor.execute(sql)
+
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS expenses (
