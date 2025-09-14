@@ -21,9 +21,10 @@ def get_encryption_key(client_id: str) -> str:
     cursor = conn.cursor()
 
     cursor.execute(
-        "SELECT encryption_key FROM client_keys WHERE client_id = ?",
-        (client_id,)
+    "SELECT encryption_key FROM client_keys WHERE client_id = %s",
+    (client_id,)
     )
+
     result = cursor.fetchone()
     conn.close()
 
