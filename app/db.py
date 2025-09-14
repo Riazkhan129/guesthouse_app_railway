@@ -36,7 +36,7 @@ def create_postgres_database(client_code):
         raise RuntimeError(f"❌ Failed to create database {client_code}: {e}")
 
 # ---------- 🔧 ADDED: Connect to client-specific PostgreSQL DB ----------
-def get_client_connection(client_code):
+def get_client_connectionclient_code):
     template = os.getenv("DB_URL_TEMPLATE")  # e.g. postgresql://user:pass@host:port/{client}
     if not template:
         raise RuntimeError("❌ DB_URL_TEMPLATE not set")
@@ -113,14 +113,13 @@ def encrypt_password(password: str, key: str) -> str:
     return fernet.encrypt(password.encode()).decode()
 
 # ---------- Create Tables & Insert Default Data ----------
-def initialize_database(conn, client_id):    
-    cursor = conn.cursor()
 
-    # ✅ Use correct placeholder syntax
+# ✅ FIXED: Wrap table creation inside a proper function
+def initialize_database(conn, client_id):
+    cursor = conn.cursor()
     placeholder = "%s" if DB_MODE == "cloud" else "?"
 
-    # -------- Tables --------
-
+    # ✅ FIXED: Create client_keys table first
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS client_keys (
             client_id TEXT PRIMARY KEY,
@@ -128,10 +127,9 @@ def initialize_database(conn, client_id):
         )
     """)
 
-
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS users (
-            user_id {"SERIAL PRIMARY KEY" if DB_MODE == "cloud" else "INTEGER PRIMARY KEY AUTOINCREMENT"},
+            user_id {'SERIAL PRIMARY KEY' if DB_MODE == 'cloud' else 'INTEGER PRIMARY KEY AUTOINCREMENT'},
             name TEXT,
             username TEXT UNIQUE NOT NULL,
             password TEXT NOT NULL,
@@ -215,45 +213,45 @@ def initialize_database(conn, client_id):
     # -------- Insert Default Users --------
 
     # ---------- Insert Encryption Key ----------
-    cursor.execute(f"SELECT encryption_key FROM client_keys LIMIT 1")
+    cursor.execute("SELECT encryption_key FROM client_keys WHERE client_id = %s", (client_id,))
     result = cursor.fetchone()
-    # cursor.execute("SELECT encryption_key FROM client_keys WHERE client_id = ?", (client_id,))
-    # result = cursor.fetchone()
-
+    
     if result:
         encryption_key = result[0]
         print(f"🔐 Existing encryption key found")
     else:
         encryption_key = Fernet.generate_key().decode()
         cursor.execute(
-            f"INSERT INTO client_keys (client_id, encryption_key) VALUES ({placeholder}, {placeholder})",
+            # f"INSERT INTO client_keys (client_id, encryption_key) VALUES ({placeholder}, {placeholder})",
+            "INSERT INTO client_keys (client_id, encryption_key) VALUES (%s, %s)",
             (client_id, encryption_key)
+            
         )
         print(f"🆕 New encryption key generated and saved")
 
     conn.commit()  # ✅ Commit the key insert immediately
 
     # -------- Insert Default Users --------
-    cursor.execute(f"SELECT COUNT(*) FROM users WHERE username = {placeholder}", ("admin1",))
+    cursor.execute("SELECT COUNT(*) FROM users WHERE username = %s", ("admin1",))
     if cursor.fetchone()[0] == 0:
         encrypted_pw = encrypt_password('admin1', encryption_key)  # 🔄 CHANGED
         cursor.execute(
-            f"INSERT INTO users (username, password, role, name) VALUES ({placeholder}, {placeholder}, {placeholder}, {placeholder})",
+            "INSERT INTO users (username, password, role, name) VALUES (%s, %s, %s, %s)",            
             ("admin1", encrypted_pw, "Front Desk", "Admin One")
         )
 
-    cursor.execute(f"SELECT COUNT(*) FROM users WHERE username = {placeholder}", ("admin2",))
+    cursor.execute("SELECT COUNT(*) FROM users WHERE username = %s", ("admin2",))
     if cursor.fetchone()[0] == 0:
         encrypted_pw = encrypt_password('admin2', encryption_key)  # 🔄 CHANGED
         cursor.execute(
-            f"INSERT INTO users (username, password, role, name) VALUES ({placeholder}, {placeholder}, {placeholder}, {placeholder})",
+            "INSERT INTO users (username, password, role, name) VALUES (%s, %s, %s, %s)",           
             ("admin2", encrypted_pw, "Management", "Admin Two")
         )
 
 
     conn.commit()
     conn.close()
-    print(f"✅ Database initialized at {db_path}")
+    print(f"✅ Database initialized for client: {client_id}")
 
 
 
