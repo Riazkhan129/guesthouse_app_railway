@@ -206,7 +206,7 @@ def initialize_database(conn, client_id):
 
     sql = f"""
         CREATE TABLE IF NOT EXISTS expenses (
-            {id_column},
+            {epense_id_column},
             title TEXT NOT NULL,
             amount REAL NOT NULL,
             category TEXT NOT NULL,
