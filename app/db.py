@@ -11,6 +11,22 @@ import string
 # ---------- 🧠 Environment Mode Detection ----------
 DB_MODE = os.getenv("DB_MODE", "local")  # ✅ 'local' or 'cloud'
 
+# ---------- ✅ ADDED: Unified DB setup function ----------
+def get_or_create_client_db(client_id):
+    try:
+        if DB_MODE == "cloud":
+            create_postgres_database(client_id)
+            conn = get_client_connection(client_id)
+        else:
+            ghms_folder = find_or_create_ghms_folder()
+            db_path = os.path.join(ghms_folder, f"{client_id}.sqlite")
+            conn = sqlite3.connect(db_path)
+            conn.execute("PRAGMA foreign_keys = ON")
+        initialize_database(conn, client_id)
+        return conn
+    except Exception as e:
+        raise RuntimeError(f"❌ Failed to prepare client DB: {e}")
+
 # ---------- 🔧 ADDED: Create PostgreSQL DB for client ----------
 def create_postgres_database(client_code):
     admin_url = os.getenv("DB_ADMIN_URL")  # Connects to Railway's default 'postgres' DB
@@ -106,15 +122,8 @@ def get_db():
     finally:
         db.close()
 
-
-# 🆕 ADDED: Encrypt password using client-specific key
-def encrypt_password(password: str, key: str) -> str:
-    fernet = Fernet(key.encode())
-    return fernet.encrypt(password.encode()).decode()
-
 # ---------- Create Tables & Insert Default Data ----------
 
-# ✅ FIXED: Wrap table creation inside a proper function
 def initialize_database(conn, client_id):
     cursor = conn.cursor()
     placeholder = "%s" if DB_MODE == "cloud" else "?"
@@ -211,7 +220,6 @@ def initialize_database(conn, client_id):
     """)
 
     # -------- Insert Default Users --------
-
     # ---------- Insert Encryption Key ----------
     cursor.execute("SELECT encryption_key FROM client_keys WHERE client_id = %s", (client_id,))
     result = cursor.fetchone()
@@ -253,7 +261,10 @@ def initialize_database(conn, client_id):
     conn.close()
     print(f"✅ Database initialized for client: {client_id}")
 
-
+# 🆕 ADDED: Encrypt password using client-specific key
+def encrypt_password(password: str, key: str) -> str:
+    fernet = Fernet(key.encode())
+    return fernet.encrypt(password.encode()).decode()
 
 # ---------- Run only once to initialize ----------
 if __name__ == "__main__":
