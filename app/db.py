@@ -36,7 +36,7 @@ def create_postgres_database(client_code):
         raise RuntimeError(f"❌ Failed to create database {client_code}: {e}")
 
 # ---------- 🔧 ADDED: Connect to client-specific PostgreSQL DB ----------
-def get_client_connectionclient_code):
+def get_client_connection(client_code):
     template = os.getenv("DB_URL_TEMPLATE")  # e.g. postgresql://user:pass@host:port/{client}
     if not template:
         raise RuntimeError("❌ DB_URL_TEMPLATE not set")
