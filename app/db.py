@@ -202,11 +202,11 @@ def initialize_database(conn, client_id):
     if DB_MODE == "cloud":
         expense_id_column = "id SERIAL PRIMARY KEY"
     else:
-        booking_id_column = "id INTEGER PRIMARY KEY AUTOINCREMENT"
+        expense_id_column = "id INTEGER PRIMARY KEY AUTOINCREMENT"
 
     sql = f"""
         CREATE TABLE IF NOT EXISTS expenses (
-            {epense_id_column},
+            {expense_id_column},
             title TEXT NOT NULL,
             amount REAL NOT NULL,
             category TEXT NOT NULL,
