@@ -5,6 +5,7 @@ from fastapi.security import OAuth2PasswordBearer
 from cryptography.fernet import Fernet
 from .crud import get_encryption_key
 from .db import get_or_create_client_db  # ✅ ADDED: Single entry point for DB setup
+import os
 
 auth_router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token")
