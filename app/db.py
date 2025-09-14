@@ -14,6 +14,7 @@ DB_MODE = os.getenv("DB_MODE", "local")  # ✅ 'local' or 'cloud'
 # ---------- 🔧 ADDED: Create PostgreSQL DB for client ----------
 def create_postgres_database(client_code):
     admin_url = os.getenv("DB_ADMIN_URL")  # Connects to Railway's default 'postgres' DB
+    print("🔧 Connecting to admin DB:", admin_url)  # ✅ NEW: Log admin URL
     if not admin_url:
         raise RuntimeError("❌ DB_ADMIN_URL not set")
 
@@ -21,7 +22,13 @@ def create_postgres_database(client_code):
         admin_conn = psycopg2.connect(admin_url)
         admin_conn.autocommit = True
         cursor = admin_conn.cursor()
-        cursor.execute(f"CREATE DATABASE {client_code}")
+        # cursor.execute(f"CREATE DATABASE {client_code}")
+        cursor.execute("SELECT 1 FROM pg_database WHERE datname = %s", (client_code,))  # ✅ NEW: Check if DB exists
+        if cursor.fetchone():
+            print(f"⚠️ Database '{client_code}' already exists.")  # ✅ NEW: Log existing DB
+        else:
+            cursor.execute(f"CREATE DATABASE {client_code}")  # ✅ NEW: Create only if not exists
+            print(f"✅ Created PostgreSQL database: {client_code}")  # ✅ NEW: Log success
         cursor.close()
         admin_conn.close()
         print(f"✅ Created PostgreSQL database: {client_code}")
@@ -211,7 +218,7 @@ def initialize_database(conn, client_id):
     cursor.execute(f"SELECT encryption_key FROM client_keys LIMIT 1")
     result = cursor.fetchone()
     # cursor.execute("SELECT encryption_key FROM client_keys WHERE client_id = ?", (client_id,))
-    result = cursor.fetchone()
+    # result = cursor.fetchone()
 
     if result:
         encryption_key = result[0]
@@ -249,6 +256,7 @@ def initialize_database(conn, client_id):
     print(f"✅ Database initialized at {db_path}")
 
 
+
 # ---------- Run only once to initialize ----------
 if __name__ == "__main__":
     client_code = input("Enter client code: ")
@@ -256,10 +264,10 @@ if __name__ == "__main__":
     if DB_MODE == "cloud":
         create_postgres_database(client_code)
         conn = get_client_connection(client_code)
-        initialize_database(conn)
+        initialize_database(conn, client_code)  # ✅ UPDATED: Pass client_id explicitly
     else:
         ghms_folder = find_or_create_ghms_folder()
         db_path = os.path.join(ghms_folder, f"{client_code}.sqlite")
         conn = sqlite3.connect(db_path)
         conn.execute("PRAGMA foreign_keys = ON")
-        initialize_database(conn)
+        initialize_database(conn, client_code)  # ✅ UPDATED: Pass client_id explicitly
