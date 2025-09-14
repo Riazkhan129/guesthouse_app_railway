@@ -141,15 +141,16 @@ def initialize_database(conn, client_id):
     else:
         user_id_column = "user_id INTEGER PRIMARY KEY AUTOINCREMENT"
 
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS users (
-            {user_id_column},
-            name TEXT,
-            username TEXT UNIQUE NOT NULL,
-            password TEXT NOT NULL,
-            role TEXT NOT NULL
-        )
-    """)
+    sql = (
+    "CREATE TABLE IF NOT EXISTS users ("
+    f"{user_id_column}, "
+    "name TEXT, "
+    "username TEXT UNIQUE NOT NULL, "
+    "password TEXT NOT NULL, "
+    "role TEXT NOT NULL)"
+    )
+
+    cursor.execute(sql)
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS guests (
