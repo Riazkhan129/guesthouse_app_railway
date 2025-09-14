@@ -136,9 +136,14 @@ def initialize_database(conn, client_id):
         )
     """)
 
+    if DB_MODE == "cloud":
+        user_id_column = "user_id SERIAL PRIMARY KEY"
+    else:
+        user_id_column = "user_id INTEGER PRIMARY KEY AUTOINCREMENT"
+
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS users (
-            user_id {'SERIAL PRIMARY KEY' if DB_MODE == 'cloud' else 'INTEGER PRIMARY KEY AUTOINCREMENT'},
+            {user_id_column},
             name TEXT,
             username TEXT UNIQUE NOT NULL,
             password TEXT NOT NULL,
