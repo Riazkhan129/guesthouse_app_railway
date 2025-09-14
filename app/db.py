@@ -175,9 +175,14 @@ def initialize_database(conn, client_id):
         )
     """)
 
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS bookings (
-            booking_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    if DB_MODE == "cloud":
+        booking_id_column = "booking_id SERIAL PRIMARY KEY"
+    else:
+        booking_id_column = "booking_id INTEGER PRIMARY KEY AUTOINCREMENT"
+
+    sql = f"""
+    CREATE TABLE IF NOT EXISTS bookings (
+        {booking_id_column},
             nic_passport_number TEXT,
             room_number TEXT,
             checkin_date TEXT,
@@ -192,6 +197,8 @@ def initialize_database(conn, client_id):
             FOREIGN KEY (nic_passport_number) REFERENCES guests(nic_passport_number)
         )
     """)
+
+    cursor.execute(sql)
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS expenses (
