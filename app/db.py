@@ -277,7 +277,7 @@ def initialize_database(conn, client_id):
 
 
     conn.commit()
-    conn.close()
+    # conn.close()
     print(f"✅ Database initialized for client: {client_id}")
 
 # 🆕 ADDED: Encrypt password using client-specific key
