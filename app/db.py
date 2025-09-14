@@ -199,18 +199,24 @@ def initialize_database(conn, client_id):
     """
     cursor.execute(sql)
 
+    if DB_MODE == "cloud":
+        expense_id_column = "id SERIAL PRIMARY KEY"
+    else:
+        booking_id_column = "id INTEGER PRIMARY KEY AUTOINCREMENT"
 
-    cursor.execute("""
+    sql = f"""
         CREATE TABLE IF NOT EXISTS expenses (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            {id_column},
             title TEXT NOT NULL,
             amount REAL NOT NULL,
             category TEXT NOT NULL,
             notes TEXT,
             timestamp TEXT,
             date TEXT
-        )
-    """)
+    )
+    """
+    cursor.execute(sql)
+
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS invoices (
