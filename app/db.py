@@ -80,6 +80,8 @@ def get_or_create_client_db(client_id):
             conn = psycopg2.connect(db_url)
             conn.autocommit = True
             print(f"✅ Connected to PostgreSQL DB for client: {client_id}")
+            print(f"🔧 DB_MODE: {DB_MODE}")
+            print(f"🔧 Initializing DB for client: {client_id}")
         else:
             ghms_folder = find_or_create_ghms_folder()
             db_path = os.path.join(ghms_folder, f"{client_id}.sqlite")
