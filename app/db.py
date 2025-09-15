@@ -145,13 +145,13 @@ def initialize_database(conn, client_id):
         user_id_column = "user_id INTEGER PRIMARY KEY AUTOINCREMENT"
 
     cursor.execute(f"""
-    CREATE TABLE IF NOT EXISTS users (
-        {user_id_column},
-        name TEXT, 
-        username TEXT UNIQUE NOT NULL, 
-        password TEXT NOT NULL, 
-        role TEXT NOT NULL)
-    )
+        CREATE TABLE IF NOT EXISTS users (
+            {user_id_column},
+            name TEXT, 
+            username TEXT UNIQUE NOT NULL, 
+            password TEXT NOT NULL, 
+            role TEXT NOT NULL)
+        )
     """)
 
     print("✅ 'users' table creation executed")  # ✅ ADDED: Debug log
