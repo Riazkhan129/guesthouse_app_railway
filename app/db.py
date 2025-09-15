@@ -2,69 +2,15 @@
 
 import os
 import sqlite3
-import psycopg2  
-from contextlib import contextmanager
-from cryptography.fernet import Fernet
-import sys
+import psycopg2
 import string
+# from contextlib import contextmanager
+from cryptography.fernet import Fernet
+# import sys
+
 
 # ---------- 🧠 Environment Mode Detection ----------
 DB_MODE = os.getenv("DB_MODE", "local")  # ✅ 'local' or 'cloud'
-
-# ---------- ✅ ADDED: Unified DB setup function ----------
-def get_or_create_client_db(client_id):
-    try:
-        if DB_MODE == "cloud":
-            create_postgres_database(client_id)
-            conn = get_client_connection(client_id)
-        else:
-            ghms_folder = find_or_create_ghms_folder()
-            db_path = os.path.join(ghms_folder, f"{client_id}.sqlite")
-            conn = sqlite3.connect(db_path)
-            conn.execute("PRAGMA foreign_keys = ON")
-        initialize_database(conn, client_id)
-        print(f"✅ DB setup complete for client: {client_id}")  # ✅ ADDED
-        return conn
-    except Exception as e:
-        raise RuntimeError(f"❌ Failed to prepare client DB: {e}")
-
-# ---------- 🔧 ADDED: Create PostgreSQL DB for client ----------
-def create_postgres_database(client_code):
-    admin_url = os.getenv("DB_ADMIN_URL")  # Connects to Railway's default 'postgres' DB
-    print("🔧 Connecting to admin DB:", admin_url)  # ✅ NEW: Log admin URL
-    if not admin_url:
-        raise RuntimeError("❌ DB_ADMIN_URL not set")
-
-    try:
-        admin_conn = psycopg2.connect(admin_url)
-        admin_conn.autocommit = True
-        cursor = admin_conn.cursor()
-        # cursor.execute(f"CREATE DATABASE {client_code}")
-        cursor.execute("SELECT 1 FROM pg_database WHERE datname = %s", (client_code,))  # ✅ NEW: Check if DB exists
-        if cursor.fetchone():
-            print(f"⚠️ Database '{client_code}' already exists.")  # ✅ NEW: Log existing DB
-        else:
-            cursor.execute(f"CREATE DATABASE {client_code}")  # ✅ NEW: Create only if not exists
-            print(f"✅ Created PostgreSQL database: {client_code}")  # ✅ NEW: Log success
-        cursor.close()
-        admin_conn.close()
-        print(f"✅ Created PostgreSQL database: {client_code}")
-    except Exception as e:
-        raise RuntimeError(f"❌ Failed to create database {client_code}: {e}")
-
-# ---------- 🔧 ADDED: Connect to client-specific PostgreSQL DB ----------
-def get_client_connection(client_code):
-    template = os.getenv("DB_URL_TEMPLATE")  # e.g. postgresql://user:pass@host:port/{client}
-    if not template:
-        raise RuntimeError("❌ DB_URL_TEMPLATE not set")
-    
-    db_url = template.replace("{client}", client_code)
-    try:
-        conn = psycopg2.connect(db_url)
-        print(f"✅ Connected to client DB: {client_code}")
-        return conn
-    except Exception as e:
-        raise RuntimeError(f"❌ Failed to connect to client DB: {e}")
 
 # ---------- Get Available Drives ----------
 def get_available_drives():
@@ -75,6 +21,10 @@ def get_available_drives():
             drives.append(drive)
     return drives
 
+    # ✅ ADDED: Fallback for Linux environments
+    if not drives:
+        drives.append(os.getcwd())
+    return drives
 
 # ---------- Create or Find ghms Folder ----------
 def find_or_create_ghms_folder():
@@ -89,8 +39,6 @@ def find_or_create_ghms_folder():
     
     raise RuntimeError("❌ Could not create ghms folder on any available drive.")
 
-
-
 # ---------- Get DB Connection ----------
 def get_connection():
     if DB_MODE == "cloud":
@@ -99,6 +47,7 @@ def get_connection():
             raise RuntimeError("❌ DB_URL environment variable not set")
         try:
             conn = psycopg2.connect(db_url)
+            conn.autocommit = True
             print("✅ Connected to Railway PostgreSQL")
             return conn
         except Exception as e:
@@ -106,16 +55,45 @@ def get_connection():
     else:
         ghms_folder = find_or_create_ghms_folder()  # ✅ Use client drive logic
         db_path = os.path.join(ghms_folder, "guesthouse.sqlite")  # ✅ Fixed local path
+        print("📌 Checking DB at:", db_path)
         if not os.path.exists(db_path):
-            print("⚠️ Local DB not found. Creating it...")
+            print("⚠️ DB not found. Creating it...")
             initialize_database(db_path)
+        try:
+            with open(db_path, 'rb') as f:
+                f.read(1)
+            print("✅ DB file is readable")
+        except Exception as e:
+            raise RuntimeError(f"❌ Cannot read DB file: {e}")
         conn = sqlite3.connect(db_path)
         conn.execute("PRAGMA foreign_keys = ON")
-        print(f"✅ Connected to local SQLite at {db_path}")
         return conn
 
+# ✅ ADDED: Unified DB setup for local and cloud
+def get_or_create_client_db(client_id):
+    try:
+        if DB_MODE == "cloud":
+            template = os.getenv("DB_URL_TEMPLATE")
+            if not template:
+                raise RuntimeError("❌ DB_URL_TEMPLATE not set")
+            db_url = template.replace("{client}", client_id)
+            conn = psycopg2.connect(db_url)
+            conn.autocommit = True
+            print(f"✅ Connected to PostgreSQL DB for client: {client_id}")
+        else:
+            ghms_folder = find_or_create_ghms_folder()
+            db_path = os.path.join(ghms_folder, f"{client_id}.sqlite")
+            if not os.path.exists(db_path):
+                print(f"⚠️ Local DB for client '{client_id}' not found. Creating...")
+            conn = sqlite3.connect(db_path)
+            conn.execute("PRAGMA foreign_keys = ON")
+            print(f"✅ Connected to SQLite DB for client: {client_id}")
+
+        initialize_database(conn if DB_MODE == "cloud" else db_path, client_id)  # ✅ ADDED: Pass client_id
+        return conn
+    except Exception as e:
+        raise RuntimeError(f"❌ Failed to prepare DB for client '{client_id}': {e}")
 # ---------- FastAPI Dependency ----------
-@contextmanager
 def get_db():
     db = get_connection()
     try:
@@ -123,11 +101,26 @@ def get_db():
     finally:
         db.close()
 
-# ---------- Create Tables & Insert Default Data ----------
+# ---------- Encrypt password ----------
+def encrypt_password(password: str, key: str) -> str:
+    fernet = Fernet(key.encode())
+    return fernet.encrypt(password.encode()).decode()
 
-def initialize_database(conn, client_id):
+# ---------- Create Tables & Insert Default Data ----------
+def initialize_database(db_path_or_conn):
+    if DB_MODE == "cloud":
+        conn = db_path_or_conn  # 🔄 UPDATED: PostgreSQL connection
+        placeholder = "%s"
+    else:
+        db_path = db_path_or_conn
+        if not os.path.exists(db_path):
+            print(" DB file not found. Creating a new one...")
+        else:
+            print(" DB file found.")
+        conn = sqlite3.connect(db_path)
+        placeholder = "?"
+
     cursor = conn.cursor()
-    placeholder = "%s" if DB_MODE == "cloud" else "?"
 
     # ✅ FIXED: Create client_keys table first
     cursor.execute("""
@@ -138,12 +131,9 @@ def initialize_database(conn, client_id):
     """) 
 
     print("✅ 'client_keys' table creation executed")  # ✅ ADDED: Debug log
-    
-    if DB_MODE == "cloud":
-        user_id_column = "user_id SERIAL PRIMARY KEY"
-    else:
-        user_id_column = "user_id INTEGER PRIMARY KEY AUTOINCREMENT"
 
+    user_id_column = "user_id SERIAL PRIMARY KEY" if DB_MODE == "cloud" else "user_id INTEGER PRIMARY KEY AUTOINCREMENT"    
+    
     cursor.execute(f"""
         CREATE TABLE IF NOT EXISTS users (
             {user_id_column},
@@ -183,11 +173,7 @@ def initialize_database(conn, client_id):
 
     print("✅ 'rooms' table creation executed")  # ✅ ADDED: Debug log
 
-    if DB_MODE == "cloud":
-        booking_id_column = "booking_id SERIAL PRIMARY KEY"
-    else:
-        booking_id_column = "booking_id INTEGER PRIMARY KEY AUTOINCREMENT"
-
+    booking_id_column = "booking_id SERIAL PRIMARY KEY" if DB_MODE == "cloud" else "booking_id INTEGER PRIMARY KEY AUTOINCREMENT"
     cursor.execute(f"""
         CREATE TABLE IF NOT EXISTS bookings (
             {booking_id_column},
@@ -208,12 +194,9 @@ def initialize_database(conn, client_id):
 
     print("✅ 'booking' table creation executed")  # ✅ ADDED: Debug log
 
-    if DB_MODE == "cloud":
-        expense_id_column = "id SERIAL PRIMARY KEY"
-    else:
-        expense_id_column = "id INTEGER PRIMARY KEY AUTOINCREMENT"
-
-    cursor.execute(f""
+    expense_id_column = "id SERIAL PRIMARY KEY" if DB_MODE == "cloud" else "id INTEGER PRIMARY KEY AUTOINCREMENT"
+    
+    cursor.execute(f"""
         CREATE TABLE IF NOT EXISTS expenses (
             {expense_id_column},
             title TEXT NOT NULL,
@@ -250,10 +233,12 @@ def initialize_database(conn, client_id):
 
     print("✅ 'invoices' table creation executed")  # ✅ ADDED: Debug log
 
-    # -------- Insert Default Users --------
-    # ---------- Insert Encryption Key ----------
+# ---------- Encryption Key ----------
     
-    cursor.execute("SELECT encryption_key FROM client_keys WHERE client_id = %s", (client_id,))
+    if DB_MODE == "cloud":
+        cursor.execute("SELECT encryption_key FROM client_keys WHERE client_id = %s", (client_id,))
+    else:
+        cursor.execute("SELECT encryption_key FROM client_keys WHERE client_id = ?", (client_id,))
     result = cursor.fetchone()
     
     if result:
@@ -261,52 +246,52 @@ def initialize_database(conn, client_id):
         print(f"🔐 Existing encryption key found")
     else:
         encryption_key = Fernet.generate_key().decode()
-        cursor.execute(
-            "INSERT INTO client_keys (client_id, encryption_key) VALUES (%s, %s)",
-            (client_id, encryption_key)
-            )
-        print(f"🆕 New encryption key generated and saved")
+        if DB_MODE == "cloud":
+            cursor.execute("INSERT INTO client_keys (client_id, encryption_key) VALUES (%s, %s)", (client_id, encryption_key))
+        else:
+            cursor.execute("INSERT INTO client_keys (client_id, encryption_key) VALUES (?, ?)", (client_id, encryption_key))
+        print("🆕 New encryption key generated and saved")
 
     conn.commit()  # ✅ Commit the key insert immediately
 
-    # -------- Insert Default Users --------
-    cursor.execute("SELECT COUNT(*) FROM users WHERE username = %s", ("admin1",))
+# -------- Insert Default Users --------
+        
+    if DB_MODE == "cloud":
+        cursor.execute("SELECT COUNT(*) FROM users WHERE username = %s", ("admin1",))
+    else:
+        cursor.execute("SELECT COUNT(*) FROM users WHERE username = ?", ("admin1",))
     if cursor.fetchone()[0] == 0:
-        encrypted_pw = encrypt_password('admin1', encryption_key)  # 🔄 CHANGED
-        cursor.execute(
-            "INSERT INTO users (username, password, role, name) VALUES (%s, %s, %s, %s)",            
-            ("admin1", encrypted_pw, "Front Desk", "Admin One")
-        )
+        encrypted_pw = encrypt_password("admin1", encryption_key)
+        if DB_MODE == "cloud":
+            cursor.execute("INSERT INTO users (username, password, role, name) VALUES (%s, %s, %s, %s)",
+                           ("admin1", encrypted_pw, "Front Desk", "Admin One"))
+        else:
+            cursor.execute("INSERT INTO users (username, password, role, name) VALUES (?, ?, ?, ?)",
+                           ("admin1", encrypted_pw, "Front Desk", "Admin One"))
 
-    cursor.execute("SELECT COUNT(*) FROM users WHERE username = %s", ("admin2",))
+    if DB_MODE == "cloud":
+        cursor.execute("SELECT COUNT(*) FROM users WHERE username = %s", ("admin2",))
+    else:
+        cursor.execute("SELECT COUNT(*) FROM users WHERE username = ?", ("admin2",))
     if cursor.fetchone()[0] == 0:
-        encrypted_pw = encrypt_password('admin2', encryption_key)  # 🔄 CHANGED
-        cursor.execute(
-            "INSERT INTO users (username, password, role, name) VALUES (%s, %s, %s, %s)",           
-            ("admin2", encrypted_pw, "Management", "Admin Two")
-        )
-
+        encrypted_pw = encrypt_password("admin2", encryption_key)
+        if DB_MODE == "cloud":
+            cursor.execute("INSERT INTO users (username, password, role, name) VALUES (%s, %s, %s, %s)",
+                           ("admin2", encrypted_pw, "Management", "Admin Two"))
+        else:
+            cursor.execute("INSERT INTO users (username, password, role, name) VALUES (?, ?, ?, ?)",
+                           ("admin2", encrypted_pw, "Management", "Admin Two"))
 
     conn.commit()
-    # conn.close()
     print(f"✅ Database initialized for client: {client_id}")
-
-# 🆕 ADDED: Encrypt password using client-specific key
-def encrypt_password(password: str, key: str) -> str:
-    fernet = Fernet(key.encode())
-    return fernet.encrypt(password.encode()).decode()
+    
 
 # ---------- Run only once to initialize ----------
 if __name__ == "__main__":
-    client_code = input("Enter client code: ")
-
     if DB_MODE == "cloud":
-        create_postgres_database(client_code)
-        conn = get_client_connection(client_code)
-        initialize_database(conn, client_code)  # ✅ UPDATED: Pass client_id explicitly
+        conn = get_connection()
+        initialize_database(conn)  # ✅ ADDED: Cloud mode uses connection
     else:
         ghms_folder = find_or_create_ghms_folder()
-        db_path = os.path.join(ghms_folder, f"{client_code}.sqlite")
-        conn = sqlite3.connect(db_path)
-        conn.execute("PRAGMA foreign_keys = ON")
-        initialize_database(conn, client_code)  # ✅ UPDATED: Pass client_id explicitly
+        db_path = os.path.join(ghms_folder, "guesthouse.sqlite")
+        initialize_database(db_path)  # ✅ Local mode uses file path

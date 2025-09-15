@@ -22,9 +22,7 @@ def login(
     print("Client ID:", client_id)
 
     if not client_id:
-        raise HTTPException(status_code=400, detail="Missing client_id")
-
-    # ✅ REPLACED: All DB setup logic with one call
+        raise HTTPException(status_code=400, detail="Missing client_id")    
     try:
         conn = get_or_create_client_db(client_id)
     except Exception as e:

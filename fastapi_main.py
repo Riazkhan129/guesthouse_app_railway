@@ -5,6 +5,8 @@ from datetime import datetime
 from cryptography.fernet import Fernet
 from dotenv import load_dotenv  # ✅ NEW: Load .env for local testing
 from fastapi.middleware.cors import CORSMiddleware
+# ✅ ADDED: Import DB initializer
+from app.db import get_or_create_client_db  # ✅ ADDED: Initialize DB per client
 
 
 
@@ -161,20 +163,15 @@ def license_check():
 # === FastAPI Startup Event ===
 @app.on_event("startup")
 def validate_license():
-    try:
-        # ✅ Step 1: Get client code
+    try:        
         client_code = read_client_code()
-
-        # ✅ Step 2: Get file paths
         license_path, key_path = get_license_paths(client_code)
 
-        # ✅ Step 3: Check files exist
         if not os.path.exists(license_path):
             raise FileNotFoundError(f"License file not found for client: {client_code}")
         if not os.path.exists(key_path):
             raise FileNotFoundError(f"Key file not found for client: {client_code}")
 
-        # ✅ Step 4: Load key and decrypt license
         with open(key_path, "rb") as kf:
             key = kf.read()
         cipher = Fernet(key)
@@ -184,10 +181,8 @@ def validate_license():
         decrypted = cipher.decrypt(encrypted)
         license_data = json.loads(decrypted.decode())
 
-        # ✅ Step 5: Store guesthouse name
         app.state.guesthouse_name = license_data.get("guesthouse", "Unknown")
 
-        # ✅ Step 6: Check expiry
         expiry = license_data.get("expiry")
         if expiry:
             expiry_date = datetime.strptime(expiry, "%Y-%m-%d").date()
@@ -195,6 +190,10 @@ def validate_license():
                 raise Exception(f"License expired on {expiry_date}")
 
         print(f"✅ License valid for: {app.state.guesthouse_name}")
+
+        # ✅ ADDED: Initialize DB for this client
+        conn = get_or_create_client_db(client_code)
+        conn.close()
 
     except Exception as e:
         print("❌ License validation failed:", str(e))
