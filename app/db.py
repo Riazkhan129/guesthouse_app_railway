@@ -23,6 +23,7 @@ def get_or_create_client_db(client_id):
             conn = sqlite3.connect(db_path)
             conn.execute("PRAGMA foreign_keys = ON")
         initialize_database(conn, client_id)
+        print(f"✅ DB setup complete for client: {client_id}")  # ✅ ADDED
         return conn
     except Exception as e:
         raise RuntimeError(f"❌ Failed to prepare client DB: {e}")
@@ -134,23 +135,26 @@ def initialize_database(conn, client_id):
             client_id TEXT PRIMARY KEY,
             encryption_key TEXT NOT NULL
         )
-    """)
+    """) 
 
+    print("✅ 'client_keys' table creation executed")  # ✅ ADDED: Debug log
+    
     if DB_MODE == "cloud":
         user_id_column = "user_id SERIAL PRIMARY KEY"
     else:
         user_id_column = "user_id INTEGER PRIMARY KEY AUTOINCREMENT"
 
-    sql = (
-    "CREATE TABLE IF NOT EXISTS users ("
-    f"{user_id_column}, "
-    "name TEXT, "
-    "username TEXT UNIQUE NOT NULL, "
-    "password TEXT NOT NULL, "
-    "role TEXT NOT NULL)"
+    cursor.execute(f"""
+    CREATE TABLE IF NOT EXISTS users (
+        {user_id_column},
+        name TEXT, 
+        username TEXT UNIQUE NOT NULL, 
+        password TEXT NOT NULL, 
+        role TEXT NOT NULL)
     )
+    """)
 
-    cursor.execute(sql)
+    print("✅ 'users' table creation executed")  # ✅ ADDED: Debug log
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS guests (
@@ -165,6 +169,8 @@ def initialize_database(conn, client_id):
         )
     """)
 
+    print("✅ 'guests' table creation executed")  # ✅ ADDED: Debug log
+
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS rooms (
             room_number TEXT NOT NULL,
@@ -175,36 +181,39 @@ def initialize_database(conn, client_id):
         )
     """)
 
+    print("✅ 'rooms' table creation executed")  # ✅ ADDED: Debug log
+
     if DB_MODE == "cloud":
         booking_id_column = "booking_id SERIAL PRIMARY KEY"
     else:
         booking_id_column = "booking_id INTEGER PRIMARY KEY AUTOINCREMENT"
 
-    sql = f"""
+    cursor.execute(f"""
         CREATE TABLE IF NOT EXISTS bookings (
-        {booking_id_column},
-        nic_passport_number TEXT,
-        room_number TEXT,
-        checkin_date TEXT,
-        checkout_date TEXT,
-        status TEXT,
-        notes TEXT,
-        actual_checkin_time TEXT,
-        advance_payment REAL,
-        actual_checkout_time TEXT,
-        total_payment REAL,
-        invoice_id INTEGER,
-        FOREIGN KEY (nic_passport_number) REFERENCES guests(nic_passport_number)
-    )
-    """
-    cursor.execute(sql)
+            {booking_id_column},
+            nic_passport_number TEXT,
+            room_number TEXT,
+            checkin_date TEXT,
+            checkout_date TEXT,
+            status TEXT,
+            notes TEXT,
+            actual_checkin_time TEXT,
+            advance_payment REAL,
+            actual_checkout_time TEXT,
+            total_payment REAL,
+            invoice_id INTEGER,
+            FOREIGN KEY (nic_passport_number) REFERENCES guests(nic_passport_number)
+        )
+    """)
+
+    print("✅ 'booking' table creation executed")  # ✅ ADDED: Debug log
 
     if DB_MODE == "cloud":
         expense_id_column = "id SERIAL PRIMARY KEY"
     else:
         expense_id_column = "id INTEGER PRIMARY KEY AUTOINCREMENT"
 
-    sql = f"""
+    cursor.execute(f""
         CREATE TABLE IF NOT EXISTS expenses (
             {expense_id_column},
             title TEXT NOT NULL,
@@ -213,9 +222,10 @@ def initialize_database(conn, client_id):
             notes TEXT,
             timestamp TEXT,
             date TEXT
-    )
-    """
-    cursor.execute(sql)
+        )
+    """)
+
+    print("✅ 'expenses' table creation executed")  # ✅ ADDED: Debug log
 
 
     cursor.execute("""
@@ -238,8 +248,11 @@ def initialize_database(conn, client_id):
         )
     """)
 
+    print("✅ 'invoices' table creation executed")  # ✅ ADDED: Debug log
+
     # -------- Insert Default Users --------
     # ---------- Insert Encryption Key ----------
+    
     cursor.execute("SELECT encryption_key FROM client_keys WHERE client_id = %s", (client_id,))
     result = cursor.fetchone()
     
@@ -249,11 +262,9 @@ def initialize_database(conn, client_id):
     else:
         encryption_key = Fernet.generate_key().decode()
         cursor.execute(
-            # f"INSERT INTO client_keys (client_id, encryption_key) VALUES ({placeholder}, {placeholder})",
             "INSERT INTO client_keys (client_id, encryption_key) VALUES (%s, %s)",
             (client_id, encryption_key)
-            
-        )
+            )
         print(f"🆕 New encryption key generated and saved")
 
     conn.commit()  # ✅ Commit the key insert immediately
