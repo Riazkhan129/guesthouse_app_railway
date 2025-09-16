@@ -109,7 +109,7 @@ def encrypt_password(password: str, key: str) -> str:
     return fernet.encrypt(password.encode()).decode()
 
 # ---------- Create Tables & Insert Default Data ----------
-def initialize_database(db_path_or_conn):
+def initialize_database(db_path_or_conn, client_id):
     if DB_MODE == "cloud":
         conn = db_path_or_conn  # 🔄 UPDATED: PostgreSQL connection
         placeholder = "%s"
