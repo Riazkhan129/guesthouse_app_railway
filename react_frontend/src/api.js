@@ -17,9 +17,12 @@ API.interceptors.request.use((config) => {
   const isAuthRoute = config.url?.startsWith("/token");
   const isAbsolute = config.url?.startsWith("http");
 
-  if (clientId && config.url && !config.url.startsWith("/token")) {
-    // ✅ Rewrite URL to include client_id prefix
-    config.url = `/${clientId}${config.url}`;
+  if (clientId && !isAuthRoute && !isAbsolute) {
+    // ✅ Send client_id as a custom header instead of rewriting the URL
+    config.headers = {
+      ...config.headers,
+      "X-Client-ID": clientId, // ✅ Backend can read this to filter tenant data
+    };
   }
 
   return config;
