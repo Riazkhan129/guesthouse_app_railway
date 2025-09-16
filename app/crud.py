@@ -1,7 +1,7 @@
 # app/crud.py
 
 from fastapi import HTTPException
-from .db import get_connection
+from .db import get_or_create_client_db
 from sqlalchemy.orm import Session
 from datetime import datetime, date
 from .crypto_utils import encrypt_password
@@ -17,7 +17,7 @@ import sqlite3
 
 
 def get_encryption_key(client_id: str) -> str:
-    conn = get_connection()
+    conn = get_or_create_client_db(client_id)
     cursor = conn.cursor()
 
     cursor.execute(
