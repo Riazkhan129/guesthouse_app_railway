@@ -12,6 +12,9 @@ const API = axios.create({
 API.interceptors.request.use((config) => {
   const clientId = localStorage.getItem("client_id"); // ✅ Assumes client_id is stored after login
 
+  const isAuthRoute = config.url?.startsWith("/token");
+  const isAbsolute = config.url?.startsWith("http");
+
   if (clientId && config.url && !config.url.startsWith("/token")) {
     // ✅ Rewrite URL to include client_id prefix
     config.url = `/${clientId}${config.url}`;
