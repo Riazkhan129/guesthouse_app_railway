@@ -4,7 +4,8 @@ import { AuthContext } from "../context/AuthContext";
 
 function UserManager() {
   const { token } = useContext(AuthContext);
-  const headers = { Authorization: `Bearer ${token}` };
+
+  //const headers = { Authorization: `Bearer ${token}` };
 
   const [users, setUsers] = useState([]);
   const [action, setAction] = useState("View");
@@ -33,7 +34,9 @@ function UserManager() {
 
   const fetchUsers = async () => {
     try {
-      const res = await API.get("/users", { headers });
+      const res = await API.get("/users", {
+        headers: { Authorization: `Bearer ${token}` } // 🔧 UPDATED
+      });
       if (res.status === 200) setUsers(res.data);
     } catch (err) {
       alert("❌ Failed to fetch users.");
@@ -42,7 +45,9 @@ function UserManager() {
 
   const handleAddUser = async () => {
     try {
-      const res = await API.post("/users/add", formData, { headers });
+      const res = await API.post("/users/add", formData, {
+        headers: { Authorization: `Bearer ${token}` } // 🔧 UPDATED
+      });
       if (res.status === 200) {
         alert("✅ User added!");
         fetchUsers();
@@ -58,8 +63,10 @@ function UserManager() {
 
   const handleUpdateUser = async () => {
     try {
-      const res = await API.put(`/users/update/${selectedUserId}`, formData, { headers });
-      if (res.status === 200) {
+      const res = await API.put(`/users/update/${selectedUserId}`, formData, {
+        headers: { Authorization: `Bearer ${token}` } // 🔧 UPDATED
+      });
+       if (res.status === 200) {
         alert("✅ User updated!");
         fetchUsers();
         setSelectedUserId(null);
@@ -76,7 +83,10 @@ function UserManager() {
   const handleDeleteUser = async (id) => {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
     try {
-      const res = await API.delete(`/users/delete/${id}`, { headers });
+      const res = await API.delete(`/users/delete/${id}`, {
+        headers: { Authorization: `Bearer ${token}` } // 🔧 UPDATED
+      });
+
       if (res.status === 200) {
         alert("🗑️ User deleted!");
         fetchUsers();

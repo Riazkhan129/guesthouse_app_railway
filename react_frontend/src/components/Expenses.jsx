@@ -1,20 +1,17 @@
 import React, { useEffect, useState, useContext } from "react";
-import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
-// 🔧 UPDATED: Add datepicker import
+import API from "../api"; // ✅ ADDED: Centralized Axios instance
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 
 function Expenses() {
   const { token } = useContext(AuthContext);
-  const API_URL = "http://localhost:8000";
+  // const API_URL = "http://localhost:8000";
 
   const [action, setAction] = useState("Add");
   const [expenses, setExpenses] = useState([]);
   const formatDateOnly = (date) => date.toISOString().split("T")[0];
-  
-  
   
   const [form, setForm] = useState({
     title: "",
@@ -42,7 +39,9 @@ function Expenses() {
 
   const fetchExpenses = async () => {
     try {
-      const res = await axios.get(`${API_URL}/expenses/`, { headers });
+      const res = await API.get("/expenses/", {
+        headers: { Authorization: `Bearer ${token}` } // ✅ CHANGED
+      });
       if (res.status === 200) setExpenses(res.data);
     } catch (err) {
       alert("❌ Failed to load expenses");
@@ -75,7 +74,9 @@ function Expenses() {
     console.log("Type of form.date:", typeof form.date);
 
     try {
-      const res = await axios.post(`${API_URL}/expenses/add`, form, { headers });
+      const res = await API.post("/expenses/add", form, {
+        headers: { Authorization: `Bearer ${token}` } // ✅ CHANGED
+      });
       if (res.status === 200) {
         alert("✅ Expense added");
         fetchExpenses();
@@ -91,7 +92,9 @@ function Expenses() {
     if (error) return alert("❌ " + error);
 
     try {
-      const res = await axios.put(`${API_URL}/expenses/update/${selectedExpenseId}`, form, { headers });
+      const res = await API.put(`/expenses/update/${selectedExpenseId}`, form, {
+        headers: { Authorization: `Bearer ${token}` } // ✅ CHANGED
+      });
       if (res.status === 200) {
         alert("✅ Expense updated");
         fetchExpenses();
@@ -106,7 +109,9 @@ function Expenses() {
     if (!selectedExpenseId) return alert("❌ No expense selected.");
 
     try {
-      const res = await axios.delete(`${API_URL}/expenses/${selectedExpenseId}`, { headers });
+      const res = await API.delete(`/expenses/${selectedExpenseId}`, {
+        headers: { Authorization: `Bearer ${token}` } // ✅ CHANGED
+      });
       if (res.status === 200) {
         alert("🗑️ Expense deleted");
         fetchExpenses();

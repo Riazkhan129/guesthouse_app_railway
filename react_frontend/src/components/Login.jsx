@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, useContext} from "react";
-import axios from "axios";
+// import axios from "axios";
+import API from "../api";
 import qs from "qs";
 import { AuthContext } from "../context/AuthContext";
 function Login() {
@@ -21,20 +22,22 @@ function Login() {
   setLoading(true);
   setError("");
 
-  const API_URL = import.meta.env.VITE_API_BASE_URL;
-  console.log("🔍 API Base URL:", API_URL);
-  console.log("📡 Sending login request to:", `${API_URL}/token`);
+  // const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
+  // console.log("🔍 API Base URL:", API_URL);
+  console.log("📡 Sending login request to: /token"); // 🔧 FIXED: Removed API_URL reference
   console.log("📝 Login payload:", { username, password, client_id: clientId });
-
+  
   try {
-    const res = await axios.post(
-      `${API_URL}/token`,
+    const res = await API.post(
+      "/token",
       qs.stringify({ username, password, client_id: clientId }),
       { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
     );
 
     console.log("✅ Login response:", res.data);
-    login(res.data.access_token, username, res.data.role);
+    localStorage.setItem("client_id", res.data.clientId); // ✅ Store client_id for interceptors
+    // login(res.data.access_token, username, res.data.role);
+    login(res.data.access_token, username, res.data.role, res.data.client_id); // ✅ Pass client_id
   } catch (err) {
     console.error("❌ Login error:", err.response?.data || err.message);
     setError("Invalid username, password or client id.");

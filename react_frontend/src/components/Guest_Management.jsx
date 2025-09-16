@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState, useEffect, useContext } from "react";
+import { AuthContext } from "../context/AuthContext"; // ✅ ADDED
+import API from "../api"; // ✅ ADDED
 
 const blankGuestForm = {
   nic_passport_number: "",
@@ -47,7 +48,9 @@ const GuestForm = ({ form, onChange, editable = true, onSubmit, buttonLabel }) =
     </div>
   );
 };
-const GuestManagement = ({ API_URL, headers }) => {
+const GuestManagement = () => {
+  const { token } = useContext(AuthContext); // ✅ ADDED
+
   const [guests, setGuests] = useState([]);
   const [form, setForm] = useState({ ...blankGuestForm });
   const [selectedGuest, setSelectedGuest] = useState("");
@@ -66,8 +69,9 @@ const GuestManagement = ({ API_URL, headers }) => {
 
   useEffect(() => {
     if (selectedGuest) {
-      axios
-        .get(`${API_URL}/guests/search/${selectedGuest}`, { headers })
+      API.get(`/guests/search/${selectedGuest}`, {
+        headers: { Authorization: `Bearer ${token}` } // ✅ CHANGED
+      })
         .then((res) => setForm({ ...res.data }))
         .catch(() => alert("❌ Guest not found"));
     }
@@ -81,8 +85,9 @@ const GuestManagement = ({ API_URL, headers }) => {
   };
 
   const fetchGuests = () => {
-    axios
-      .get(`${API_URL}/guests/all`, { headers })
+    API.get("/guests/all", {
+      headers: { Authorization: `Bearer ${token}` } // ✅ CHANGED
+    })
       .then((res) => setGuests(res.data))
       .catch(() => alert("❌ Failed to load guests"));
   };
@@ -93,8 +98,9 @@ const GuestManagement = ({ API_URL, headers }) => {
   };
 
   const handleCreate = () => {
-    axios
-      .post(`${API_URL}/guests`, form, { headers })
+    API.post("/guests", form, {
+      headers: { Authorization: `Bearer ${token}` } // ✅ CHANGED
+    })
       .then(() => {
         alert("✅ Guest created successfully");
         setGuests((prev) => [...prev, form]);
@@ -104,9 +110,10 @@ const GuestManagement = ({ API_URL, headers }) => {
   };
 
   const handleUpdate = () => {
-    axios
-      .put(`${API_URL}/guests/update/${form.nic_passport_number}`, form, { headers })
-      .then(() => {
+    API.put(`/guests/update/${form.nic_passport_number}`, form, {
+      headers: { Authorization: `Bearer ${token}` } // ✅ CHANGED
+    })
+       .then(() => {
         alert("✅ Guest updated");
         resetForm();
       })
@@ -114,15 +121,17 @@ const GuestManagement = ({ API_URL, headers }) => {
   };
 
   const handleDeleteSearch = () => {
-    axios
-      .get(`${API_URL}/guests/search/${nicToDelete}`, { headers })
+    API.get(`/guests/search/${nicToDelete}`, {
+      headers: { Authorization: `Bearer ${token}` } // ✅ CHANGED
+    })
       .then((res) => setGuestToDelete(res.data))
       .catch(() => alert("❌ Guest not found"));
   };
 
   const handleDelete = () => {
-    axios
-      .delete(`${API_URL}/guests/delete/${nicToDelete}`, { headers })
+    API.delete(`/guests/delete/${nicToDelete}`, {
+      headers: { Authorization: `Bearer ${token}` } // ✅ CHANGED
+    })
       .then(() => {
         alert("✅ Deleted successfully");
         resetForm();

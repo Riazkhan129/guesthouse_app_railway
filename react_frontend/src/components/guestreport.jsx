@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useEffect, useState, useContext } from "react";
+import API from "../api"; // ✅ ADDED: Centralized Axios instance
+import { AuthContext } from "../context/AuthContext"; // ✅ ADDED: For token
 
 const API_URL = "http://localhost:8000"; // Replace with your actual backend
 const headers = { Authorization: "Bearer your_token_here" }; // Add auth if needed
 
 const GuestReport = () => {
+  const { token } = useContext(AuthContext); // ✅ ADDED
+
   const [guests, setGuests] = useState([]);
   const [selectedNic, setSelectedNic] = useState("");
   const [guest, setGuest] = useState({});
@@ -45,7 +48,9 @@ const GuestReport = () => {
 
   // Load NICs from bookings with actual_checkin_time
   useEffect(() => {
-    axios.get(`${API_URL}/guests/all`, { headers })
+    API.get("/guests/all", {
+      headers: { Authorization: `Bearer ${token}` }
+    })
 
       .then(res => setGuests(res.data))
       .catch(err => console.error("❌ Failed to load guests", err));
@@ -54,11 +59,15 @@ const GuestReport = () => {
   // Load guest and all bookings
   useEffect(() => {
     if (selectedNic) {
-      axios.get(`${API_URL}/guests/search/${selectedNic}`, { headers })
+      API.get(`/guests/search/${selectedNic}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
         .then(res => setGuest(res.data))
         .catch(err => console.error("❌ Guest fetch error", err));
 
-      axios.get(`${API_URL}/bookings/by_nic/${selectedNic}`, { headers })
+      API.get(`/bookings/by_nic/${selectedNic}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
         .then(res => {
           console.log("📦 Raw booking data:", res.data);
           const filtered = res.data.filter(b => b.actual_checkin_time);

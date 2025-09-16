@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
-import axios from "axios";
+import API from "../api"; // ✅ ADDED: Centralized Axios instance
 
 const Rooms = () => {
   const { token } = useContext(AuthContext);
-  const headers = { Authorization: `Bearer ${token}` };
-  const API_URL = "http://localhost:8000";
+
+  // const headers = { Authorization: `Bearer ${token}` };
+  // const API_URL = "http://localhost:8000";
 
   const [rooms, setRooms] = useState([]);
   const [newRoom, setNewRoom] = useState({
@@ -26,7 +27,9 @@ const Rooms = () => {
 
   const fetchRooms = async () => {
     try {
-      const res = await axios.get(`${API_URL}/rooms/`, { headers });
+      const res = await API.get("/rooms/", {
+        headers: { Authorization: `Bearer ${token}` } // 🔧 CHANGED
+      });
       if (res.status === 200) setRooms(res.data);
     } catch (err) {
       console.error("Fetch rooms failed", err);
@@ -37,10 +40,12 @@ const Rooms = () => {
   const handleCreateRoom = async () => {
     try {
       setLoading(true);
-      const res = await axios.post(`${API_URL}/rooms/add`, {
+      const res = await API.post("/rooms/add", {
         ...newRoom,
         price: parseFloat(newRoom.price),
-      }, { headers });
+      }, {
+        headers: { Authorization: `Bearer ${token}` } // 🔧 CHANGED
+      });
 
       if (res.status === 200) {
         alert("✅ Room Added!");
@@ -63,7 +68,9 @@ const Rooms = () => {
     if (!window.confirm(`Are you sure you want to delete Room ${roomNumber}?`)) return;
 
     try {
-      const res = await axios.delete(`${API_URL}/rooms/${roomNumber}`, { headers });
+      const res = await API.delete(`/rooms/${roomNumber}`, {
+        headers: { Authorization: `Bearer ${token}` } // 🔧 CHANGED
+      });
       if (res.status === 200) {
         alert("✅ Room Deleted");
         fetchRooms();
@@ -76,10 +83,12 @@ const Rooms = () => {
 
   const handleUpdateRoom = async () => {
     try {
-      const res = await axios.put(`${API_URL}/rooms/update/${editMode}`, {
+      const res = await API.put(`/rooms/update/${editMode}`, {
         ...editedRoom,
         price: parseFloat(editedRoom.price),
-      }, { headers });
+      }, {
+        headers: { Authorization: `Bearer ${token}` } // 🔧 CHANGED
+      });
 
       if (res.status === 200) {
         alert("✅ Room Updated");

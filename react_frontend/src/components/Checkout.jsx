@@ -1,11 +1,12 @@
 import { useEffect, useState, useContext } from "react";
-import axios from "axios";
+// import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import Billing from "./Billing";
+import API from "../api"; // ✅ ADDED: Centralized Axios instance
 
 function Checkout() {
   const { token } = useContext(AuthContext);
-  const API_URL = "http://localhost:8000";
+  // const API_URL = "http://localhost:8000";
 
   const [bookings, setBookings] = useState([]);
   const [selectedBookingId, setSelectedBookingId] = useState("");
@@ -41,8 +42,8 @@ function Checkout() {
 
   const fetchCheckedInBookings = async () => {
     try {
-      const res = await axios.get(`${API_URL}/checkin_checkout/checkedin`, {
-        headers: { Authorization: `Bearer ${token}` },
+      const res = await API.get("/checkin_checkout/checkedin", {
+        headers: { Authorization: `Bearer ${token}` } // ✅ CHANGED
       });
       // setCheckedInBookings(res.data);
       if (res.status === 200) {
@@ -70,13 +71,13 @@ function Checkout() {
 
     try {
       console.log("IN CHECKOUT - before getting GUEST_NAME");
-      const guestRes = await axios.get(`${API_URL}/checkin_checkout/guest_name/${nic}`, {
-        headers: { Authorization: `Bearer ${token}` },
+      const guestRes = await API.get(`/checkin_checkout/guest_name/${nic}`, {
+        headers: { Authorization: `Bearer ${token}` } // ✅ CHANGED
       });
       setGuest(guestRes.status === 200 ? guestRes.data : { name: "Unknown" });
       console.log("IN CHECKOUT - before getting ROOMNUMBER");
-      const roomRes = await axios.get(`${API_URL}/checkin_checkout/${roomNumber}`, {
-        headers: { Authorization: `Bearer ${token}` },
+      const roomRes = await API.get(`/checkin_checkout/${roomNumber}`, {
+        headers: { Authorization: `Bearer ${token}` } // ✅ CHANGED
       });
       setRoomPrice(roomRes.status === 200 ? roomRes.data.price : 0);
 

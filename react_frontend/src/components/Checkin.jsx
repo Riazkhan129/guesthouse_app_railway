@@ -1,13 +1,14 @@
 import React, { useEffect, useState, useContext } from "react";
-import axios from "axios";
+// import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
+import API from "../api"; // ✅ ADDED: Centralized Axios instance
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 function Checkin() {
   const { token } = useContext(AuthContext);
-  const headers = { Authorization: `Bearer ${token}` };
-  const API_URL = "http://localhost:8000";
+  // const headers = { Authorization: `Bearer ${token}` };
+  // const API_URL = "http://localhost:8000";
 
   const [bookings, setBookings] = useState([]);
   const [vacantRooms, setVacantRooms] = useState([]);
@@ -70,7 +71,9 @@ const [statusMessage, setStatusMessage] = useState("");
 
   const fetchTodayBookings = async () => {
     try {
-      const res = await axios.get(`${API_URL}/bookings/today`, { headers });
+      const res = await API.get("/bookings/today", {
+        headers: { Authorization: `Bearer ${token}` } // ✅ CHANGED
+      });
       if (res.status === 200) setBookings(res.data);
     } catch (err) {
       console.error("Error fetching today's bookings", err);
@@ -80,7 +83,9 @@ const [statusMessage, setStatusMessage] = useState("");
 
   const fetchVacantRooms = async () => {
     try {
-      const res = await axios.get(`${API_URL}/rooms/vacant`, { headers });
+      const res = await API.get("/rooms/vacant", {
+        headers: { Authorization: `Bearer ${token}` } // ✅ CHANGED
+      });
       if (res.status === 200) setVacantRooms(res.data);
     } catch (err) {
       console.error("Error fetching vacant rooms", err);
@@ -113,10 +118,10 @@ const [statusMessage, setStatusMessage] = useState("");
     };
 
     try {
-      const res = await axios.put(
-        `${API_URL}/checkin_checkout/checkin/${selectedBooking.booking_id}`,
+      const res = await API.put(
+        `/checkin_checkout/checkin/${selectedBooking.booking_id}`,
         payload,
-        { headers }
+        { headers: { Authorization: `Bearer ${token}` } } // ✅ CHANGED
       );
       if (res.status === 200) {
         alert("✅ Guest checked in successfully.");

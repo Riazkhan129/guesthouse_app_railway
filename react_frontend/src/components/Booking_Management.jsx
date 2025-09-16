@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { format } from "date-fns";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import API from "../api"; // ✅ ADDED: Centralized Axios instance
+import { AuthContext } from "../context/AuthContext"; // ✅ ADDED: For token
 
-function BookingManagement({ API_URL, headers }) {
+function BookingManagement() {
+  const { token } = useContext(AuthContext);
   const [action, setAction] = useState("Create Booking");
   const [guests, setGuests] = useState([]);
   const [selectedGuest, setSelectedGuest] = useState(null);
@@ -53,7 +56,7 @@ useEffect(() => {
     const nameMap = {};
     for (const nic of uniqueNICs) {
       try {
-        const res = await axios.get(`${API_URL}/guests/search/${nic}`);
+        const res = await API.get(`/guests/search/${nic}`);
         nameMap[nic] = res.data.name; // ⬅️ Adjust if the field is different
       } catch {
         nameMap[nic] = "Unknown Guest";
@@ -70,21 +73,21 @@ useEffect(() => {
 
   useEffect(() => {
     if (action === "Create Booking") {
-      axios.get(`${API_URL}/guests/all`, { headers })
+      API.get("/guests/all", { headers: { Authorization: `Bearer ${token}` } }) // 🔧 CHANGED
+        .then(res => setGuests(res.data))
         .then(res => setGuests(res.data))
         .catch(() => alert("❌ Failed to load guest list."));
     }
     if (["View All Bookings", "Cancel Booking", "Upcoming Booking"].includes(action)) {
       const endpoint = action === "Upcoming Booking" ? "upcoming" : "";
-      axios.get(`${API_URL}/bookings/${endpoint}`, { headers })
+      API.get(`/bookings/${endpoint}`, { headers: { Authorization: `Bearer ${token}` } }) // 🔧 CHANGED
         .then(res => setBookings(res.data))
         .catch(() => alert("❌ Failed to load bookings."));
     }
-  }, [action, API_URL, headers]);
+  }, [action, token]);
 
   const fetchBookings = () => {
-  axios
-    .get(`${API_URL}/bookings`, { headers })
+  API.get("/bookings", { headers: { Authorization: `Bearer ${token}` } }) // 🔧 CHANGED
     .then((res) => {
       setBookings(res.data); // 🎯 Update list with fresh data
     })
@@ -95,10 +98,9 @@ useEffect(() => {
 
   const handleCheckAvailability = (date) => {
     // console.log("📅 handleCheckAvailability called with:", date);
-  axios
-    .get(`${API_URL}/bookings/total`, {
+  API.get("/bookings/total", {
       params: { checkin_date: date },
-    })
+    }) // 🔧 CHANGED
     .then((res) => {
       console.log("✅ Availability data received:", res.data); // 👈 Here’s your debug log!
       setAvailability(res.data);
@@ -121,8 +123,7 @@ useEffect(() => {
       total_rooms: availability?.total_rooms,
     };
     
-    axios
-    .post(`${API_URL}/bookings`, payload)
+    API.post("/bookings", payload) // 🔧 CHANGED
     .then(() => {
       alert("✅ Booking created successfully!");
       setBookingCreated(true); // ✅ Move this inside .then()
@@ -138,7 +139,7 @@ useEffect(() => {
 
   const handleCancelBooking = (bookingId, roomNumber) => {
   axios
-    .put(`${API_URL}/bookings/cancel/${bookingId}`, { room_number: roomNumber }, { headers })
+    API.put(`/bookings/cancel/${bookingId}`, { room_number: roomNumber }, { headers: { Authorization: `Bearer ${token}` } }) // 🔧 CHANGED
     .then(() => {
       alert("✅ Booking cancelled.");
 

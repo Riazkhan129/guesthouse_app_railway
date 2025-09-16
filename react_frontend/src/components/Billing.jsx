@@ -4,7 +4,7 @@ import { AuthContext } from "../context/AuthContext";
 import API from "../api";
 import '../styles/global.css';
 // import 'D:/guesthouse_app_Cleaned/react_frontend/my-react-web-app/src/styles/global.css';
-import axios from "axios";
+// import axios from "axios";
 
 const formatCurrency = (value) => {
   const num = Number(value);
@@ -14,6 +14,7 @@ const formatCurrency = (value) => {
 function Billing({ selectedBooking, guest, roomPrice, totalNights, onCheckoutComplete }) {
 // function Billing({ selectedBooking, guest, roomPrice, totalNights }) {
   const { token } = useContext(AuthContext);
+  const { clientId } = useContext(AuthContext);
 
   const [laundry, setLaundry] = useState(0);
   const [meals, setMeals] = useState(0);

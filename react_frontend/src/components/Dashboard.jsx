@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import API from "../api"; // ✅ ADDED: Centralized Axios instance
+import { AuthContext } from "../context/AuthContext"; // ✅ ADDED: For token
 import dayjs from "dayjs";
 
-const Dashboard = ({ API_URL, headers }) => {
+const Dashboard = () => {
+  const { token } = useContext(AuthContext); // ✅ ADDED: Get token from context
+
   const [dashboardData, setDashboardData] = useState([]);
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState("");
@@ -13,7 +16,9 @@ const Dashboard = ({ API_URL, headers }) => {
 
   const fetchDashboard = async () => {
     try {
-      const response = await axios.get(`${API_URL}/dashboard/monthly`, { headers });
+      const response = await API.get("/dashboard/monthly", {
+        headers: { Authorization: `Bearer ${token}` } // ✅ CHANGED
+      });
       const sortedData = response.data.sort(
         (a, b) => new Date(b.month) - new Date(a.month)
       );
