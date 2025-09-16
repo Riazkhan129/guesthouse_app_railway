@@ -142,7 +142,7 @@ def initialize_database(db_path_or_conn, client_id):
             name TEXT, 
             username TEXT UNIQUE NOT NULL, 
             password TEXT NOT NULL, 
-            role TEXT NOT NULL)
+            role TEXT NOT NULL
         )
     """)
 
