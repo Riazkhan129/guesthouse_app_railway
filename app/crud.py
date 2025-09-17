@@ -186,7 +186,7 @@ def create_guest(client_id: str, data: dict):
             INSERT INTO guests (nic_passport_number, name, contact, email, address, nationality, emergency_contact, guest_type)
             VALUES ({placeholder}, {placeholder}, {placeholder}, {placeholder}, {placeholder}, {placeholder}, {placeholder}, {placeholder})
         """  # ✅ Dynamic placeholders
-        conn.execute(query, (
+        cursor.execute(query, (
             data["nic_passport_number"], data["name"], data["contact"], data["email"],
             data["address"], data.get("nationality"), data.get("emergency_contact"), data.get("guest_type")
         ))
@@ -239,7 +239,7 @@ def delete_guest(client_id: str, nic: str):
 def get_all_guests(client_id: str):
     conn, _ = get_or_create_client_db(client_id)
     cursor = conn.cursor()
-    cursor = conn.execute("SELECT * FROM guests")  # ✅ No placeholder needed
+    cursor.execute("SELECT * FROM guests")  # ✅ No placeholder needed
     rows = cursor.fetchall()
     conn.close()
     keys = ["nic_passport_number", "name", "contact", "email", "address", "nationality", "emergency_contact", "guest_type"]
