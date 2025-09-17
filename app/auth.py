@@ -24,7 +24,7 @@ def login(
     if not client_id:
         raise HTTPException(status_code=400, detail="Missing client_id")    
     try:
-        conn, _ = get_or_create_client_db(client_id)
+        conn, _ = get_or_create_client_db(client_id) 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
