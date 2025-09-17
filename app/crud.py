@@ -724,7 +724,7 @@ def update_user(client_id: str, user_id: int, data):
     cursor = conn.cursor()
     if data.password:
         encrypted_password = encrypt_password(data.password)
-        query = f"UPDATE users SET name={placeholder}, role={placeholder}, password={placeholder} WHERE user_id
+        query = f"UPDATE users SET name={placeholder}, role={placeholder}, password={placeholder} WHERE user_id={placeholder}"
     else:  # Password is not being updated
         cursor.execute(
             "UPDATE users SET name = ?, role = ? WHERE user_id = ?",
