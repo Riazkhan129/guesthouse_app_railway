@@ -22,11 +22,6 @@ def get_encryption_key(client_id: str) -> str:
 
     query = f"SELECT encryption_key FROM client_keys WHERE client_id = {placeholder}"  # ✅ UPDATED: Dynamic placeholder
     cursor.execute(query, (client_id,))  # ✅ No change needed here
-  #  cursor.execute(
-  #      "SELECT encryption_key FROM client_keys WHERE client_id = %s",
-  #      (client_id,)
-  #  )
-
     result = cursor.fetchone()
     conn.close()
 
@@ -141,8 +136,6 @@ def update_room(client_id: str, room_number, room_data):
         }
     else:
         return None
-    
-    #conn.close()
 
 def delete_room(client_id: str, room_number):
     conn, placeholder = get_or_create_client_db(client_id)  # ✅ UPDATED    print("IN DELETE ROOM", room_number)
@@ -163,7 +156,6 @@ def get_active_booking_by_nic(client_id: str, nic_passport_number: str):
     conn, placeholder = get_or_create_client_db(client_id)
     cursor = conn.cursor()
 
-    
     query = f"""
         SELECT booking_id, nic_passport_number, room_number, checkin_date, checkout_date, status
         FROM bookings
