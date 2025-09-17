@@ -189,8 +189,8 @@ def validate_license():
         print(f"✅ License valid for: {app.state.guesthouse_name}")
 
         # ✅ ADDED: Initialize DB for this client
-        conn = get_or_create_client_db(client_code)
-        conn.close()
+        conn, _ = get_or_create_client_db(client_code)  # ✅ UPDATED
+        conn.close()  # ✅ Now this works correctly
 
     except Exception as e:
         print("❌ License validation failed:", str(e))
