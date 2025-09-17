@@ -188,8 +188,8 @@ def get_active_booking_by_nic(client_id: str, nic_passport_number: str):
 # ------------------ Guests -------------
 def create_guest(client_id: str, data: dict):
     conn, placeholder = get_or_create_client_db(client_id)
-        try:
-            query = f"""
+    try:
+        query = f"""
             INSERT INTO guests (nic_passport_number, name, contact, email, address, nationality, emergency_contact, guest_type)
             VALUES ({placeholder}, {placeholder}, {placeholder}, {placeholder}, {placeholder}, {placeholder}, {placeholder}, {placeholder})
         """  # ✅ Dynamic placeholders
