@@ -1,5 +1,5 @@
 import sqlite3
-from fastapi import APIRouter, Depends, HTTPException, Request, Body
+from fastapi import APIRouter, Depends, HTTPException, Request
 from ..db import get_db
 from ..models import GuestIn, GuestOut, GuestUpdate
 from ..auth import get_current_user
@@ -19,7 +19,7 @@ def get_client_id(request: Request) -> str:
     return client_id
 
 @router.post("/")
-def create_guest(request: Request, data: dict: GuestIn):
+def create_guest(request: Request, data: data: GuestIn):
     client_id = get_client_id(request)
     success = crud.create_guest(client_id, data)
     if success:
