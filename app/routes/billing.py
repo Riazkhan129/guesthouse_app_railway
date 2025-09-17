@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 from ..db import get_db
 from ..models import BillingIn, BillingOut
@@ -9,6 +9,13 @@ router = APIRouter(
     prefix="/billing",
     tags=["Billing"]
 )
+
+# ✅ ADDED: Helper to extract client_id from headers
+def get_client_id(request: Request) -> str:
+    client_id = request.headers.get("X-Client-ID")
+    if not client_id:
+        raise HTTPException(status_code=400, detail="Missing client_id")
+    return client_id
 
 # Create a bill
 @router.post("/", response_model=BillingOut)
