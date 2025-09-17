@@ -197,9 +197,9 @@ def create_guest(client_id: str, data: dict):
             data["nic_passport_number"], data["name"], data["contact"], data["email"],
             data["address"], data.get("nationality"), data.get("emergency_contact"), data.get("guest_type")
         ))
-    conn.commit()
-    conn.close()
-    return True
+        conn.commit()
+        conn.close()
+        return True
     except sqlite3.IntegrityError:
         conn.close()
         return False
