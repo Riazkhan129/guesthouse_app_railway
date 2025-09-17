@@ -98,7 +98,7 @@ const GuestManagement = () => {
   };
 
   const handleCreate = () => {
-    API.post("/guests", form, {
+    API.post("/guests/", form, {
       headers: { Authorization: `Bearer ${token}` } // ✅ CHANGED
     })
       .then(() => {
