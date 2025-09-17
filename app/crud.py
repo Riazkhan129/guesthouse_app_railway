@@ -219,7 +219,7 @@ def update_guest(client_id: str, nic: str, data: dict):
             nationality = {placeholder}, emergency_contact = {placeholder}, guest_type = {placeholder}
         WHERE nic_passport_number = {placeholder}
     """  # ✅ Dynamic placeholders
-    conn.execute(query, (
+    cursor.execute(query, (
         data["name"], data["contact"], data["email"], data["address"],
         data.get("nationality"), data.get("emergency_contact"), data.get("guest_type"), nic
     ))
@@ -231,7 +231,7 @@ def delete_guest(client_id: str, nic: str):
     conn, placeholder = get_or_create_client_db(client_id)  # ✅ UPDATED
     cursor = conn.cursor()
     query = f"DELETE FROM guests WHERE nic_passport_number = {placeholder}"  # ✅ Dynamic placeholder
-    cursor = conn.execute(query, (nic,))
+    cursor.execute(query, (nic,))
     conn.commit()
     conn.close()
     return cursor.rowcount > 0
