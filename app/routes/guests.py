@@ -19,7 +19,7 @@ def get_client_id(request: Request) -> str:
     return client_id
 
 @router.post("/")
-def create_guest(request: Request, data: data: GuestIn):
+def create_guest(request: Request, data: GuestIn):
     client_id = get_client_id(request)
     success = crud.create_guest(client_id, data)
     if success:
