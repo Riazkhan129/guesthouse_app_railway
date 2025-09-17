@@ -508,7 +508,7 @@ def create_invoice(client_id: str, invoice_data: InvoiceCreate):
     try:
         conn, placeholder = get_or_create_client_db(client_id)  # ✅ UPDATED
         cursor = conn.cursor()
-         query = f"""
+        query = f"""
             INSERT INTO invoices (
                 nic_passport_number, guest_name, room_number, room_price,
                 checkin_date, checkout_date, total_nights,
