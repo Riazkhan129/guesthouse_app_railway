@@ -178,7 +178,7 @@ def get_active_booking_by_nic(client_id: str, nic_passport_number: str):
     return None
 
 # ------------------ Guests -------------
-def create_guest(client_id: str, data: dict):
+def create_guest(client_id: str, data: GuestIn):
     conn, placeholder = get_or_create_client_db(client_id)
     cursor = conn.cursor()
     try:
@@ -187,8 +187,8 @@ def create_guest(client_id: str, data: dict):
             VALUES ({placeholder}, {placeholder}, {placeholder}, {placeholder}, {placeholder}, {placeholder}, {placeholder}, {placeholder})
         """  # ✅ Dynamic placeholders
         cursor.execute(query, (
-            data["nic_passport_number"], data["name"], data["contact"], data["email"],
-            data["address"], data.get("nationality"), data.get("emergency_contact"), data.get("guest_type")
+            data.nic_passport_number, data.name, data.contact, data.email,
+            data.address, data.nationality, data.emergency_contact, data.guest_type
         ))
         conn.commit()
         conn.close()
