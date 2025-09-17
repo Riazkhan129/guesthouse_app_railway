@@ -77,6 +77,7 @@ class GuestBase(BaseModel):
     address: str
     nationality: Optional[str] = None
     emergency_contact: Optional[str] = None
+    guest_type: Optional[str] = None
 
 # ---------- Create ----------
 class GuestCreate(GuestBase):
