@@ -68,7 +68,7 @@ def get_room(request: Request, room_id: int, user: str = Depends(get_current_use
 def update_room(request: Request, room_number: int, room: RoomIn, user: str = Depends(get_current_user)):
     client_id = get_client_id(request)  # ✅ ADDED
     print("Received room update:", room.dict())
-    updated_room = crud.update_room(client_id,, room_number, room)
+    updated_room = crud.update_room(client_id, room_number, room)
     if not updated_room:
         raise HTTPException(status_code=404, detail="Room not found")
     return updated_room
