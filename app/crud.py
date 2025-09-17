@@ -228,9 +228,9 @@ def update_guest(client_id: str, nic: str, data: dict):
         data["name"], data["contact"], data["email"], data["address"],
         data.get("nationality"), data.get("emergency_contact"), data.get("guest_type"), nic
     ))
-        conn.commit()
-        conn.close()
-        return True
+    conn.commit()
+    conn.close()
+    return True
 
 def delete_guest(client_id: str, nic: str):
     conn, placeholder = get_or_create_client_db(client_id)  # ✅ UPDATED
