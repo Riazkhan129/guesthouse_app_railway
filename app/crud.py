@@ -180,6 +180,7 @@ def get_active_booking_by_nic(client_id: str, nic_passport_number: str):
 # ------------------ Guests -------------
 def create_guest(client_id: str, data: dict):
     conn, placeholder = get_or_create_client_db(client_id)
+    cursor = conn.cursor()
     try:
         query = f"""
             INSERT INTO guests (nic_passport_number, name, contact, email, address, nationality, emergency_contact, guest_type)
@@ -197,7 +198,8 @@ def create_guest(client_id: str, data: dict):
         return False
 
 def get_guest(client_id: str, nic: str):
-    conn, placeholder = get_or_create_client_db(client_id)  # ✅ UPDATED
+    conn, placeholder = get_or_create_client_db(client_id)
+    cursor = conn.cursor()
     query = f"SELECT * FROM guests WHERE nic_passport_number = {placeholder}"  # ✅ Dynamic placeholder
     cursor = conn.execute(query, (nic,))
     row = cursor.fetchone()
@@ -209,7 +211,8 @@ def get_guest(client_id: str, nic: str):
 
 def update_guest(client_id: str, nic: str, data: dict):
     print("in Crud update_guest")
-    conn, placeholder = get_or_create_client_db(client_id)  # ✅ UPDATED
+    conn, placeholder = get_or_create_client_db(client_id)
+    cursor = conn.cursor()
     query = f"""
         UPDATE guests
         SET name = {placeholder}, contact = {placeholder}, email = {placeholder}, address = {placeholder},
@@ -226,6 +229,7 @@ def update_guest(client_id: str, nic: str, data: dict):
 
 def delete_guest(client_id: str, nic: str):
     conn, placeholder = get_or_create_client_db(client_id)  # ✅ UPDATED
+    cursor = conn.cursor()
     query = f"DELETE FROM guests WHERE nic_passport_number = {placeholder}"  # ✅ Dynamic placeholder
     cursor = conn.execute(query, (nic,))
     conn.commit()
@@ -233,7 +237,8 @@ def delete_guest(client_id: str, nic: str):
     return cursor.rowcount > 0
 
 def get_all_guests(client_id: str):
-    conn, _ = get_or_create_client_db(client_id)  # ✅ UPDATED
+    conn, _ = get_or_create_client_db(client_id)
+    cursor = conn.cursor()
     cursor = conn.execute("SELECT * FROM guests")  # ✅ No placeholder needed
     rows = cursor.fetchall()
     conn.close()
