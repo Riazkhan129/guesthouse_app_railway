@@ -79,6 +79,7 @@ def get_or_create_client_db(client_id):
             db_url = template.replace("{client}", client_id)
             conn = psycopg2.connect(db_url)
             conn.autocommit = True
+            placeholder = "%s"  # ✅ PostgreSQL placeholder
             print(f"✅ Connected to PostgreSQL DB for client: {client_id}")
             print(f"🔧 DB_MODE: {DB_MODE}")
             print(f"🔧 Initializing DB for client: {client_id}")
@@ -89,6 +90,7 @@ def get_or_create_client_db(client_id):
                 print(f"⚠️ Local DB for client '{client_id}' not found. Creating...")
             conn = sqlite3.connect(db_path)
             conn.execute("PRAGMA foreign_keys = ON")
+            placeholder = "?"  # ✅ SQLite placeholder
             print(f"✅ Connected to SQLite DB for client: {client_id}")
 
         initialize_database(conn if DB_MODE == "cloud" else db_path, client_id)  # ✅ ADDED: Pass client_id
