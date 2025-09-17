@@ -201,7 +201,7 @@ def get_guest(client_id: str, nic: str):
     conn, placeholder = get_or_create_client_db(client_id)
     cursor = conn.cursor()
     query = f"SELECT * FROM guests WHERE nic_passport_number = {placeholder}"  # ✅ Dynamic placeholder
-    cursor = conn.execute(query, (nic,))
+    cursor.execute(query, (nic,))
     row = cursor.fetchone()
     conn.close()
     if row:
