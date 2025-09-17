@@ -97,7 +97,7 @@ def get_rooms(client_id: str):
     cursor = conn.cursor()
     rows = cursor.execute("SELECT * FROM rooms").fetchall()
 
-    columns = ["room_number", "room_type", "price_per_day", "status", "notes")
+    columns = ["room_number", "room_type", "price_per_day", "status", "notes"]
     rooms = [dict(zip(columns, row)) for row in rows]
     return rooms
 
