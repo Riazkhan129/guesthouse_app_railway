@@ -94,7 +94,7 @@ def get_or_create_client_db(client_id):
             print(f"✅ Connected to SQLite DB for client: {client_id}")
 
         initialize_database(conn if DB_MODE == "cloud" else db_path, client_id)  # ✅ ADDED: Pass client_id
-        return conn
+        return conn, placeholder  # ✅ Return both values
     except Exception as e:
         raise RuntimeError(f"❌ Failed to prepare DB for client '{client_id}': {e}")
 # ---------- FastAPI Dependency ----------
