@@ -457,7 +457,7 @@ def checkin_booking(client_id: str, booking_id: int, data):
             status = {placeholder}
         WHERE room_number = {placeholder}
     """  # ✅ Dynamic placeholders
-    conn.execute(query_room, (status, room_number))
+    cursor.execute(query_room, (status, room_number))
 
     conn.commit()
     conn.close()
