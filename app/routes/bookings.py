@@ -12,7 +12,7 @@ router = APIRouter(
 )
 
 # ✅ ADDED: Helper to extract client_id from headers
-def extract_client_id(request: Request) -> str:
+def get_client_id(request: Request) -> str:
     client_id = request.headers.get("X-Client-ID")
     if not client_id:
         raise HTTPException(status_code=400, detail="Missing client_id")
@@ -22,14 +22,14 @@ def extract_client_id(request: Request) -> str:
 
 @router.get("/total")
 def get_room_summary(request: Request, checkin_date: str = Query(...)):
-    client_id = extract_client_id(request)
+    client_id = get_client_id(request)
     print("IN BOOKINGS CHECKIN_DATE = ", checkin_date)
     summary = crud.get_room_stats(client_id, checkin_date)
     return summary
 
 @router.post("/", response_model=BookingResponse)
 def create_booking(request: Request, data: BookingCreate):
-    client_id = extract_client_id(request)
+    client_id = get_client_id(request)
     print("In bookings Before crud.create_booking")
     booking_id = crud.create_booking(client_id, data.dict())
     if not booking_id:
@@ -40,7 +40,7 @@ def create_booking(request: Request, data: BookingCreate):
 
 @router.get("/bookings/{booking_id}", response_model=BookingOut)
 def get_booking_by_id(request: Request, booking_id: int):
-    client_id = extract_client_id(request)
+    client_id = get_client_id(request)
     booking = crud.get_booking(client_id, booking_id)
     if booking:
         return booking
@@ -49,13 +49,13 @@ def get_booking_by_id(request: Request, booking_id: int):
 # ------- Get all bookings ------------
 @router.get("/", response_model=list[BookingOut])
 def get_all_bookings(request: Request,):
-    client_id = extract_client_id(request)
+    client_id = get_client_id(request)
     return crud.get_all_bookings(client_id)
 
 #------- Get Bookings by NIC for Guest Report -------------
 @router.get("/by_nic/{selected_nic}", response_model=list[BookingOut])
 def get_bookings_by_nic(request: Request, selected_nic: str):
-    client_id = extract_client_id(request)
+    client_id = get_client_id(request)
     bookings = crud.get_bookings_by_nic(client_id, selected_nic)
     print("IN BOOKING -> BOOKINGS = ", bookings)
     if bookings:
@@ -71,7 +71,7 @@ def get_today_bookings(request: Request,):
 
 @router.put("/bookings/update/{booking_id}")
 def update_booking_by_id(request: Request, booking_id: int, data: dict):
-    client_id = extract_client_id(request)
+    client_id = get_client_id(request)
     booking = crud.get_booking(client_id, booking_id)
     if not booking:
         raise HTTPException(status_code=404, detail="Booking not found")
@@ -81,7 +81,7 @@ def update_booking_by_id(request: Request, booking_id: int, data: dict):
 
 @router.put("/cancel/{booking_id}")
 def cancel_booking_by_id(request: Request, booking_id: int, data: CancelBookingRequest):
-    client_id = extract_client_id(request)
+    client_id = get_client_id(request)
     room_number = data.room_number
     success = crud.cancel_booking(client_id, booking_id, room_number)
     if success:
@@ -90,10 +90,8 @@ def cancel_booking_by_id(request: Request, booking_id: int, data: CancelBookingR
 
 @router.get("/upcoming")
 def get_upcoming(request: Request,):
-    client_id = extract_client_id(request)
+    client_id = get_client_id(request)
     return crud.get_upcoming_bookings(client_id)
-
-#from fastapi import Query
 
     success = crud.checkout_booking(booking_id, final_payment)
     if success:
