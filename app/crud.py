@@ -310,8 +310,9 @@ def create_booking(client_id: str, data: dict):
 #-------------
 def get_booking(client_id: str, booking_id: int):
     conn, placeholder = get_or_create_client_db(client_id)  # ✅ UPDATED
+    cursor = conn.cursor()
     query = f"SELECT * FROM bookings WHERE booking_id = {placeholder}"  # ✅ Dynamic placeholder
-    cursor = conn.execute(query, (booking_id,))
+    cursor.execute(query, (booking_id,))
     row = cursor.fetchone()
     conn.close()
     print("ROW = ", row)
@@ -334,6 +335,7 @@ def get_all_bookings(client_id: str):
 def get_today_bookings(client_id: str):
     today = date.today().strftime('%Y-%m-%d')  # format as YYYY-MM-DD
     conn, placeholder = get_or_create_client_db(client_id)  # ✅ UPDATED
+    cursor = conn.cursor()
     query = f"""
         SELECT 
             b.*, 
@@ -344,7 +346,7 @@ def get_today_bookings(client_id: str):
         WHERE b.status = 'booked' 
           AND date(b.checkin_date) = date({placeholder})
     """  # ✅ Dynamic placeholder
-    cursor = conn.execute(query, (today,))
+    cursor.execute(query, (today,))
     rows = cursor.fetchall()
     print("rows in get_tody_bookings = ", rows)
     keys = [description[0] for description in cursor.description]
@@ -354,8 +356,9 @@ def get_today_bookings(client_id: str):
 # --- Search single booking by ID ---
 def get_booking(client_id: str, booking_id: int):
     conn, placeholder = get_or_create_client_db(client_id)  # ✅ UPDATED: Use tenant-aware DB
+    cursor = conn.cursor()
     query = f"SELECT * FROM bookings WHERE booking_id = {placeholder}"  # ✅ Dynamic placeholder
-    cursor = conn.execute(query, (booking_id,))
+    cursor.execute(query, (booking_id,))
     row = cursor.fetchone()
     conn.close()
     if row:
@@ -366,11 +369,12 @@ def get_booking(client_id: str, booking_id: int):
 # def cancel_booking(booking_id):
 def cancel_booking(client_id: str, booking_id: int, room_number: str):
     conn, placeholder = get_or_create_client_db(client_id)  # ✅ UPDATED
+    cursor = conn.cursor()
     query_cancel = f"UPDATE bookings SET status = 'cancelled' WHERE booking_id = {placeholder}"  # ✅ Dynamic placeholder
-    cursor = conn.execute(query_cancel, (booking_id,))         # Set the room status to 'booked'
+    cursor.execute(query_cancel, (booking_id,))         # Set the room status to 'booked'
 
     query_room = f"UPDATE rooms SET status = 'vacant' WHERE room_number = {placeholder}"  # ✅ Dynamic placeholder
-    conn.execute(query_room, (room_number,))
+    cursor.execute(query_room, (room_number,))
 
     print("AFTER UPDATE ROOM")
     conn.commit()
@@ -380,12 +384,13 @@ def cancel_booking(client_id: str, booking_id: int, room_number: str):
 def get_upcoming_bookings(client_id: str):
     today = datetime.today().strftime('%Y-%m-%d')
     conn, placeholder = get_or_create_client_db(client_id)  # ✅ UPDATED
+    cursor = conn.cursor()
     query = f"""
         SELECT * FROM bookings
         WHERE date(checkin_date) >= date({placeholder})
         ORDER BY checkin_date ASC
     """  # ✅ Dynamic placeholder
-    cursor = conn.execute(query, (today,))
+    cursor.execute(query, (today,))
     rows = cursor.fetchall()
     keys = ["booking_id", "nic_passport_number", "room_number", "checkin_date", "checkout_date", "status", "notes"]
         
@@ -396,11 +401,12 @@ def get_upcoming_bookings(client_id: str):
 
 def get_bookings_by_nic(client_id: str, nic_passport_number: str):
     onn, placeholder = get_or_create_client_db(client_id)  # ✅ UPDATED
+    cursor = conn.cursor()
     query = f"""
         SELECT * FROM bookings
         WHERE nic_passport_number = {placeholder}
     """  # ✅ Dynamic placeholder
-    cursor = conn.execute(query, (nic_passport_number,))
+    cursor.execute(query, (nic_passport_number,))
     rows = cursor.fetchall()
     print("IN CRUD GET BOOKING BY NIC ROWS = ", rows)
     keys = [description[0] for description in cursor.description]
@@ -411,6 +417,7 @@ def get_bookings_by_nic(client_id: str, nic_passport_number: str):
 
 def checkin_booking(client_id: str, booking_id: int, data):
     conn, placeholder = get_or_create_client_db(client_id)  # ✅ UPDATED
+    cursor = conn.cursor()
     
     # Extract each field from the CheckinData object
     room_number = str(data.room_number)
@@ -429,7 +436,7 @@ def checkin_booking(client_id: str, booking_id: int, data):
         status = {placeholder}
         WHERE booking_id = {placeholder}
     """  # ✅ Dynamic placeholders
-    conn.execute(query_booking, (
+    cursor.execute(query_booking, (
         room_number,
         checkout_date,
         actual_checkin_time,
@@ -453,6 +460,7 @@ def checkin_booking(client_id: str, booking_id: int, data):
 
 def get_checkedin_bookings(client_id: str):
     conn, _ = get_or_create_client_db(client_id)  # ✅ UPDATED
+    cursor.cursor()
     cursor = conn.execute("SELECT * FROM bookings WHERE status = 'checked_in'")
     rows = cursor.fetchall()
     print("GET_CHECKEDIN_BOOKINGS ----- ROWS = ", rows)
@@ -464,6 +472,7 @@ def get_checkedin_bookings(client_id: str):
 
 def checkout_booking(client_id: str, booking_id: int, final_payment: float):
     conn, placeholder = get_or_create_client_db(client_id)
+    cursor = conn.cursor()
     checkout_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
     query = f"""
@@ -473,7 +482,7 @@ def checkout_booking(client_id: str, booking_id: int, final_payment: float):
             total_payment = {placeholder}
         WHERE booking_id = {placeholder}
     """  # ✅ Dynamic placeholders
-    cursor = conn.execute(query, (checkout_time, final_payment, booking_id))
+    cursor.execute(query, (checkout_time, final_payment, booking_id))
     conn.commit()
     conn.close()
     return cursor.rowcount > 0
@@ -482,8 +491,9 @@ def checkout_booking(client_id: str, booking_id: int, final_payment: float):
 
 def get_room_by_number(client_id: str, room_number: str):
     conn, placeholder = get_or_create_client_db(client_id)  # ✅ UPDATED
+    cursor = conn.cursor()
     query = f"SELECT * FROM rooms WHERE room_number = {placeholder}"  # ✅ Dynamic placeholder
-    cursor = conn.execute(query, (room_number,))
+    cursor.execute(query, (room_number,))
     row = cursor.fetchone()
     columns = [column[0] for column in cursor.description]
     conn.close()
@@ -495,8 +505,9 @@ def get_room_by_number(client_id: str, room_number: str):
 
 def get_guest_name_by_nic(client_id: str, nic: str):
     conn, placeholder = get_or_create_client_db(client_id)  # ✅ UPDATED
+    cursor = conn.cursor()
     query = f"SELECT name FROM guests WHERE nic_passport_number = {placeholder}"  # ✅ Dynamic placeholder
-    cursor = conn.execute(query, (nic,))
+    cursor.execute(query, (nic,))
     row = cursor.fetchone()
     conn.close()
     if row:
