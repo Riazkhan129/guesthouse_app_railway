@@ -7,8 +7,6 @@ import "react-datepicker/dist/react-datepicker.css";
 
 function Checkin() {
   const { token } = useContext(AuthContext);
-  // const headers = { Authorization: `Bearer ${token}` };
-  // const API_URL = "http://localhost:8000";
 
   const [bookings, setBookings] = useState([]);
   const [vacantRooms, setVacantRooms] = useState([]);
@@ -21,20 +19,6 @@ function Checkin() {
     tomorrow.setDate(today.getDate() + 1);
     return tomorrow;
   });
-
-//<DatePicker
-//  selected={checkoutDate}
-//  onChange={(date) => setCheckoutDate(date)}
-//  dateFormat="dd-MMM-yyyy"
-//  placeholderText="Select checkout date"
-//  className="your-custom-input"
-// />
-
- // const [actualCheckinDate, setActualCheckinDate] = useState(() => {
- //   const now = new Date();
- //   const isoString = now.toISOString().slice(0, 16); // "YYYY-MM-DDTHH:mm"
- //   return isoString.replace("T", " - "); // "YYYY-MM-DD - HH:mm"
-// });
 
 const formatToDisplayDate = (isoDateStr) => {
   if (!isoDateStr) return "";

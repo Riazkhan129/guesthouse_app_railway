@@ -468,7 +468,7 @@ def checkin_booking(client_id: str, booking_id: int, data):
 def get_checkedin_bookings(client_id: str):
     conn, _ = get_or_create_client_db(client_id)  # ✅ UPDATED
     cursor.cursor()
-    cursor = conn.execute("SELECT * FROM bookings WHERE status = 'checked_in'")
+    cursor.execute("SELECT * FROM bookings WHERE status = 'checked_in'")
     rows = cursor.fetchall()
     print("GET_CHECKEDIN_BOOKINGS ----- ROWS = ", rows)
     columns = [column[0] for column in cursor.description]
