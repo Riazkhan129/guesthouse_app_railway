@@ -14,4 +14,4 @@ def get_client_id(request: Request) -> str:
 
 @router.get("/monthly")
 def monthly_dashboard_data(client_id, user: dict = Depends(get_current_user)):
-    return get_dashboard_data()
+    return curd_dashboar.get_dashboard_data(client_id)
