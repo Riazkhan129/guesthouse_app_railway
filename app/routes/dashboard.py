@@ -1,5 +1,5 @@
 # routes/dashboard.py
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, HTTPException
 from ..auth import get_current_user
 from ..crud_dashboard import get_dashboard_data
 
@@ -13,5 +13,6 @@ def get_client_id(request: Request) -> str:
     return client_id
 
 @router.get("/monthly")
-def monthly_dashboard_data(client_id, user: dict = Depends(get_current_user)):
-    return curd_dashboard.get_dashboard_data(client_id)
+def monthly_dashboard_data(request: Request, user: dict = Depends(get_current_user)):
+    client_id = get_client_id(request)  # ✅ Extract from headers
+    return get_dashboard_data(client_id)  # ✅ Pass to CRUD

@@ -1,12 +1,12 @@
 # crud/dashboard.py
-from .db import get_connection
+from .db import get_or_create_client_db
 from datetime import datetime, timedelta
 from collections import defaultdict
 
-def get_dashboard_data():
-    conn = get_connection()
+def get_dashboard_data(client_id: str):
+    conn, _ = get_or_create_client_db(client_id)  # ✅ Use correct DB
     cursor = conn.cursor()
-
+    
     today = datetime.today()
     results = []
 

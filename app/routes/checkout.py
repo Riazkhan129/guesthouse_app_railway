@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 #from app.db import get_db
 from app.db import get_connection
 from datetime import datetime
@@ -10,8 +10,16 @@ router = APIRouter(
     tags=["Checkout"]
 )
 
+# ✅ ADDED: Helper to extract client_id from headers
+def get_client_id(request: Request) -> str:
+    client_id = request.headers.get("X-Client-ID")
+    if not client_id:
+        raise HTTPException(status_code=400, detail="Missing client_id")
+    return client_id
+
 @router.put("/update_booking/{booking_id}")
-def update_booking_detail(booking_id: int, update: BookingUpdate):
+def update_booking_detail(request: Request, booking_id: int, update: BookingUpdate):
+    client_id = get_client_id(request)
     try:
         conn = get_connection()
         cursor = conn.cursor()
@@ -35,16 +43,3 @@ def update_booking_detail(booking_id: int, update: BookingUpdate):
 
 
 
-#def update_booking_details(
-#    booking_id: int,
-#    status: str,
-#    actual_checkout_date: str,
-#    total_payment: float,
-#    invoice_id: int
-#):
-
-#cursor.execute("""
-#    UPDATE bookings
-#    SET status = ?, actual_checkout_date = ?, total_payment = ?, invoice_id = ?
-#    WHERE booking_id = ?
-#""", (status, actual_checkout_date, total_payment, invoice_id, booking_id))
