@@ -17,17 +17,27 @@ def get_dashboard_data(client_id: str):
         
         # Pending bookings (status = 'booked' and checkin date < today)
         if month_str == today.strftime("%Y-%m"):
-            cursor.execute("""
+            query_pending = f"""
                 SELECT COUNT(*) FROM bookings
-                WHERE status = 'booked' AND checkin_date < ?
-            """, (today.strftime("%Y-%m-%d"),))
+                WHERE status = 'booked' AND checkin_date < {placeholder}
+            """
+            cursor.execute(query_pending, (today.strftime("%Y-%m-%d"),))
             pending_bookings = cursor.fetchone()[0]
         else:
             pending_bookings = 0
 
 
         # Income from invoices
-        cursor.execute("""
+        query_income = f"""
+            SELECT
+                COALESCE(SUM(room_charges), 0),
+                COALESCE(SUM(meals), 0),
+                COALESCE(SUM(laundry), 0),
+                COALESCE(SUM(damages), 0),
+                COALESCE(SUM(total_amount), 0)
+            FROM invoices
+            WHERE TO_CHAR(checkout_date, 'YYYY-MM') = {placeholder}
+        """ if conn.__class__.__name__ == "connection" else f"""
             SELECT
                 IFNULL(SUM(room_charges), 0),
                 IFNULL(SUM(meals), 0),
@@ -35,17 +45,26 @@ def get_dashboard_data(client_id: str):
                 IFNULL(SUM(damages), 0),
                 IFNULL(SUM(total_amount), 0)
             FROM invoices
-            WHERE strftime('%Y-%m', checkout_date) = ?
-        """, (month_str,))
+            WHERE strftime('%Y-%m', checkout_date) = {placeholder}
+        """  # ✅ PostgreSQL vs SQLite switch
+
+        cursor.execute(query_income, (month_str,))
         room_charges, meals, laundry, damages, total_amount = cursor.fetchone()
 
-        # Expenses per category
-        cursor.execute("""
+        # ✅ FIXED: Expenses per category
+        query_expenses = f"""
             SELECT category, SUM(amount)
             FROM expenses
-            WHERE strftime('%Y-%m', date) = ?
+            WHERE TO_CHAR(date, 'YYYY-MM') = {placeholder}
             GROUP BY category
-        """, (month_str,))
+        """ if conn.__class__.__name__ == "connection" else f"""
+            SELECT category, SUM(amount)
+            FROM expenses
+            WHERE strftime('%Y-%m', date) = {placeholder}
+            GROUP BY category
+        """  # ✅ PostgreSQL vs SQLite switch
+
+        cursor.execute(query_expenses, (month_str,))
         expenses_data = cursor.fetchall()
         expenses = {cat: amt for cat, amt in expenses_data}
         total_expenses = sum(expenses.values())
