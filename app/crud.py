@@ -323,7 +323,8 @@ def get_booking(client_id: str, booking_id: int):
 
 def get_all_bookings(client_id: str):
     conn, _ = get_or_create_client_db(client_id)
-    cursor = conn.execute("SELECT * FROM bookings WHERE status = 'booked'")
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM bookings WHERE status = 'booked'")
     rows = cursor.fetchall()
     print("IN GEL ALL BOOKINGS")
     print("rows in all_bookings = ", rows)
