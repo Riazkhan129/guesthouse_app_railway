@@ -80,20 +80,21 @@ def get_all_rooms(client_id: str):
     conn, _ = get_or_create_client_db(client_id)
 
     cursor = conn.cursor()
-    rows = cursor.execute("SELECT room_number, type, price, status, notes FROM rooms").fetchall()
+    cursor.execute("SELECT room_number, type, price, status, notes FROM rooms").fetchall()
+    rows = cursor.fetchall()
+    
     columns = ["room_number", "type", "price", "status", "notes"]
-
-    # Manually convert each tuple to a dict
     rooms = [dict(zip(columns, row)) for row in rows]
     return rooms
 
 def get_rooms(client_id: str):
     conn, _ = get_or_create_client_db(client_id)  # ✅ UPDATED
     cursor = conn.cursor()
-    rows = cursor.execute("SELECT * FROM rooms").fetchall()
-
+    cursor.execute("SELECT * FROM rooms")
+    rows = cursor.fetchall()
     columns = ["room_number", "room_type", "price_per_day", "status", "notes"]
     rooms = [dict(zip(columns, row)) for row in rows]
+    conn.close()
     return rooms
 
 
@@ -115,11 +116,11 @@ def update_room(client_id: str, room_number, room_data):
     ))
     conn.commit()
     
-    cursor.execute("""
-        UPDATE rooms SET room_number=?, type=?, price=?, status=?, notes=?
-        WHERE room_number=?
-    """, (room_data.room_number, room_data.type, room_data.price, room_data.status, room_data.notes, room_number))
-    conn.commit()
+#    cursor.execute("""
+#        UPDATE rooms SET room_number=?, type=?, price=?, status=?, notes=?
+#        WHERE room_number=?
+#    """, (room_data.room_number, room_data.type, room_data.price, room_data.status, room_data.notes, room_number))
+#    conn.commit()
     # Fetch the updated room
     query_fetch = f"SELECT * FROM rooms WHERE room_number = {placeholder}"  # ✅ Dynamic placeholder
     cursor.execute(query_fetch, (room_data.room_number,))
@@ -140,9 +141,11 @@ def update_room(client_id: str, room_number, room_data):
 def delete_room(client_id: str, room_number):
     conn, placeholder = get_or_create_client_db(client_id)  # ✅ UPDATED    print("IN DELETE ROOM", room_number)
     cursor = conn.cursor()
+    
     query = f"DELETE FROM rooms WHERE room_number = {placeholder}"  # ✅ Dynamic placeholder
     cursor.execute(query, (room_number,))
     deleted = cursor.rowcount
+    
     conn.commit()
     conn.close()
     return deleted > 0
