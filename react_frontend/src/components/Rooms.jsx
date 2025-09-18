@@ -104,7 +104,23 @@ const Rooms = () => {
 
   return (
     <div style={{ padding: "20px" }}>
-      {/* Add Room Form */}
+      {/* ✅ ADDED: Action Selector */}
+      <div style={{ marginBottom: "20px", display: "flex", gap: "20px" }}>
+        {["Add", "View", "Update", "Delete"].map((act) => (
+          <label key={act} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <input
+              type="radio"
+              name="action"
+              value={act}
+              checked={action === act}
+              onChange={(e) => setAction(e.target.value)}
+            />
+            {act}
+          </label>
+        ))}
+      </div>
+      {/* ✅ CONDITIONAL: Add Room */}
+      {action === "Add" && (
       <div style={{
         background: "#f9f9f9",
         padding: "20px",
@@ -172,7 +188,8 @@ const Rooms = () => {
         </button>
       </div>
 
-      {/* Room List */}
+      {/* ✅ CONDITIONAL: View / Update / Delete */}
+      {["View", "Update", "Delete"].includes(action) && (
       <div style={{ display: "grid", gap: "16px" }}>
         {rooms.map((room) => (
           <div key={room.room_number} style={{
@@ -183,6 +200,7 @@ const Rooms = () => {
           }}>
             {editMode === room.room_number ? (
               <>
+              {/* ✅ Edit Mode */}
               <div style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
@@ -235,6 +253,7 @@ const Rooms = () => {
               </>
             ) : (
               <>
+                {/* ✅ View Mode */}
                 <div style={{ 
                   display: "grid", 
                   gridTemplateColumns: "1fr 1fr", 
@@ -250,14 +269,16 @@ const Rooms = () => {
                     <strong>Notes:</strong> {room.notes}
                   </p>
                 </div>
-
-
+                {/* ✅ CONDITIONAL BUTTONS BASED ON ACTION */}
                 <div>
-                  <button style={buttonStyle("orange")} onClick={() => {
-                    setEditMode(room.room_number);
-                    setEditedRoom({ ...room });
-                  }}>Edit</button>
-                  <button style={buttonStyle("red")} onClick={() => handleDeleteRoom(room.room_number)}>Delete</button>
+                  {action === "Update" && (
+                    <button style={buttonStyle("orange")} onClick={() => {
+                      setEditMode(room.room_number);
+                      setEditedRoom({ ...room });
+                    }}>Edit</button>
+                     )}
+              {action === "Delete" && (
+                    <button style={buttonStyle("red")} onClick={() => handleDeleteRoom(room.room_number)}>Delete</button>
                 </div>
               </>
             )}
