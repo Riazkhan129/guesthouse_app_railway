@@ -288,6 +288,7 @@ def create_booking(client_id: str, data: dict):
         return {"error": "No rooms available for the selected date"}
     else:
         conn, placeholder = get_or_create_client_db(client_id)  # ✅ UPDATED
+        cursor = conn.cursor()
         query = f"""
             INSERT INTO bookings (
                 nic_passport_number, room_number, checkin_date, checkout_date,
