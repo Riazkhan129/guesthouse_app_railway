@@ -143,9 +143,9 @@ def delete_room(client_id: str, room_number):
     cursor = conn.cursor()
     
     query = f"DELETE FROM rooms WHERE room_number = {placeholder}"  # ✅ Dynamic placeholder
-    cursor.execute(query, (room_number,))
-    deleted = cursor.rowcount
+    cursor.execute(query, (str(room_number),))
     
+    deleted = cursor.rowcount
     conn.commit()
     conn.close()
     return deleted > 0
