@@ -65,7 +65,7 @@ def get_bookings_by_nic(request: Request, selected_nic: str):
 # ------- Get todays bookings ------------
 @router.get("/today", response_model=list[BookingOutCheckIn])
 def get_today_bookings(request: Request,):
-    client_id = extract_client_id(request)
+    client_id = get_client_id(request)
     print("In bookings Before crud.get_today_bookings()")
     return crud.get_today_bookings(client_id)
 
