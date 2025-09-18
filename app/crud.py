@@ -370,16 +370,20 @@ def get_booking(client_id: str, booking_id: int):
 def cancel_booking(client_id: str, booking_id: int, room_number: str):
     conn, placeholder = get_or_create_client_db(client_id)  # ✅ UPDATED
     cursor = conn.cursor()
+
     query_cancel = f"UPDATE bookings SET status = 'cancelled' WHERE booking_id = {placeholder}"  # ✅ Dynamic placeholder
     cursor.execute(query_cancel, (booking_id,))         # Set the room status to 'booked'
+    booking_updated = cursor.rowcount
 
     query_room = f"UPDATE rooms SET status = 'vacant' WHERE room_number = {placeholder}"  # ✅ Dynamic placeholder
-    cursor.execute(query_room, (room_number,))
+    cursor.execute(query_room, (str(room_number),))
+    room_updated = cursor.rowcount
 
     print("AFTER UPDATE ROOM")
     conn.commit()
     conn.close()
-    return cursor.rowcount > 0
+    return booking_updated > 0 and room_updated > 0
+    # return cursor.rowcount > 0
 
 def get_upcoming_bookings(client_id: str):
     today = datetime.today().strftime('%Y-%m-%d')
