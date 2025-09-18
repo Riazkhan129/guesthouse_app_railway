@@ -107,12 +107,12 @@ def update_room(client_id: str, room_number, room_data):
         status={placeholder}, notes={placeholder} WHERE room_number={placeholder}
     """  # ✅ Dynamic placeholders
     cursor.execute(query_update, (
-        room_data.room_number,
+        str(room_data.room_number),
         room_data.type,
         room_data.price,
         room_data.status,
         room_data.notes,
-        room_number
+        str(room_number)
     ))
     conn.commit()
     
@@ -123,7 +123,7 @@ def update_room(client_id: str, room_number, room_data):
 #    conn.commit()
     # Fetch the updated room
     query_fetch = f"SELECT * FROM rooms WHERE room_number = {placeholder}"  # ✅ Dynamic placeholder
-    cursor.execute(query_fetch, (room_data.room_number,))
+    cursor.execute(query_fetch, (str(room_data.room_number),))
     row = cursor.fetchone()
     conn.close()
     
