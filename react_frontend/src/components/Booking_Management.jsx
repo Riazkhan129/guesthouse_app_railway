@@ -75,7 +75,6 @@ useEffect(() => {
     if (action === "Create Booking") {
       API.get("/guests/all", { headers: { Authorization: `Bearer ${token}` } }) // 🔧 CHANGED
         .then(res => setGuests(res.data))
-        .then(res => setGuests(res.data))
         .catch(() => alert("❌ Failed to load guest list."));
     }
     if (["View All Bookings", "Cancel Booking", "Upcoming Booking"].includes(action)) {
