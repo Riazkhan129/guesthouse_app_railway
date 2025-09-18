@@ -5,8 +5,7 @@ import API from "../api"; // ✅ ADDED: Centralized Axios instance
 const Rooms = () => {
   const { token } = useContext(AuthContext);
 
-  // const headers = { Authorization: `Bearer ${token}` };
-  // const API_URL = "http://localhost:8000";
+  const [action, setAction] = useState("Add");
 
   const [rooms, setRooms] = useState([]);
   const [newRoom, setNewRoom] = useState({
