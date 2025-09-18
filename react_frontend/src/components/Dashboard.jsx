@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
+// import React, { useEffect, useState, usecontext } from "react";
 import API from "../api"; // ✅ ADDED: Centralized Axios instance
 import { AuthContext } from "../context/AuthContext"; // ✅ ADDED: For token
 import dayjs from "dayjs";
 
 const Dashboard = () => {
   const { token } = useContext(AuthContext); // ✅ ADDED: Get token from context
-
   const [dashboardData, setDashboardData] = useState([]);
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState("");
