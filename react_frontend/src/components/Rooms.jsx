@@ -186,9 +186,8 @@ const Rooms = () => {
         >
           {loading ? "Adding..." : "Add Room"}
         </button>
-      </div>
-
-      {/* ✅ CONDITIONAL: View / Update / Delete */}
+      </div> 
+    )} {/* ✅ FIXED: CLOSED Add Room conditional block */}
       {["View", "Update", "Delete"].includes(action) && (
       <div style={{ display: "grid", gap: "16px" }}>
         {rooms.map((room) => (
@@ -245,7 +244,8 @@ const Rooms = () => {
                   </select>
                 </div>
               </div>
-
+              
+                  {/* ✅ CONDITIONAL: View / Update / Delete */}
                   <div style={{ display: "flex", gap: "10px" }}>
                     <button style={buttonStyle("green")} onClick={handleUpdateRoom}>Save</button>
                     <button style={buttonStyle("gray")} onClick={() => { setEditMode(null); setEditedRoom({}); }}>Cancel</button>
@@ -270,23 +270,25 @@ const Rooms = () => {
                   </p>
                 </div>
                 {/* ✅ CONDITIONAL BUTTONS BASED ON ACTION */}
-                <div>
+                <div style={{ display: "flex", gap: "10px" }}>
                   {action === "Update" && (
                     <button style={buttonStyle("orange")} onClick={() => {
                       setEditMode(room.room_number);
                       setEditedRoom({ ...room });
                     }}>Edit</button>
-                     )}
-              {action === "Delete" && (
+                  )}
+                  {action === "Delete" && (
                     <button style={buttonStyle("red")} onClick={() => handleDeleteRoom(room.room_number)}>Delete</button>
+                  )}
                 </div>
               </>
             )}
           </div>
-        ))}
-      </div>
+        ))} {/* ✅ CLOSED rooms.map */}
+      </div> 
+    )} {/* ✅ CLOSED conditional block */}
     </div>
-  );
+   );
 };
 
 // === Styles ===
