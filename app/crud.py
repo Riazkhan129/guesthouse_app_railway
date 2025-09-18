@@ -80,7 +80,7 @@ def get_all_rooms(client_id: str):
     conn, _ = get_or_create_client_db(client_id)
 
     cursor = conn.cursor()
-    cursor.execute("SELECT room_number, type, price, status, notes FROM rooms").fetchall()
+    cursor.execute("SELECT room_number, type, price, status, notes FROM rooms")
     rows = cursor.fetchall()
     
     columns = ["room_number", "type", "price", "status", "notes"]
