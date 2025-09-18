@@ -374,14 +374,17 @@ def cancel_booking(client_id: str, booking_id: int, room_number: str):
     query_cancel = f"UPDATE bookings SET status = 'cancelled' WHERE booking_id = {placeholder}"  # ✅ Dynamic placeholder
     cursor.execute(query_cancel, (booking_id,))         # Set the room status to 'booked'
     booking_updated = cursor.rowcount
+    print("booking_updated =", booking_updated)  # ✅ DEBUG
 
     query_room = f"UPDATE rooms SET status = 'vacant' WHERE room_number = {placeholder}"  # ✅ Dynamic placeholder
     cursor.execute(query_room, (str(room_number),))
     room_updated = cursor.rowcount
+    print("room_updated =", room_updated)  # ✅ DEBUG
 
     print("AFTER UPDATE ROOM")
     conn.commit()
     conn.close()
+    
     return booking_updated > 0 and room_updated > 0
     # return cursor.rowcount > 0
 
