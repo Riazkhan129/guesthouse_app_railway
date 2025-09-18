@@ -44,7 +44,7 @@ def get_dashboard_data(client_id: str):
                 COALESCE(SUM(damages), 0),
                 COALESCE(SUM(total_amount), 0)
             FROM invoices
-            WHERE TO_CHAR(checkout_date, 'YYYY-MM') = {placeholder}
+            WHERE TO_CHAR(checkout_date::DATE, 'YYYY-MM') = {placeholder}
         """ if conn.__class__.__name__ == "connection" else f"""
             SELECT
                 IFNULL(SUM(room_charges), 0),
@@ -63,7 +63,7 @@ def get_dashboard_data(client_id: str):
         query_expenses = f"""
             SELECT category, SUM(amount)
             FROM expenses
-            WHERE TO_CHAR(date, 'YYYY-MM') = {placeholder}
+            WHERE TO_CHAR(date::DATE, 'YYYY-MM') = {placeholder}
             GROUP BY category
         """ if conn.__class__.__name__ == "connection" else f"""
             SELECT category, SUM(amount)
