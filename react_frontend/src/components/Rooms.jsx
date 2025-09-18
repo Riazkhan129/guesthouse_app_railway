@@ -26,7 +26,7 @@ const Rooms = () => {
 
   const fetchRooms = async () => {
     try {
-      const res = await API.get("/rooms/", {
+      const res = await API.get("/rooms", {
         headers: { Authorization: `Bearer ${token}` } // 🔧 CHANGED
       });
       if (res.status === 200) setRooms(res.data);
