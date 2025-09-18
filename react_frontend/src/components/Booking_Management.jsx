@@ -122,7 +122,7 @@ useEffect(() => {
       total_rooms: availability?.total_rooms,
     };
     
-    API.post("/bookings", payload) // 🔧 CHANGED
+    API.post("/bookings/", payload) // 🔧 CHANGED
     .then(() => {
       alert("✅ Booking created successfully!");
       setBookingCreated(true); // ✅ Move this inside .then()
