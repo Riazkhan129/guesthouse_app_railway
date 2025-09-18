@@ -296,7 +296,7 @@ def create_booking(client_id: str, data: dict):
             VALUES ({placeholder}, {placeholder}, {placeholder}, {placeholder},
                     {placeholder}, {placeholder}, {placeholder}, {placeholder})
         """  # ✅ Dynamic placeholders
-        cursor = conn.execute(query, (
+        cursor.execute(query, (
             data["nic_passport_number"], data["room_number"], data["checkin_date"],
             data["checkout_date"], data["status"], data.get("notes"),
             data.get("advance_payment"), data.get("total_payment")
