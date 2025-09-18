@@ -6,7 +6,6 @@ import API from "../api"; // ✅ ADDED: Centralized Axios instance
 
 function Checkout() {
   const { token } = useContext(AuthContext);
-  // const API_URL = "http://localhost:8000";
 
   const [bookings, setBookings] = useState([]);
   const [selectedBookingId, setSelectedBookingId] = useState("");
