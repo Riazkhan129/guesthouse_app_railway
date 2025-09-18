@@ -2,17 +2,17 @@
 from .db import get_or_create_client_db
 from datetime import datetime, timedelta
 from collections import defaultdict
-from fastapi import HTTPException
+#from fastapi import HTTPException
 
 # ✅ ADDED: Helper to extract client_id from headers
-# def get_client_id(request: Request) -> str:
+#def get_client_id(request: Request) -> str:
 #    client_id = request.headers.get("X-Client-ID")
 #    if not client_id:
 #        raise HTTPException(status_code=400, detail="Missing client_id")
 #    return client_id
 
 def get_dashboard_data(client_id: str):
-    conn, _ = get_or_create_client_db(client_id)  # ✅ Use correct DB
+    conn, placeholder = get_or_create_client_db(client_id)
     cursor = conn.cursor()
     
     today = datetime.today()
