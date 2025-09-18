@@ -254,12 +254,12 @@ def get_room_stats(client_id: str, checkin_date: str) -> dict:
     cursor = conn.cursor()
     
     # Get total number of rooms
-    cursor = conn.execute("SELECT COUNT(*) FROM rooms")
+    cursor.execute("SELECT COUNT(*) FROM rooms")
     total_rooms = cursor.fetchone()[0]
     print("total_rooms = ", total_rooms)
 
     # Debug: show all bookings
-    cursor = conn.execute("SELECT booking_id, checkin_date, checkout_date, status FROM bookings")
+    cursor.execute("SELECT booking_id, checkin_date, checkout_date, status FROM bookings")
     for row in cursor.fetchall():
              print(row)
 
