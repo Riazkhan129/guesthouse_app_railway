@@ -16,7 +16,7 @@ const Dashboard = () => {
 
   const fetchDashboard = async () => {
     try {
-      const response = await API.get("/dashboard/monthly", {
+      const response = await API.get("dashboard/monthly", {
         headers: { Authorization: `Bearer ${token}` } // ✅ CHANGED
       });
       const sortedData = response.data.sort(
