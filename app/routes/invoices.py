@@ -1,25 +1,24 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from app.models import InvoiceCreate
 from app import crud
 
-#from app.crud import create_invoice as insert_invoice  # enamed to avoid conflict
-#import logging
-#logger = logging.getLogger("uvicorn.info")
-
 router = APIRouter(prefix="/invoices", tags=["Invoices"])
 
-
-
-#@router.post("/")
-#def create_invoice_endpoint(invoice: InvoiceCreate):
-#logger.info("🧾 IN INVOICES BEFORE GOING TO CRUD")
-
+# ✅ ADDED: Helper to extract client_id from headers
+def get_client_id(request: Request) -> str:
+    client_id = request.headers.get("X-Client-ID")
+    if not client_id:
+        raise HTTPException(status_code=400, detail="Missing client_id")
+    return client_id
 
 @router.post("/")
-def create_invoice_endpoint(invoice: InvoiceCreate):  # use InvoiceCreate
+def create_invoice_endpoint(request: Request, invoice: InvoiceCreate):  # use InvoiceCreate
     print("IN INVOICES BEFORE GOING TO CRUD")
     try:
-        invoice_data = crud.create_invoice(invoice)  # ✅ call with actual data
+        client_id = get_client_id(request)
+        if not client_id:
+            raise HTTPException(status_code=400, detail="Missing client_id")
+        invoice_data = crud.create_invoice(client_id, invoice)  # ✅ call with actual data
         invoice_id = invoice_data["id"]  # ✅ get the ID from returned dict
         print("INVOICE_ID IN INVOICES.PY = ", invoice_id)
         print("✅ Invoice saved with ID:", invoice_id)
