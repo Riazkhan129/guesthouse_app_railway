@@ -7,7 +7,9 @@ import string
 # from contextlib import contextmanager
 from cryptography.fernet import Fernet
 # import sys
+from dotenv import load_dotenv
 
+load_dotenv()
 
 # ---------- 🧠 Environment Mode Detection ----------
 DB_MODE = os.getenv("DB_MODE", "local")  # ✅ 'local' or 'cloud'
