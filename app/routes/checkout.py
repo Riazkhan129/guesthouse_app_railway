@@ -24,6 +24,12 @@ def update_booking_detail(request: Request, booking_id: int, update: BookingUpda
         conn, placeholder = get_or_create_client_db(client_id)
         cursor = conn.cursor()
 
+        print("status =", update.status)
+        print("actual_checkout_date =", update.actual_checkout_date)
+        print("total_payment =", update.total_payment)
+        print("invoice_id =", update.invoice_id)
+        print("booking_id =", booking_id)
+
         query = f"""
             UPDATE bookings
             SET status = {placeholder},
