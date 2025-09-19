@@ -24,7 +24,7 @@ def get_client_id(request: Request) -> str:
 # Check-in endpoint
 
 #----------------
-from ..models import CheckinData
+# from ..models import CheckinData
 
 @router.put("/checkin/{booking_id}")
 def checkin_guest(request: Request, booking_id: int, data: CheckinData):

@@ -3,8 +3,6 @@ import React, { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import API from "../api";
 import '../styles/global.css';
-// import 'D:/guesthouse_app_Cleaned/react_frontend/my-react-web-app/src/styles/global.css';
-// import axios from "axios";
 
 const formatCurrency = (value) => {
   const num = Number(value);
@@ -12,8 +10,7 @@ const formatCurrency = (value) => {
 };
 
 function Billing({ selectedBooking, guest, roomPrice, totalNights, onCheckoutComplete }) {
-// function Billing({ selectedBooking, guest, roomPrice, totalNights }) {
-  const { token } = useContext(AuthContext);
+  // const { token } = useContext(AuthContext);
   const { clientId } = useContext(AuthContext);
 
   const [laundry, setLaundry] = useState(0);
@@ -23,7 +20,8 @@ function Billing({ selectedBooking, guest, roomPrice, totalNights, onCheckoutCom
   const [checkoutComplete, setCheckoutComplete] = useState(false);
   const [error, setError] = useState("");
 
-  if (!token || !selectedBooking || !guest) return null;
+  if (!selectedBooking || !guest || !clientId) return null;
+//  if (!token || !selectedBooking || !guest) return null;
 
   const roomCharges = roomPrice * totalNights;
   const extraCharges = laundry + meals + damages;
@@ -83,14 +81,17 @@ function Billing({ selectedBooking, guest, roomPrice, totalNights, onCheckoutCom
   };
 
   const handleCheckout = async () => {
-  const bookingId = selectedBooking.booking_id;
-  const roomNumber = selectedBooking.room_number;
-  try {
-    console.log("🚀 Starting checkout for booking:", bookingId);
-    const headers = { Authorization: `Bearer ${token}` };
+    const bookingId = selectedBooking.booking_id;
+    const roomNumber = selectedBooking.room_number;
+    try {
+      console.log("🚀 Starting checkout for booking:", bookingId);
+      const headers = {
+        "X-Client-ID": clientId
+      // const headers = { Authorization: `Bearer ${token}` };
 
     // Vacant the room
-    await API.put(`/rooms/update_status/${roomNumber}?status=vacant`, {}, { headers });
+    await API.put(`/rooms/update_status/${roomNumber}?status=vacant`, {}, { headers });  // ✅ Confirm backend accepts query param
+    // await API.put(`/rooms/update_status/${roomNumber}?status=vacant`, {}, { headers });
     console.log("✅ Room marked vacant");
 
     // Save invoice
@@ -119,7 +120,7 @@ function Billing({ selectedBooking, guest, roomPrice, totalNights, onCheckoutCom
     
     // Update booking
     const bookingUpdatePayload = {
-      actual_checkout_date: `${new Date().toISOString().split("T")[0]} ${new Date().toTimeString().split(" ")[0]}`,
+      actual_checkout_time: `${new Date().toISOString().split("T")[0]} ${new Date().toTimeString().split(" ")[0]}`,
       // actual_checkout_date: new Date().toISOString().split("T")[0],
       total_payment: totalAmount,
       invoice_id: invoiceId,

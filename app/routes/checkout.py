@@ -33,7 +33,7 @@ def update_booking_detail(request: Request, booking_id: int, update: BookingUpda
         query = f"""
             UPDATE bookings
             SET status = {placeholder},
-                actual_checkout_date = {placeholder},
+                actual_checkout_time = {placeholder},
                 total_payment = {placeholder},
                 invoice_id = {placeholder}
             WHERE booking_id = {placeholder}
@@ -50,6 +50,7 @@ def update_booking_detail(request: Request, booking_id: int, update: BookingUpda
         conn.commit()
         return {"message": f"Booking {booking_id} updated successfully"}
     except Exception as e:
+        print("❌ Booking update error:", e)
         raise HTTPException(status_code=500, detail=str(e))
 
 
