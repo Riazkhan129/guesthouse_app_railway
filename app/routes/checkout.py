@@ -33,7 +33,7 @@ def update_booking_detail(request: Request, booking_id: int, update: BookingUpda
         query = f"""
             UPDATE bookings
             SET status = {placeholder},
-                actual_checkout_date = {placeholder},
+                actual_checkout_time = {placeholder},
                 total_payment = {placeholder},
                 invoice_id = {placeholder}
             WHERE booking_id = {placeholder}
@@ -41,7 +41,7 @@ def update_booking_detail(request: Request, booking_id: int, update: BookingUpda
 
         cursor.execute(query, (
             update.status,
-            update.actual_checkout_date,
+            update.actual_checkout_time,
             update.total_payment,
             update.invoice_id,
             str(booking_id)
