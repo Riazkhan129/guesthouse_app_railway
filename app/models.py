@@ -127,7 +127,7 @@ class BookingUpdate(BaseModel):
     status: str
     actual_checkout_date: Optional[str] = None
     total_payment: Optional[int] = None
-    invoice_id: Optional[int] = None
+    invoice_id: Optional[int]
 
 class BookingCreate(BaseModel):
     nic_passport_number: str
