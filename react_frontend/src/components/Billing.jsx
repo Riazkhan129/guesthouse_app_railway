@@ -119,8 +119,8 @@ function Billing({ selectedBooking, guest, roomPrice, totalNights, onCheckoutCom
     
     // Update booking
     const bookingUpdatePayload = {
-      // actual_checkout_date: `${new Date().toISOString().split("T")[0]} ${new Date().toTimeString().split(" ")[0]}`,
-      actual_checkout_date: new Date().toISOString().split("T")[0],
+      actual_checkout_time: `${new Date().toISOString().split("T")[0]} ${new Date().toTimeString().split(" ")[0]}`,
+      // actual_checkout_date: new Date().toISOString().split("T")[0],
       total_payment: totalAmount,
       invoice_id: invoiceId,
       status: "checked_out"

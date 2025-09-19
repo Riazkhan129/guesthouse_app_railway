@@ -125,7 +125,7 @@ class BookingBase(BaseModel):
 
 class BookingUpdate(BaseModel):
     status: str
-    actual_checkout_date: Optional[str] = None
+    actual_checkout_time: Optional[str] = None
     total_payment: Optional[int] = None
     invoice_id: Optional[int]
 
