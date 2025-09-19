@@ -38,7 +38,7 @@ def update_booking_detail(request: Request, booking_id: int, update: BookingUpda
             update.actual_checkout_date,
             update.total_payment,
             update.invoice_id,
-            booking_id
+            str(booking_id)
         ))
 
         conn.commit()
