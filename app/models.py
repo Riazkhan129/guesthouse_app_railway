@@ -121,7 +121,7 @@ class BookingBase(BaseModel):
     advance_payment: Optional[int] = None
     actual_checkout_date: Optional[str] = None
     total_payment: Optional[int] = None
-    invoice_id: int
+    invoice_id: Optional[int] = None
 
 class BookingUpdate(BaseModel):
     status: str
@@ -136,8 +136,8 @@ class BookingCreate(BaseModel):
     checkout_date: str
     status: str
     notes: Optional[str] = None
-    advance_payment: int
-    total_payment: int
+    advance_payment: Optional[int]
+    total_payment: Optional[int]
     booked_rooms: Optional[int]
     total_rooms: Optional[int]
 
