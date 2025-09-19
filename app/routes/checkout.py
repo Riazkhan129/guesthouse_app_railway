@@ -21,14 +21,19 @@ def get_client_id(request: Request) -> str:
 def update_booking_detail(request: Request, booking_id: int, update: BookingUpdate):
     client_id = get_client_id(request)
     try:
-        conn = get_connection()
+        conn, placeholder = get_or_create_client_db(client_id)
         cursor = conn.cursor()
 
-        cursor.execute("""
+        query = f"""
             UPDATE bookings
-            SET status = ?, actual_checkout_date = ?, total_payment = ?, invoice_id = ?
-            WHERE booking_id = ?
-        """, (
+            SET status = {placeholder},
+                actual_checkout_date = {placeholder},
+                total_payment = {placeholder},
+                invoice_id = {placeholder}
+            WHERE booking_id = {placeholder}
+        """  # ✅ Dynamic placeholders
+
+        cursor.execute(query, (
             update.status,
             update.actual_checkout_date,
             update.total_payment,
