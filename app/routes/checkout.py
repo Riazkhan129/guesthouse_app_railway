@@ -33,7 +33,7 @@ def update_booking_detail(request: Request, booking_id: int, update: BookingUpda
         query = f"""
             UPDATE bookings
             SET status = {placeholder},
-                str(actual_checkout_date) = {placeholder},
+                ctual_checkout_date = {placeholder},
                 total_payment = {placeholder},
                 invoice_id = {placeholder}
             WHERE booking_id = {placeholder}
