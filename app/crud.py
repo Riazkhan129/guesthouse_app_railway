@@ -485,7 +485,7 @@ def checkout_booking(client_id: str, booking_id: int, final_payment: float):
     query = f"""
         UPDATE bookings SET
             status = 'checked_out',
-            actual_checkout_time = {placeholder},
+            actual_checkout_date = {placeholder},
             total_payment = {placeholder}
         WHERE booking_id = {placeholder}
     """  # ✅ Dynamic placeholders
