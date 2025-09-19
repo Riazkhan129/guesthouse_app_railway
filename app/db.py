@@ -76,9 +76,11 @@ def get_or_create_client_db(client_id):
     try:
         if DB_MODE == "cloud":
             template = os.getenv("DB_URL_TEMPLATE")
+            print("DB_URL_TEMPLATE = ", DB_URL_TEMPLATE)
             if not template:
                 raise RuntimeError("❌ DB_URL_TEMPLATE not set")
             db_url = template.replace("{client}", client_id)
+            print("db_url = ", db_url)
             conn = psycopg2.connect(db_url)
             conn.autocommit = True
             placeholder = "%s"  # ✅ PostgreSQL placeholder
