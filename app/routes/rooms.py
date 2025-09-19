@@ -39,7 +39,7 @@ def update_room_status(request: Request, room_number: int, status: str):
     conn, placeholder = get_or_create_client_db(client_id)  # ✅ REPLACED get_connection()
     cursor = conn.cursor()
     query = f"UPDATE rooms SET status = {placeholder} WHERE room_number = {placeholder}"  # ✅ Dynamic placeholder
-    cursor.execute(query, (status, room_number))
+    cursor.execute(query, (status, str(room_number)))
     # conn = get_connection()
     # cursor = conn.cursor()
     conn.commit()
