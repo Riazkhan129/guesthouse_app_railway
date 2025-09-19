@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Request
 #from app.db import get_db
-from app.db import get_connection
+from app.db import get_or_create_client_db  # ✅ Required for multi-tenant support
 from datetime import datetime
 # from pydantic import BaseModel
 from app.models import BookingUpdate
