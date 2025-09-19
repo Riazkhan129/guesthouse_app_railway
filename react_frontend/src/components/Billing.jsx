@@ -86,12 +86,11 @@ function Billing({ selectedBooking, guest, roomPrice, totalNights, onCheckoutCom
     try {
       console.log("🚀 Starting checkout for booking:", bookingId);
       const headers = {
-        "X-Client-ID": clientId
+        "X-Client-ID": clientId}
       // const headers = { Authorization: `Bearer ${token}` };
 
     // Vacant the room
-    await API.put(`/rooms/update_status/${roomNumber}?status=vacant`, {}, { headers });  // ✅ Confirm backend accepts query param
-    // await API.put(`/rooms/update_status/${roomNumber}?status=vacant`, {}, { headers });
+    await API.put(`/rooms/update_status/${roomNumber}?status=vacant`, {}, { headers });
     console.log("✅ Room marked vacant");
 
     // Save invoice
