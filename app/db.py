@@ -7,9 +7,7 @@ import string
 # from contextlib import contextmanager
 from cryptography.fernet import Fernet
 # import sys
-from dotenv import load_dotenv
 
-load_dotenv()
 
 # ---------- 🧠 Environment Mode Detection ----------
 DB_MODE = os.getenv("DB_MODE", "local")  # ✅ 'local' or 'cloud'
@@ -76,7 +74,7 @@ def get_or_create_client_db(client_id):
     try:
         if DB_MODE == "cloud":
             template = os.getenv("DB_URL_TEMPLATE")
-            print("DB_URL_TEMPLATE = ", DB_URL_TEMPLATE)
+            print("DB_URL_TEMPLATE = ", template)
             if not template:
                 raise RuntimeError("❌ DB_URL_TEMPLATE not set")
             db_url = template.replace("{client}", client_id)
