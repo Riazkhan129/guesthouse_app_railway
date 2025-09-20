@@ -77,7 +77,7 @@ def find_or_create_ghms_folder():
 #----------------------
 def get_or_create_client_db(client_id):
     try:
-        if DB_MODE == "cloud":
+        if DB_MODE == "multi-tenant":
             config_url = os.getenv("CONFIG_DB_URL")
             config_conn = psycopg2.connect(config_url)
             config_cursor = config_conn.cursor()
