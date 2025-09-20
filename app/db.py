@@ -40,34 +40,34 @@ def find_or_create_ghms_folder():
     raise RuntimeError("❌ Could not create ghms folder on any available drive.")
 
 # ---------- Get DB Connection ----------
-def get_connection():
-    if DB_MODE == "cloud":
-        db_url = os.getenv("DB_URL")  # ✅ Railway PostgreSQL URL
-        if not db_url:
-            raise RuntimeError("❌ DB_URL environment variable not set")
-        try:
-            conn = psycopg2.connect(db_url)
-            conn.autocommit = True
-            print("✅ Connected to Railway PostgreSQL")
-            return conn
-        except Exception as e:
-            raise RuntimeError(f"❌ Failed to connect to Railway DB: {e}")
-    else:
-        ghms_folder = find_or_create_ghms_folder()  # ✅ Use client drive logic
-        db_path = os.path.join(ghms_folder, "guesthouse.sqlite")  # ✅ Fixed local path
-        print("📌 Checking DB at:", db_path)
-        if not os.path.exists(db_path):
-            print("⚠️ DB not found. Creating it...")
-            initialize_database(db_path)
-        try:
-            with open(db_path, 'rb') as f:
-                f.read(1)
-            print("✅ DB file is readable")
-        except Exception as e:
-            raise RuntimeError(f"❌ Cannot read DB file: {e}")
-        conn = sqlite3.connect(db_path)
-        conn.execute("PRAGMA foreign_keys = ON")
-        return conn
+#def get_connection():
+#    if DB_MODE == "cloud":
+#        db_url = os.getenv("DB_URL")  # ✅ Railway PostgreSQL URL
+#        if not db_url:
+#            raise RuntimeError("❌ DB_URL environment variable not set")
+#        try:
+#            conn = psycopg2.connect(db_url)
+#            conn.autocommit = True
+#            print("✅ Connected to Railway PostgreSQL")
+#            return conn
+#        except Exception as e:
+#            raise RuntimeError(f"❌ Failed to connect to Railway DB: {e}")
+#    else:
+#        ghms_folder = find_or_create_ghms_folder()  # ✅ Use client drive logic
+#        db_path = os.path.join(ghms_folder, "guesthouse.sqlite")  # ✅ Fixed local path
+#        print("📌 Checking DB at:", db_path)
+#        if not os.path.exists(db_path):
+#            print("⚠️ DB not found. Creating it...")
+#            initialize_database(db_path)
+#        try:
+#            with open(db_path, 'rb') as f:
+#                f.read(1)
+#            print("✅ DB file is readable")
+#        except Exception as e:
+#            raise RuntimeError(f"❌ Cannot read DB file: {e}")
+#        conn = sqlite3.connect(db_path)
+#        conn.execute("PRAGMA foreign_keys = ON")
+#        return conn
 
 # ✅ ADDED: Unified DB setup for local and cloud
 def get_or_create_client_db(client_id):
@@ -77,8 +77,9 @@ def get_or_create_client_db(client_id):
             print("DB_URL_TEMPLATE = ", template)
             if not template:
                 raise RuntimeError("❌ DB_URL_TEMPLATE not set")
+            print("In get_or_create_client_db - fb_url = ", db_url)
             db_url = template.replace("{client}", client_id)
-            print("db_url = ", db_url)
+            print("after replacing of cient_id - db_url = ", db_url)
             conn = psycopg2.connect(db_url)
             conn.autocommit = True
             placeholder = "%s"  # ✅ PostgreSQL placeholder
