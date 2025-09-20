@@ -70,16 +70,30 @@ def find_or_create_ghms_folder():
 #        return conn
 
 # ✅ ADDED: Unified DB setup for local and cloud
+
+#-----------------------
+
+
+#----------------------
 def get_or_create_client_db(client_id):
     try:
         if DB_MODE == "cloud":
-            template = os.getenv("DB_URL_TEMPLATE")
-            print("DB_URL_TEMPLATE = ", template)
-            if not template:
-                raise RuntimeError("❌ DB_URL_TEMPLATE not set")
+            config_url = os.getenv("CONFIG_DB_URL")
+            config_conn = psycopg2.connect(config_url)
+            config_cursor = config_conn.cursor()
+            config_cursor.execute("SELECT db_url FROM client_databases WHERE client_id = %s", (client_id,))
+            result = config_cursor.fetchone()
+            config_conn.close()  # ✅ ADDED: Close config DB connection
+            
+            # template = os.getenv("DB_URL_TEMPLATE")
+            # print("DB_URL_TEMPLATE = ", template)
+            if not result:
+                raise RuntimeError(f"❌ No DB URL found for client '{client_id}'")  # ✅ ADDED: Error if missing
             # print("In get_or_create_client_db - fb_url = ", db_url)
-            db_url = template.replace("{client}", client_id)
-            print("after replacing of cient_id - db_url = ", db_url)
+            
+            db_url = result[0]  # ✅ ADDED: Extract actual DB URL
+            print("✅ Retrieved DB URL from config table:", db_url)
+            
             conn = psycopg2.connect(db_url)
             conn.autocommit = True
             placeholder = "%s"  # ✅ PostgreSQL placeholder
