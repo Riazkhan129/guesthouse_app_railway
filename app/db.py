@@ -77,7 +77,7 @@ def get_or_create_client_db(client_id):
             print("DB_URL_TEMPLATE = ", template)
             if not template:
                 raise RuntimeError("❌ DB_URL_TEMPLATE not set")
-            print("In get_or_create_client_db - fb_url = ", db_url)
+            # print("In get_or_create_client_db - fb_url = ", db_url)
             db_url = template.replace("{client}", client_id)
             print("after replacing of cient_id - db_url = ", db_url)
             conn = psycopg2.connect(db_url)
