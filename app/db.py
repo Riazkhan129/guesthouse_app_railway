@@ -12,6 +12,8 @@ from cryptography.fernet import Fernet
 # ---------- 🧠 Environment Mode Detection ----------
 DB_MODE = os.getenv("DB_MODE", "local")  # ✅ 'local' or 'cloud'
 
+print("DB_MODE = ", DB_MODE)
+
 # ---------- Get Available Drives ----------
 def get_available_drives():
     drives = []
