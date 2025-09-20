@@ -85,6 +85,7 @@ def get_or_create_client_db(client_id):
             config_cursor = config_conn.cursor()
             config_cursor.execute("SELECT db_url FROM client_databases WHERE client_id = %s", (client_id,))
             result = config_cursor.fetchone()
+            print("Config_cursor.fetchone = ", result)
             config_conn.close()  # ✅ ADDED: Close config DB connection
             
             # template = os.getenv("DB_URL_TEMPLATE")
