@@ -29,7 +29,7 @@ def login(
         raise HTTPException(status_code=500, detail=str(e))
 
     cursor = conn.cursor()
-    placeholder = "%s" if os.getenv("DB_MODE") == "cloud" else "?"
+    placeholder = "%s" if os.getenv("DB_MODE") == "multi-tenant" else "?"
     try:
         query = f"SELECT username, password, role FROM users WHERE username = {placeholder}"
         cursor.execute(query, (username,))
