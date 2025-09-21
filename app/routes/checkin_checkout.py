@@ -46,7 +46,7 @@ def get_checkedin_bookings(request: Request):
     return bookings
 
 @router.post("/checkout/{booking_id}")
-def check_out(request: Request, booking_id: int, db = Depends(get_db), user: str = Depends(get_current_user)):
+def check_out(request: Request, booking_id: int, user: str = Depends(get_current_user)):
     client_id = get_client_id(request)
     conn, placeholder = get_or_create_client_db(client_id)
     booking = crud.get_booking(client_id, conn, booking_id)
