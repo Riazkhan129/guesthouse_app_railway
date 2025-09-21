@@ -719,10 +719,11 @@ def create_user(client_id: str, user_data):
 
 #-------
 
-def get_all_users(client_id: str):
-    conn, _ = get_or_create_client_db(client_id)  # ✅ UPDATED
+def get_all_users(conn):
+    # conn, _ = get_or_create_client_db(client_id)  # ✅ UPDATED
     cursor = conn.cursor()
-    rows = cursor.execute("SELECT user_id, name, username, password, role FROM users").fetchall()
+    cursor.execute("SELECT user_id, name, username, password, role FROM users")
+    rows = cursor.fetchall()
     users = []
     for row in rows:
         try:
