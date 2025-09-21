@@ -73,8 +73,6 @@ def find_or_create_ghms_folder():
 
 # ✅ ADDED: Unified DB setup for local and multi-tenant
 
-#-----------------------
-
 
 #----------------------
 def get_or_create_client_db(client_id):
