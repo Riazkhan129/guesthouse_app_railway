@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
 # from sqlalchemy.orm import Session
-from ..db import get_db, get_or_create_client_db
+from ..db import get_or_create_client_db
 from ..models import RoomIn, RoomOut
 from ..auth import get_current_user
 from .. import crud
@@ -40,8 +40,6 @@ def update_room_status(request: Request, room_number: int, status: str):
     cursor = conn.cursor()
     query = f"UPDATE rooms SET status = {placeholder} WHERE room_number = {placeholder}"  # ✅ Dynamic placeholder
     cursor.execute(query, (status, str(room_number)))
-    # conn = get_connection()
-    # cursor = conn.cursor()
     conn.commit()
     conn.close()
     return {"message": f"Room {room_number} status updated to {status}"}
@@ -51,8 +49,6 @@ def update_room_status(request: Request, room_number: int, status: str):
 def get_all_rooms(request: Request, user: str = Depends(get_current_user)):
     client_id = get_client_id(request)  # ✅ ADDED
     return crud.get_all_rooms(client_id)  # ✅ UPDATED
-    # rooms = crud.get_all_rooms(db)
-    # return rooms
 
 # ---------- Get Room by ID ----------
 @router.get("/{room_id}", response_model=RoomOut)
