@@ -48,7 +48,8 @@ def get_checkedin_bookings(request: Request):
 @router.post("/checkout/{booking_id}")
 def check_out(request: Request, booking_id: int, db = Depends(get_db), user: str = Depends(get_current_user)):
     client_id = get_client_id(request)
-    booking = crud.get_booking(client_id, db, booking_id)
+    conn, placeholder = get_or_create_client_db(client_id)
+    booking = crud.get_booking(client_id, conn, booking_id)
     if not booking:
         raise HTTPException(status_code=404, detail="Booking not found")
 
@@ -59,7 +60,7 @@ def check_out(request: Request, booking_id: int, db = Depends(get_db), user: str
         raise HTTPException(status_code=400, detail="Guest already checked out")
 
     now = datetime.now()
-    crud.update_checkout_time(client_id, db, booking_id, now)
+    crud.update_checkout_time(client_id, conn, booking_id, now)
 
     return {"status": "success", "message": f"Checked out at {now}"}
 
