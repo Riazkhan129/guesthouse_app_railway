@@ -725,19 +725,31 @@ def get_all_users(conn):
     cursor.execute("SELECT user_id, name, username, password, role FROM users")
     rows = cursor.fetchall()
     users = []
-    for row in rows:
-        try:
-            decrypted_password = decrypt_password(row[3])  # row[3] is password
-        except Exception as e:
-            decrypted_password = "[Error decrypting]"
+#    for row in rows:
+    return [
+        {
+            "id": row[0],
+            "title": row[1],
+            "amount": row[2],
+            "category": row[3],
+            "notes": row[4],
+            "timestamp": row[5],
+            "date": row[6],
+        }
+        for row in rows
+    ]
+#        try:
+#            decrypted_password = decrypt_password(row[3])  # row[3] is password
+#        except Exception as e:
+#            decrypted_password = "[Error decrypting]"
 
-        users.append({
-            "user_id": row[0],
-            "name": row[1],
-            "username": row[2],
-            "password": decrypted_password,  # show in plain text
-            "role": row[4]
-        })
+#        users.append({
+#            "user_id": row[0],
+#            "name": row[1],
+#            "username": row[2],
+#            "password": decrypted_password,  # show in plain text
+#            "role": row[4]
+#        })
     conn.close()
     return users
 
