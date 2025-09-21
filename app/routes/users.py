@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from ..db import get_or_create_client_db
 from .. import crud
 from ..auth import get_current_user
