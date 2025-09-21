@@ -615,13 +615,15 @@ def add_expense(client_id: str, expense):
     }
 
 def get_all_expenses(client_id: str):
-    conn, _ = get_or_create_client_db(client_id)  # ✅ UPDATED
+    # conn, _ = get_or_create_client_db(client_id)  # ✅ UPDATED
     cursor = conn.cursor()
     rows = cursor.execute("SELECT id, title, amount, category, notes, timestamp, date FROM expenses ORDER BY date DESC").fetchall()
     return [
         {"id": row[0], "title": row[1], "amount": row[2], "category": row[3], "notes": row[4], "timestamp": row[5], "date": row[6],   }
         for row in rows
     ]
+
+
 
 def update_expense(client_id: str, expense_id: int, expense):
     conn, placeholder = get_or_create_client_db(client_id)  # ✅ UPDATED

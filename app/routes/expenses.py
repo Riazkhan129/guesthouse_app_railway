@@ -29,6 +29,8 @@ def get_all_expenses(request: Request, user: str = Depends(get_current_user)):
     conn, placeholder = get_or_create_client_db(client_id)
     return crud.get_all_expenses(conn)
 
+
+
 @router.put("/update/{expense_id}", response_model=ExpenseOut)
 def update_expense(request: Request, expense_id: int, expense: ExpenseCreate, user: str = Depends(get_current_user)):
     client_id = get_client_id(request)
