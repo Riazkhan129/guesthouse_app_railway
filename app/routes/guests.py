@@ -1,6 +1,6 @@
 import sqlite3
 from fastapi import APIRouter, Depends, HTTPException, Request
-from ..db import get_db
+# from ..db import get_db
 from ..models import GuestIn, GuestOut, GuestUpdate
 from ..auth import get_current_user
 from .. import crud
