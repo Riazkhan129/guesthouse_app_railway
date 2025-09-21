@@ -118,12 +118,12 @@ def get_or_create_client_db(client_id):
     except Exception as e:
         raise RuntimeError(f"❌ Failed to prepare DB for client '{client_id}': {e}")
 # ---------- FastAPI Dependency ----------
-def get_db():
-    db = get_connection()
-    try:
-        yield db
-    finally:
-        db.close()
+#def get_db():
+#    db = get_connection()
+#    try:
+#        yield db
+#    finally:
+#        db.close()
 
 # ---------- Encrypt password ----------
 def encrypt_password(password: str, key: str) -> str:
@@ -315,7 +315,8 @@ def initialize_database(db_path_or_conn, client_id):
 # ---------- Run only once to initialize ----------
 if __name__ == "__main__":
     if DB_MODE == "multi-tenant":
-        conn = get_connection()
+        # conn = get_connection()
+        conn = get_or_create_client_db(client_id)
         initialize_database(conn)  # ✅ ADDED: multi-tenant mode uses connection
     else:
         ghms_folder = find_or_create_ghms_folder()
