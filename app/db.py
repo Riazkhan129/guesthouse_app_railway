@@ -10,7 +10,7 @@ from cryptography.fernet import Fernet
 
 
 # ---------- 🧠 Environment Mode Detection ----------
-DB_MODE = os.getenv("DB_MODE", "local")  # ✅ 'local' or 'cloud'
+DB_MODE = os.getenv("DB_MODE", "local")  # ✅ 'local' or 'multi-tenant'
 
 print("DB_MODE = ", DB_MODE)
 
@@ -43,7 +43,7 @@ def find_or_create_ghms_folder():
 
 # ---------- Get DB Connection ----------
 #def get_connection():
-#    if DB_MODE == "cloud":
+#    if DB_MODE == "multi-tenant":
 #        db_url = os.getenv("DB_URL")  # ✅ Railway PostgreSQL URL
 #        if not db_url:
 #            raise RuntimeError("❌ DB_URL environment variable not set")
@@ -71,7 +71,7 @@ def find_or_create_ghms_folder():
 #        conn.execute("PRAGMA foreign_keys = ON")
 #        return conn
 
-# ✅ ADDED: Unified DB setup for local and cloud
+# ✅ ADDED: Unified DB setup for local and multi-tenant
 
 #-----------------------
 
@@ -113,7 +113,7 @@ def get_or_create_client_db(client_id):
             placeholder = "?"  # ✅ SQLite placeholder
             print(f"✅ Connected to SQLite DB for client: {client_id}")
 
-        initialize_database(conn if DB_MODE == "cloud" else db_path, client_id)  # ✅ ADDED: Pass client_id
+        initialize_database(conn if DB_MODE == "multi-tenant" else db_path, client_id)  # ✅ ADDED: Pass client_id
         return conn, placeholder  # ✅ Return both values
     except Exception as e:
         raise RuntimeError(f"❌ Failed to prepare DB for client '{client_id}': {e}")
@@ -132,7 +132,7 @@ def encrypt_password(password: str, key: str) -> str:
 
 # ---------- Create Tables & Insert Default Data ----------
 def initialize_database(db_path_or_conn, client_id):
-    if DB_MODE == "cloud":
+    if DB_MODE == "multi-tenant":
         conn = db_path_or_conn  # 🔄 UPDATED: PostgreSQL connection
         placeholder = "%s"
     else:
@@ -156,7 +156,7 @@ def initialize_database(db_path_or_conn, client_id):
 
     print("✅ 'client_keys' table creation executed")  # ✅ ADDED: Debug log
 
-    user_id_column = "user_id SERIAL PRIMARY KEY" if DB_MODE == "cloud" else "user_id INTEGER PRIMARY KEY AUTOINCREMENT"    
+    user_id_column = "user_id SERIAL PRIMARY KEY" if DB_MODE == "multi-tenant" else "user_id INTEGER PRIMARY KEY AUTOINCREMENT"    
     
     sql_users = f"""
         CREATE TABLE IF NOT EXISTS users (
@@ -199,7 +199,7 @@ def initialize_database(db_path_or_conn, client_id):
 
     print("✅ 'rooms' table creation executed")  # ✅ ADDED: Debug log
 
-    booking_id_column = "booking_id SERIAL PRIMARY KEY" if DB_MODE == "cloud" else "booking_id INTEGER PRIMARY KEY AUTOINCREMENT"
+    booking_id_column = "booking_id SERIAL PRIMARY KEY" if DB_MODE == "multi-tenant" else "booking_id INTEGER PRIMARY KEY AUTOINCREMENT"
     cursor.execute(f"""
         CREATE TABLE IF NOT EXISTS bookings (
             {booking_id_column},
@@ -220,7 +220,7 @@ def initialize_database(db_path_or_conn, client_id):
 
     print("✅ 'booking' table creation executed")  # ✅ ADDED: Debug log
 
-    expense_id_column = "id SERIAL PRIMARY KEY" if DB_MODE == "cloud" else "id INTEGER PRIMARY KEY AUTOINCREMENT"
+    expense_id_column = "id SERIAL PRIMARY KEY" if DB_MODE == "multi-tenant" else "id INTEGER PRIMARY KEY AUTOINCREMENT"
     
     cursor.execute(f"""
         CREATE TABLE IF NOT EXISTS expenses (
@@ -261,7 +261,7 @@ def initialize_database(db_path_or_conn, client_id):
 
 # ---------- Encryption Key ----------
     
-    if DB_MODE == "cloud":
+    if DB_MODE == "multi-tenant":
         cursor.execute("SELECT encryption_key FROM client_keys WHERE client_id = %s", (client_id,))
     else:
         cursor.execute("SELECT encryption_key FROM client_keys WHERE client_id = ?", (client_id,))
@@ -272,7 +272,7 @@ def initialize_database(db_path_or_conn, client_id):
         print(f"🔐 Existing encryption key found")
     else:
         encryption_key = Fernet.generate_key().decode()
-        if DB_MODE == "cloud":
+        if DB_MODE == "multi-tenant":
             cursor.execute("INSERT INTO client_keys (client_id, encryption_key) VALUES (%s, %s)", (client_id, encryption_key))
         else:
             cursor.execute("INSERT INTO client_keys (client_id, encryption_key) VALUES (?, ?)", (client_id, encryption_key))
@@ -282,26 +282,26 @@ def initialize_database(db_path_or_conn, client_id):
 
 # -------- Insert Default Users --------
         
-    if DB_MODE == "cloud":
+    if DB_MODE == "multi-tenant":
         cursor.execute("SELECT COUNT(*) FROM users WHERE username = %s", ("admin1",))
     else:
         cursor.execute("SELECT COUNT(*) FROM users WHERE username = ?", ("admin1",))
     if cursor.fetchone()[0] == 0:
         encrypted_pw = encrypt_password("admin1", encryption_key)
-        if DB_MODE == "cloud":
+        if DB_MODE == "multi-tenant":
             cursor.execute("INSERT INTO users (username, password, role, name) VALUES (%s, %s, %s, %s)",
                            ("admin1", encrypted_pw, "Front Desk", "Admin One"))
         else:
             cursor.execute("INSERT INTO users (username, password, role, name) VALUES (?, ?, ?, ?)",
                            ("admin1", encrypted_pw, "Front Desk", "Admin One"))
 
-    if DB_MODE == "cloud":
+    if DB_MODE == "multi-tenant":
         cursor.execute("SELECT COUNT(*) FROM users WHERE username = %s", ("admin2",))
     else:
         cursor.execute("SELECT COUNT(*) FROM users WHERE username = ?", ("admin2",))
     if cursor.fetchone()[0] == 0:
         encrypted_pw = encrypt_password("admin2", encryption_key)
-        if DB_MODE == "cloud":
+        if DB_MODE == "multi-tenant":
             cursor.execute("INSERT INTO users (username, password, role, name) VALUES (%s, %s, %s, %s)",
                            ("admin2", encrypted_pw, "Management", "Admin Two"))
         else:
@@ -314,9 +314,9 @@ def initialize_database(db_path_or_conn, client_id):
 
 # ---------- Run only once to initialize ----------
 if __name__ == "__main__":
-    if DB_MODE == "cloud":
+    if DB_MODE == "multi-tenant":
         conn = get_connection()
-        initialize_database(conn)  # ✅ ADDED: Cloud mode uses connection
+        initialize_database(conn)  # ✅ ADDED: multi-tenant mode uses connection
     else:
         ghms_folder = find_or_create_ghms_folder()
         db_path = os.path.join(ghms_folder, "guesthouse.sqlite")
