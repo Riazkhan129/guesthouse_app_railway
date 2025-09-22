@@ -35,7 +35,7 @@ def get_all_expenses(request: Request, user: str = Depends(get_current_user)):
 def update_expense(request: Request, expense_id: int, expense: ExpenseCreate, user: str = Depends(get_current_user)):
     client_id = get_client_id(request)
     conn, placeholder = get_or_create_client_db(client_id)
-    return crud.update_expense(conn, expense_id, expense)
+    return crud.update_expense(client_id, expense_id, expense)
 
 @router.delete("/{expense_id}")
 def delete_expense(request: Request, expense_id: int, user: str = Depends(get_current_user)):

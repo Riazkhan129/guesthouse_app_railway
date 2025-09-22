@@ -629,11 +629,11 @@ def get_all_expenses(conn):
 
 def update_expense(client_id: str, expense_id: int, expense):
     conn, placeholder = get_or_create_client_db(client_id)  # ✅ UPDATED
+    cursor = conn.cursor()
     query = f"""
         UPDATE expenses SET title={placeholder}, amount={placeholder}, category={placeholder}, notes={placeholder}, date={placeholder}
         WHERE id={placeholder}
     """  # ✅ Dynamic placeholders
-    cursor = conn.cursor()
     cursor.execute(query, (expense.title, expense.amount, expense.category, expense.notes, expense.date, expense_id))
     conn.commit()
     conn.close()
