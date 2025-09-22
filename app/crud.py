@@ -724,7 +724,7 @@ def get_all_users(client_id):
     conn, _ = get_or_create_client_db(client_id)  # ✅ UPDATED
     cursor = conn.cursor()
     cursor.execute("SELECT user_id, name, username, password, role FROM users")
-    rows = cursor.fetchall()
+    # rows = cursor.fetchall()
     users = []
     for row in rows:
         try:
@@ -739,7 +739,7 @@ def get_all_users(client_id):
             "password": decrypted_password,  # show in plain text
             "role": row[4]
         })
-    conn.close()
+    #conn.close()
     return users
 
 #----------------
