@@ -592,7 +592,7 @@ def delete_invoice(client_id: str, invoice_id: int):
     conn.close()
     return affected > 0
 
-# ---------- EXPENSES ----------
+# ---------- EXPENSES ---------------
 
 def add_expense(client_id: str, expense):
     cursor = conn.cursor()
