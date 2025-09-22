@@ -24,11 +24,11 @@ def get_client_id(request: Request) -> str:
         raise HTTPException(status_code=400, detail="Missing client_id")
     return client_id
 
-@router.get("/")
-def get_users(request: Request, user=Depends(get_current_user)):
-    client_id = get_client_id(request)
-    conn, placeholder = get_or_create_client_db(client_id)
-    return crud.get_all_users(conn)
+#@router.get("/")
+#def get_users(request: Request, user=Depends(get_current_user)):
+#    client_id = get_client_id(request)
+#    conn, placeholder = get_or_create_client_db(client_id)
+#    return crud.get_all_users(conn)
 
 @router.post("/add")
 def create_user( user_data: UserCreate, user=Depends(get_current_user)):
