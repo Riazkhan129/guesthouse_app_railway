@@ -20,8 +20,8 @@ def get_client_id(request: Request) -> str:
 @router.post("/add", response_model=ExpenseOut)
 def add_expense(request: Request, expense: ExpenseCreate, user: str = Depends(get_current_user)):
     client_id = get_client_id(request)
-    conn, placeholder = get_or_create_client_db(client_id)
-    return crud.add_expense(conn, expense)
+    
+    return crud.add_expense(client_id, expense)
 
 @router.get("/", response_model=List[ExpenseOut])
 def get_all_expenses(request: Request, user: str = Depends(get_current_user)):
