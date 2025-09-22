@@ -648,8 +648,8 @@ def update_expense(client_id: str, expense_id: int, expense):
 
 def delete_expense(client_id: str, expense_id: int):
     conn, placeholder = get_or_create_client_db(client_id)  # ✅ UPDATED
-    query = f"DELETE FROM expenses WHERE id={placeholder}"  # ✅ Dynamic placeholder
     cursor = conn.cursor()
+    query = f"DELETE FROM expenses WHERE id={placeholder}"  # ✅ Dynamic placeholder
     cursor.execute(query, (expense_id,))
     conn.commit()
     conn.close()
