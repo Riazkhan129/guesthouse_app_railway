@@ -407,7 +407,7 @@ def get_upcoming_bookings(client_id: str):
 #---------- Get Bokkings by NIC for Guest Report ---------
 
 def get_bookings_by_nic(client_id: str, nic_passport_number: str):
-    onn, placeholder = get_or_create_client_db(client_id)  # ✅ UPDATED
+    conn, placeholder = get_or_create_client_db(client_id)  # ✅ UPDATED
     cursor = conn.cursor()
     query = f"""
         SELECT * FROM bookings
