@@ -595,12 +595,13 @@ def delete_invoice(client_id: str, invoice_id: int):
 # ---------- EXPENSES ----------
 
 def add_expense(conn, expense):
-    conn, placeholder = get_or_create_client_db(client_id)  # ✅ UPDATED
+    cursor = conn.cursor()
+    # conn, placeholder = get_or_create_client_db(client_id)  # ✅ UPDATED
     query = f"""
         INSERT INTO expenses (title, amount, category, notes, date)
         VALUES ({placeholder}, {placeholder}, {placeholder}, {placeholder}, {placeholder})
     """  # ✅ Dynamic placeholders
-    cursor = conn.cursor()
+    # cursor = conn.cursor()
     cursor.execute(query, (expense.title, expense.amount, expense.category, expense.notes, expense.date))
     conn.commit()
     expense_id = cursor.lastrowid
