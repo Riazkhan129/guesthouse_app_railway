@@ -34,7 +34,7 @@ function UserManager() {
 
   const fetchUsers = async () => {
     try {
-      const res = await API.get("/users", {
+      const res = await API.get("/users/", {
         headers: { Authorization: `Bearer ${token}` } // 🔧 UPDATED
       });
       if (res.status === 200) setUsers(res.data);

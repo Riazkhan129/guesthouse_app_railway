@@ -720,7 +720,7 @@ def create_user(client_id: str, user_data):
 
 #-------
 
-def get_all_users(client_id):
+def get_all_users(conn):
     conn, _ = get_or_create_client_db(client_id)  # ✅ UPDATED
     cursor = conn.cursor()
     cursor.execute("SELECT user_id, name, username, password, role FROM users")
