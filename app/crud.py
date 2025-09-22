@@ -594,7 +594,7 @@ def delete_invoice(client_id: str, invoice_id: int):
 
 # ---------- EXPENSES ----------
 
-def add_expense(conn str, expense):
+def add_expense(conn, expense):
     conn, placeholder = get_or_create_client_db(client_id)  # ✅ UPDATED
     query = f"""
         INSERT INTO expenses (title, amount, category, notes, date)
