@@ -615,7 +615,7 @@ def add_expense(client_id: str, expense):
         
     }
 
-def get_all_expenses(client_id str):
+def get_all_expenses(client_id: str):
     conn, _ = get_or_create_client_db(client_id)  # ✅ UPDATED
     cursor = conn.cursor()
  #   cursor.execute("SELECT id, title, amount, category, notes, timestamp, date FROM expenses ORDER BY date DESC")
