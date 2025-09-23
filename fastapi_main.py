@@ -78,6 +78,7 @@ def read_root():
 
 @app.get("/meta/guesthouse")
 def get_guesthouse_name():
+    guesthouse_name = os.getenv("CLIENT_NAME")
     return {"guesthouse_name": app.state.guesthouse_name}
 
 # === Utility: Read client code from file ===

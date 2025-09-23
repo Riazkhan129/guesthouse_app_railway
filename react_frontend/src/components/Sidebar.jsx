@@ -43,7 +43,7 @@ function Sidebar({ onNavigate }) {
 
   return (
     <div style={{ width: "100%", fontFamily: "Arial", padding: "10px" }}>
-      <h3>🏨 Guest House App</h3>
+      <h3>🏨 SmartHost</h3>
       <p>Logged in as: <strong>{username}</strong></p>
       <hr />
       {role === "Front Desk" ? (

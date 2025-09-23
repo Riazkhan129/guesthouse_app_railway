@@ -9,7 +9,8 @@ import {
   useNavigate,
   useLocation
 } from "react-router-dom";
-import axios from "axios";
+// import axios from "axios";
+import API from "../api";
 import { AuthContext } from "./context/AuthContext";
 import "./styles/global.css";
 
@@ -28,7 +29,7 @@ import Billing from "./components/Billing";
 import Guestreport from "./components/guestreport";
 // import Footer from "./components/Footer";
 
-const API_URL = process.env.REACT_APP_API_BASE_URL;
+// const API_URL = process.env.REACT_APP_API_BASE_URL;
 
 // 🏢 Top header with company name
 function CompanyHeader() {
@@ -66,7 +67,7 @@ function Footer() {
       marginTop: "20px"
     }}>
       <p>
-        <strong>Developed by Aarkay's Solutions | © 2025 LodgeControl</strong>
+        <strong>Developed by Aarkay's Solutions | © 2025 SmartHost</strong>
       </p>
     </footer>
   );

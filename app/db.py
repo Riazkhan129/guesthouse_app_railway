@@ -81,13 +81,12 @@ def get_or_create_client_db(client_id):
             config_url = os.getenv("CONFIG_DB_URL")
             config_conn = psycopg2.connect(config_url)
             config_cursor = config_conn.cursor()
-            config_cursor.execute("SELECT db_url FROM client_databases WHERE client_id = %s", (client_id,))
+            config_cursor.execute("SELECT db_url, client_name FROM client_databases WHERE client_id = %s", (client_id,))
             result = config_cursor.fetchone()
             print("Config_cursor.fetchone = ", result)
             config_conn.close()  # ✅ ADDED: Close config DB connection
             
-            # template = os.getenv("DB_URL_TEMPLATE")
-            # print("DB_URL_TEMPLATE = ", template)
+            
             if not result:
                 raise RuntimeError(f"❌ No DB URL found for client '{client_id}'")  # ✅ ADDED: Error if missing
             # print("In get_or_create_client_db - fb_url = ", db_url)
