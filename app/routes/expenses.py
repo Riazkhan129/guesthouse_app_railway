@@ -26,7 +26,7 @@ def add_expense(request: Request, expense: ExpenseCreate, user: str = Depends(ge
 @router.get("/", response_model=List[ExpenseOut])
 def get_all_expenses(request: Request, user: str = Depends(get_current_user)):
     client_id = get_client_id(request)
-    conn, placeholder = get_or_create_client_db(client_id)
+    # conn, placeholder = get_or_create_client_db(client_id)
     return crud.get_all_expenses(client_id)
 
 
