@@ -10,7 +10,7 @@ import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-ro
 //  useLocation
 //} from "react-router-dom";
  import axios from "axios";
-import API from "../api";
+import API from "./api";
 import { AuthContext } from "./context/AuthContext";
 import "./styles/global.css";
 
