@@ -35,7 +35,7 @@ function CompanyHeader() {
   const { clientId } = useContext(TenantContext);
 
   useEffect(() => {
-    if (!clientId) return;
+    if (!clientId) return <Login />;
     API.get(`/meta/guesthouse/${clientId}`)
       .then((response) => setCompanyName(response.data.guesthouse_name))
       .catch(() => setCompanyName("Unknown Company"));
