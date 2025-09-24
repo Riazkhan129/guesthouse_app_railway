@@ -1,15 +1,15 @@
 import React, { useContext, useState, useEffect } from "react";
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";
 
-import {
+//import {
   // BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-  useNavigate,
-  useLocation
-} from "react-router-dom";
-// import axios from "axios";
+//  Routes,
+//  Route,
+//  Navigate,
+//  useNavigate,
+//  useLocation
+//} from "react-router-dom";
+ import axios from "axios";
 import API from "../api";
 import { AuthContext } from "./context/AuthContext";
 import "./styles/global.css";
@@ -23,23 +23,23 @@ import CheckInGuest from "./components/Checkin";
 import CheckoutGuest from "./components/Checkout";
 import Dashboard from "./components/Dashboard";
 import Rooms from "./components/Rooms";
-import Expenses from "./components/Expenses";  // ✅ Fixed typo here
+import Expenses from "./components/Expenses";  
 import UserManager from "./components/User";
 import Billing from "./components/Billing";
 import Guestreport from "./components/guestreport";
 // import Footer from "./components/Footer";
 
-// const API_URL = process.env.REACT_APP_API_BASE_URL;
-
 // 🏢 Top header with company name
 function CompanyHeader() {
   const [companyName, setCompanyName] = useState("Loading...");
+  const { clientId } = useContext(TenantContext);
 
   useEffect(() => {
-    axios.get(`${API_URL}/meta/guesthouse`)
+    if (!clientId) return;
+    API.get(`/meta/guesthouse/${clientId}`)
       .then((response) => setCompanyName(response.data.guesthouse_name))
       .catch(() => setCompanyName("Unknown Company"));
-  }, []);
+  }, [clientId]);
 
   return (
     <div style={{
@@ -100,16 +100,16 @@ function MainApp() {
             {!hasNavigated && (
               <Route path="*" element={<div>📋 Please select a module from the sidebar.</div>} />
             )}
-            <Route path="/dashboard" element={<Dashboard API_URL={API_URL} headers={{ Authorization: `Bearer ${token}` }} />} />
-            <Route path="/rooms" element={<Rooms API_URL={API_URL} headers={{ Authorization: `Bearer ${token}` }} />} />
-            <Route path="/expenses" element={<Expenses API_URL={API_URL} headers={{ Authorization: `Bearer ${token}` }} />} />
-            <Route path="/user" element={<UserManager API_URL={API_URL} headers={{ Authorization: `Bearer ${token}` }} />} />
-            <Route path="/guest_management" element={<Guest_Management API_URL={API_URL} headers={{ Authorization: `Bearer ${token}` }} />} />
-            <Route path="/bookings" element={<Bookings API_URL={API_URL} headers={{ Authorization: `Bearer ${token}` }} />} />
-            <Route path="/checkin" element={<CheckInGuest API_URL={API_URL} headers={{ Authorization: `Bearer ${token}` }} />} />
-            <Route path="/checkout" element={<CheckoutGuest API_URL={API_URL} headers={{ Authorization: `Bearer ${token}` }} />} />
-            <Route path="/billing" element={<Billing API_URL={API_URL} headers={{ Authorization: `Bearer ${token}` }} />} />
-            <Route path="/guestreport" element={<Guestreport API_URL={API_URL} headers={{ Authorization: `Bearer ${token}` }} />} />            
+            <Route path="/dashboard" element={<Dashboard token={token} />} />
+            <Route path="/rooms" element={<Rooms token={token} />} />
+            <Route path="/expenses" element={<Expenses token={token} />} />
+            <Route path="/user" element={<UserManager token={token} />} />
+            <Route path="/guest_management" element={<Guest_Management token={token} />} />
+            <Route path="/bookings" element={<Bookings token={token} />} />
+            <Route path="/checkin" element={<CheckInGuest token={token} />} />
+            <Route path="/checkout" element={<CheckoutGuest token={token} />} />
+            <Route path="/billing" element={<Billing token={token} />} />
+            <Route path="/guestreport" element={<Guestreport token={token} />} />
             <Route path="*" element={<div>❌ Page Not Found</div>} />
           </Routes>
             <Footer /> {/* ✅ Inline footer added here */}
