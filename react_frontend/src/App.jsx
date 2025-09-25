@@ -41,7 +41,9 @@ function CompanyHeader() {
     //  setCompanyName(cachedName);
     //  return;
     // }
-     API.get(`/meta/guesthouse/${clientId}`)
+     API.get(`/meta/guesthouse/${clientId}`, {
+        headers: { Authorization: `Bearer ${token}` } // ✅ CHANGED
+      })
      .then((res) => {
       console.log("Before IF res.data.guesthouse_name = ", res.data?.guesthouse_name);
       if (res.data?.guesthouse_name) {
