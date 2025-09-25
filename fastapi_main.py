@@ -79,12 +79,21 @@ def read_root():
 
 @app.get("/meta/guesthouse/{client_id}")
 def get_guesthouse_name(client_id: str):
-    cursor = conn.cursor()
-    cursor.execute("SELECT client_name FROM client_databases WHERE client_id = %s", (client_id,))
+    config_url = os.getenv("CONFIG_DB_URL")
+    config_conn = psycopg2.connect(config_url)
+    config_cursor = config_conn.cursor()
+    config_cursor.execute("SELECT db_url, client_name FROM client_databases WHERE client_id = %s", (client_id,))
     result = config_cursor.fetchone()
-    print ("IN FASTAPI_MAIN = ", result)
-    cursor.close()
-    conn.close()
+    print("Config_cursor.fetchone = ", result)
+    config_conn.close()  # ✅ ADDED: Close config DB connection
+
+    # ------------
+    #cursor = conn.cursor()
+    #cursor.execute("SELECT client_name FROM client_databases WHERE client_id = %s", (client_id,))
+    #result = config_cursor.fetchone()
+    #print ("IN FASTAPI_MAIN = ", result)
+    #cursor.close()
+    #conn.close()
     if result:
         return {"guesthouse_name": result[0]}
     return JSONResponse(status_code=404, content={"error": "Guesthouse not found"})
