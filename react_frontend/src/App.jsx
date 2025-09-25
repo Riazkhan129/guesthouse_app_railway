@@ -70,6 +70,7 @@ function MainApp() {
   const [hasNavigated, setHasNavigated] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+}
 
   useEffect(() => {
     if (token && location.pathname === "/") {
