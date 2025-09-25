@@ -79,8 +79,9 @@ def read_root():
 
 @app.get("/meta/guesthouse/{client_id}")
 def get_guesthouse_name(client_id: str):
-    config_cursor.execute("SELECT client_name FROM config_table WHERE client_id = %s", (client_id,))
+    config_cursor.execute("SELECT client_name FROM client_databases WHERE client_id = %s", (client_id,))
     result = config_cursor.fetchone()
+    print ("IN FASTAPI_MAIN = ", result)
     if result:
         return {"guesthouse_name": result[0]}
     return JSONResponse(status_code=404, content={"error": "Guesthouse not found"})
