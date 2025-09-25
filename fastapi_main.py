@@ -7,7 +7,8 @@ from dotenv import load_dotenv  # ✅ NEW: Load .env for local testing
 from fastapi.middleware.cors import CORSMiddleware
 # ✅ ADDED: Import DB initializer
 from app.db import get_or_create_client_db  # ✅ ADDED: Initialize DB per client
-
+from fastapi import APIRouter, Depends, Request
+from fastapi.responses import JSONResponse
 
 
 # ✅ Load environment variables from .env (only works locally)
@@ -78,9 +79,9 @@ def read_root():
 
 @app.get("/meta/guesthouse")
 def get_guesthouse_name():
-    guesthouse_name = os.getenv("CLIENT_NAME")
+    guesthouse_name = app.state.guesthouse_name
     print("Guest Name from FastAPI ", guesthouse_name)
-    return {"guesthouse_name": app.state.guesthouse_name}
+    return {"guesthouse_name": guesthouse_name}
 
 # === Utility: Read client code from file ===
 def read_client_code():

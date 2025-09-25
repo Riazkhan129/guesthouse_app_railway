@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import { useContext, useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
  import axios from "axios";
 import API from "./api";
@@ -22,14 +22,20 @@ import Guestreport from "./components/guestreport";
 
 // 🏢 Top header with company name
 function CompanyHeader() {
-  const [companyName, setCompanyName] = useState("Loading...");
-  const { clientId } = useContext(AuthContext);
- 
+  const [companyName, setCompanyName] = useState(() => {
+    return localStorage.getItem("guesthouse_name") || "Loading...";
+});
+
   useEffect(() => {
     if (!clientId) return;
-    // API.get(`/meta/guesthouse/${clientId}`)
-    API.get(`/meta/guesthouse`)
-      .then((response) => setCompanyName(response.data.guesthouse_name))
+    const cachedName = localStorage.getItem("guesthouse_name");
+    if (cachedName) return;
+    API.get(`/meta/guesthouse/${clientId}`)
+    .then((res) => {
+        setCompanyName(res.data.guesthouse_name);
+        localStorage.setItem("guesthouse_name", res.data.guesthouse_name); // ✅ Cache it
+      })
+      // .then((response) => setCompanyName(response.data.guesthouse_name))
       .catch(() => setCompanyName("Unknown Company"));
   }, [clientId]);
 
