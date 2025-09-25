@@ -70,7 +70,6 @@ function MainApp() {
   const [hasNavigated, setHasNavigated] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-}
 
   useEffect(() => {
     if (token && location.pathname === "/") {
@@ -80,7 +79,7 @@ function MainApp() {
   if (!token || !clientId) return <Login />;
 
   const commonProps = { token, clientId };
-
+}
   return (
     <>
       <CompanyHeader />
