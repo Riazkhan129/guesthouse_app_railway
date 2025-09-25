@@ -22,7 +22,8 @@ import Guestreport from "./components/guestreport";
 
 // 🏢 Top header with company name
 function CompanyHeader() {
-  const { token, clientId } = useContext(AuthContext);
+  const { token } = useContext(AuthContext);
+  const { clientId } = useContext(AuthContext);
   const [companyName, setCompanyName] = useState(() => {
     const cachedName = localStorage.getItem("guesthouse_name");
     alert ("Cached guesthouse_name =", cachedName)
