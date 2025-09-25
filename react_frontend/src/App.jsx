@@ -32,6 +32,7 @@ function CompanyHeader() {
 });
 
   useEffect(() => {
+    print("Received client_id:", client_id)
     if (!clientId) return;
 
     //const cachedName = localStorage.getItem("guesthouse_name");
