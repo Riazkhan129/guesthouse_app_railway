@@ -31,18 +31,21 @@ function CompanyHeader() {
     if (!clientId) return;
 
     const cachedName = localStorage.getItem("guesthouse_name");
-    if (cachedName) return;
-    API.get(`/meta/guesthouse/${clientId}`)
-    .then((res) => {
-      if (res.data?.guesthouse_name) {
-        setCompanyName(res.data.guesthouse_name);
-        localStorage.setItem("guesthouse_name", res.data.guesthouse_name); // ✅ Cache it
-      } else {
-        setCompanyName("Unknown Company");
-      }
-      })
-      .catch(() => setCompanyName("Unknown Company"));
-  }, [clientId]);
+    if (cachedName) {
+      setCompanyName(cachedName);
+      return;
+    }
+    // API.get(`/meta/guesthouse/${clientId}`)
+    // .then((res) => {
+    //  if (res.data?.guesthouse_name) {
+    //    setCompanyName(res.data.guesthouse_name);
+    //    localStorage.setItem("guesthouse_name", res.data.guesthouse_name); // ✅ Cache it
+    //  } else {
+    //    setCompanyName("Unknown Company");
+    //  }
+    //  })
+    //  .catch(() => setCompanyName("Unknown Company"));
+   }, [clientId]);
 
   return (
     <div style={{
