@@ -28,7 +28,7 @@ function CompanyHeader() {
   useEffect(() => {
     if (!clientId) return;
     // API.get(`/meta/guesthouse/${clientId}`)
-    API.get(`/meta/guesthouse/`)
+    API.get(`/meta/guesthouse`)
       .then((response) => setCompanyName(response.data.guesthouse_name))
       .catch(() => setCompanyName("Unknown Company"));
   }, [clientId]);
