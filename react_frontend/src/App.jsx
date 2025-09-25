@@ -20,11 +20,9 @@ import Billing from "./components/Billing";
 import Guestreport from "./components/guestreport";
 // import Footer from "./components/Footer";
 
-const { token } = useContext(AuthContext);
-
 // 🏢 Top header with company name
 function CompanyHeader() {
-  const { clientId } = useContext(AuthContext);
+  const { token, clientId } = useContext(AuthContext);
   const [companyName, setCompanyName] = useState(() => {
     const cachedName = localStorage.getItem("guesthouse_name");
     alert ("Cached guesthouse_name =", cachedName)
@@ -35,14 +33,9 @@ function CompanyHeader() {
 
   useEffect(() => {
     console.log("Received clientId:", clientId);
-    if (!clientId) return;
+    console.log("Using token:", token);
+    if (!clientId || !token) return;
 
-    //const cachedName = localStorage.getItem("guesthouse_name");
-    // console.log("Company name loaded:", companyName);
-    // if (cachedName) {
-    //  setCompanyName(cachedName);
-    //  return;
-    // }
      API.get(`/meta/guesthouse/${clientId}`, {
         headers: { Authorization: `Bearer ${token}` } // ✅ CHANGED
       })
@@ -57,7 +50,7 @@ function CompanyHeader() {
       }
       })
       .catch(() => setCompanyName("Unknown Company"));
-   }, [clientId]);
+   }, [clientId, token]);
 
   return (
     <div style={{
