@@ -77,11 +77,13 @@ app.include_router(users.router)
 def read_root():
     return {"msg": "Welcome to the Guest House Management System API!"}
 
-@app.get("/meta/guesthouse")
-def get_guesthouse_name():
-    guesthouse_name = app.state.guesthouse_name
-    print("Guest Name from FastAPI ", guesthouse_name)
-    return {"guesthouse_name": guesthouse_name}
+@app.get("/meta/guesthouse/{client_id}")
+def get_guesthouse_name(client_id: str):
+    config_cursor.execute("SELECT client_name FROM config_table WHERE client_id = %s", (client_id,))
+    result = config_cursor.fetchone()
+    if result:
+        return {"guesthouse_name": result[0]}
+    return JSONResponse(status_code=404, content={"error": "Guesthouse not found"})
 
 # === Utility: Read client code from file ===
 def read_client_code():
