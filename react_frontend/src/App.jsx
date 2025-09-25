@@ -77,8 +77,7 @@ function MainApp() {
       navigate("/Sidebar");
     }
   }, [token]);
-
-  if (!token) return <Login />;
+  if (!token || !clientId) return <Login />;
 
   const commonProps = { token, clientId };
 
