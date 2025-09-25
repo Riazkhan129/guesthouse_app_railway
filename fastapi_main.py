@@ -52,7 +52,7 @@ origins = [
 # Allow CORS for frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://lodgecontrol.up.railway.app"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -79,9 +79,12 @@ def read_root():
 
 @app.get("/meta/guesthouse/{client_id}")
 def get_guesthouse_name(client_id: str):
-    config_cursor.execute("SELECT client_name FROM client_databases WHERE client_id = %s", (client_id,))
+    cursor = conn.cursor()
+    cursor.execute("SELECT client_name FROM client_databases WHERE client_id = %s", (client_id,))
     result = config_cursor.fetchone()
     print ("IN FASTAPI_MAIN = ", result)
+    cursor.close()
+    conn.close()
     if result:
         return {"guesthouse_name": result[0]}
     return JSONResponse(status_code=404, content={"error": "Guesthouse not found"})
