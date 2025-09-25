@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.db import get_or_create_client_db  # ✅ ADDED: Initialize DB per client
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
+import psycopg2
 
 
 # ✅ Load environment variables from .env (only works locally)
