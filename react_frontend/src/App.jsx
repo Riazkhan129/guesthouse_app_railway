@@ -1,14 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";
 
-//import {
-  // BrowserRouter as Router,
-//  Routes,
-//  Route,
-//  Navigate,
-//  useNavigate,
-//  useLocation
-//} from "react-router-dom";
  import axios from "axios";
 import API from "./api";
 import { AuthContext } from "./context/AuthContext";
@@ -32,10 +24,11 @@ import Guestreport from "./components/guestreport";
 // 🏢 Top header with company name
 function CompanyHeader() {
   const [companyName, setCompanyName] = useState("Loading...");
-  const { clientId } = useContext(TenantContext);
+  localStorage.setItem("client_id", clientId);
+  // const { clientId } = useContext(TenantContext);
 
   useEffect(() => {
-    if (!clientId) return <Login />;
+    if (!clientId) return;
     API.get(`/meta/guesthouse/${clientId}`)
       .then((response) => setCompanyName(response.data.guesthouse_name))
       .catch(() => setCompanyName("Unknown Company"));
@@ -79,12 +72,6 @@ function MainApp() {
   const [hasNavigated, setHasNavigated] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-
-//  useEffect(() => {
-//    if (token && location.pathname === "/") {
-//      navigate("/dashboard");  // ✅ Default redirect after login
-//    }
-//  }, [token]);
 
   if (!token) return <Login />;
 
