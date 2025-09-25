@@ -25,6 +25,7 @@ import Guestreport from "./components/guestreport";
 function CompanyHeader() {
   const [companyName, setCompanyName] = useState("Loading...");
   localStorage.setItem("client_id", clientId);
+  const { clientId } = useContext(clientId);
   // const { clientId } = useContext(TenantContext);
 
   useEffect(() => {
