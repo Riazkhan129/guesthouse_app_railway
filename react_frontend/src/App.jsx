@@ -66,7 +66,7 @@ function Footer() {
 
 // 💡 Main application logic after login
 function MainApp() {
-  const { token } = useContext(AuthContext);
+  const { token, clientId } = useContext(AuthContext);
   const [hasNavigated, setHasNavigated] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -79,7 +79,7 @@ function MainApp() {
   if (!token || !clientId) return <Login />;
 
   const commonProps = { token, clientId };
-}
+
   return (
     <>
       <CompanyHeader />
@@ -105,12 +105,12 @@ function MainApp() {
             <Route path="/guestreport" element={<Guestreport {...commonProps} />} />
             <Route path="*" element={<div>❌ Page Not Found</div>} />
           </Routes>
-            <Footer /> {/* ✅ Inline footer added here */}
+          <Footer /> {/* ✅ Inline footer added here */}
         </div>
       </div>
     </>
   );
-
+}
 
 // 🧭 Router wrapper
 function App() {
