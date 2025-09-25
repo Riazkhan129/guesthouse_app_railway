@@ -22,6 +22,7 @@ import Guestreport from "./components/guestreport";
 
 // 🏢 Top header with company name
 function CompanyHeader() {
+  const { clientId } = useContext(AuthContext);
   const [companyName, setCompanyName] = useState(() => {
     return localStorage.getItem("guesthouse_name") || "Loading...";
 });
@@ -35,7 +36,6 @@ function CompanyHeader() {
         setCompanyName(res.data.guesthouse_name);
         localStorage.setItem("guesthouse_name", res.data.guesthouse_name); // ✅ Cache it
       })
-      // .then((response) => setCompanyName(response.data.guesthouse_name))
       .catch(() => setCompanyName("Unknown Company"));
   }, [clientId]);
 
