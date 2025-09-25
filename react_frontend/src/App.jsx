@@ -20,6 +20,8 @@ import Billing from "./components/Billing";
 import Guestreport from "./components/guestreport";
 // import Footer from "./components/Footer";
 
+const { token } = useContext(AuthContext);
+
 // 🏢 Top header with company name
 function CompanyHeader() {
   const { clientId } = useContext(AuthContext);
