@@ -53,7 +53,7 @@ origins = [
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["https://lodgecontrol.up.railway.app"],
-    allow_credentials=True
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
