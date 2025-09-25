@@ -1,6 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";
-
+import { BrowserRouter, Routes, Route, Navigate,nuseNavigate, useLocation } from "react-router-dom";
  import axios from "axios";
 import API from "./api";
 import { AuthContext } from "./context/AuthContext";
@@ -21,14 +20,11 @@ import Billing from "./components/Billing";
 import Guestreport from "./components/guestreport";
 // import Footer from "./components/Footer";
 
-localStorage.setItem("client_id", clientId);
-
 // 🏢 Top header with company name
 function CompanyHeader() {
   const [companyName, setCompanyName] = useState("Loading...");
-  const { clientId } = useContext(clientId);
-  // const { clientId } = useContext(TenantContext);
-
+  const { clientId } = useContext(AuthContext);
+ 
   useEffect(() => {
     if (!clientId) return;
     API.get(`/meta/guesthouse/${clientId}`)
@@ -75,7 +71,15 @@ function MainApp() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (token && location.pathname === "/") {
+      navigate("/Sidebar");
+    }
+  }, [token]);
+
   if (!token) return <Login />;
+
+  const commonProps = { token, clientId };
 
   return (
     <>
@@ -86,19 +90,20 @@ function MainApp() {
         </div>
         <div style={{ padding: "10px", flex: 1 }}>
           <Routes>
+            <Route path="/" element={<Navigate to="/Sidebar" />} /> {/* ✅ Default redirect */}
             {!hasNavigated && (
               <Route path="*" element={<div>📋 Please select a module from the sidebar.</div>} />
             )}
-            <Route path="/dashboard" element={<Dashboard token={token} />} />
-            <Route path="/rooms" element={<Rooms token={token} />} />
-            <Route path="/expenses" element={<Expenses token={token} />} />
-            <Route path="/user" element={<UserManager token={token} />} />
-            <Route path="/guest_management" element={<Guest_Management token={token} />} />
-            <Route path="/bookings" element={<Bookings token={token} />} />
-            <Route path="/checkin" element={<CheckInGuest token={token} />} />
-            <Route path="/checkout" element={<CheckoutGuest token={token} />} />
-            <Route path="/billing" element={<Billing token={token} />} />
-            <Route path="/guestreport" element={<Guestreport token={token} />} />
+            <Route path="/dashboard" element={<Dashboard {...commonProps} />} />
+            <Route path="/rooms" element={<Rooms {...commonProps} />} />
+            <Route path="/expenses" element={<Expenses {...commonProps} />} />
+            <Route path="/user" element={<UserManager {...commonProps} />} />
+            <Route path="/guest_management" element={<Guest_Management {...commonProps} />} />
+            <Route path="/bookings" element={<Bookings {...commonProps} />} />
+            <Route path="/checkin" element={<CheckInGuest {...commonProps} />} />
+            <Route path="/checkout" element={<CheckoutGuest {...commonProps} />} />
+            <Route path="/billing" element={<Billing {...commonProps} />} />
+            <Route path="/guestreport" element={<Guestreport {...commonProps} />} />
             <Route path="*" element={<div>❌ Page Not Found</div>} />
           </Routes>
             <Footer /> {/* ✅ Inline footer added here */}
@@ -106,7 +111,7 @@ function MainApp() {
       </div>
     </>
   );
-}
+
 
 // 🧭 Router wrapper
 function App() {
