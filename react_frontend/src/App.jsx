@@ -24,6 +24,9 @@ import Guestreport from "./components/guestreport";
 function CompanyHeader() {
   const { clientId } = useContext(AuthContext);
   const [companyName, setCompanyName] = useState(() => {
+    alert (" CompanyName = ", CompanyName)
+    localStorage.getItem("guesthouse_name")
+    alert (" guesthouse_name = ", guesthouse_name)
     return localStorage.getItem("guesthouse_name") || "Loading...";
 });
 
