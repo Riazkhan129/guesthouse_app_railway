@@ -42,6 +42,7 @@ function CompanyHeader() {
     // }
      API.get(`/meta/guesthouse/${clientId}`)
      .then((res) => {
+      console.log("Before IF res.data.guesthouse_name = ", res.data?.guesthouse_name);
       if (res.data?.guesthouse_name) {
         setCompanyName(res.data.guesthouse_name);
         console.log("res.data.guesthouse_name = ", res.data.guesthouse_name);
