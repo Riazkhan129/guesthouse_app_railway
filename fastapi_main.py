@@ -52,8 +52,8 @@ origins = [
 # Allow CORS for frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=["https://lodgecontrol.up.railway.app"],
+    allow_origins=["https://lodgecontrol.up.railway.app"],
+    allow_credentials=True
     allow_methods=["*"],
     allow_headers=["*"],
 )
