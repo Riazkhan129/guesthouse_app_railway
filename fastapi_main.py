@@ -79,6 +79,7 @@ def read_root():
 @app.get("/meta/guesthouse")
 def get_guesthouse_name():
     guesthouse_name = os.getenv("CLIENT_NAME")
+    print("Guest Name from FastAPI ", guesthouse_name)
     return {"guesthouse_name": app.state.guesthouse_name}
 
 # === Utility: Read client code from file ===
