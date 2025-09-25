@@ -21,10 +21,11 @@ import Billing from "./components/Billing";
 import Guestreport from "./components/guestreport";
 // import Footer from "./components/Footer";
 
+localStorage.setItem("client_id", clientId);
+
 // 🏢 Top header with company name
 function CompanyHeader() {
   const [companyName, setCompanyName] = useState("Loading...");
-  localStorage.setItem("client_id", clientId);
   const { clientId } = useContext(clientId);
   // const { clientId } = useContext(TenantContext);
 
