@@ -207,7 +207,6 @@ useEffect(() => {
                 selected={checkinDate} // 🔧 Pass Date object
                 onChange={(date) => {
                   if (!date) return;
-
                   const dateOnly = date.toISOString().split("T")[0];
                   setCheckinDate(dateOnly); 
 
@@ -234,8 +233,8 @@ useEffect(() => {
                     <p>📦 Booked: {availability.booked_rooms}</p>
                     <p>🟢 Available: {availability.available_rooms}</p>
                 </div> 
-
               )}
+
               {availability?.available_rooms > 0 ? (
                 <>
                   <label style={{ fontWeight: "bold", display: "block", marginBottom: "5px" }}>
@@ -277,8 +276,9 @@ useEffect(() => {
                 </p>
               )}              
             </div>
-          )}
         </div>
+      )}
+      </div>
       )}
 
       {/* View All Bookings */}
