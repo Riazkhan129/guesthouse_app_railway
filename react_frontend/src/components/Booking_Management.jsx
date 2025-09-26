@@ -229,7 +229,16 @@ useEffect(() => {
               </div>
 
               {availability && (
-                <div className="grid-3" style={{ marginTop: "10px" }}>
+                // <div className="grid-3" style={{ marginTop: "10px" }}>
+                <div style={{
+                  display: "flex",
+                  justifyContent: "space-between", // or "center"
+                  gap: "20px",
+                  marginTop: "10px",
+                  backgroundColor: "#f9f9f9",
+                  padding: "10px",
+                  borderRadius: "6px"
+                }}>
                     <p>✅ Total: {availability.total_rooms}</p>
                     <p>📦 Booked: {availability.booked_rooms}</p>
                     <p>🟢 Available: {availability.available_rooms}</p>
