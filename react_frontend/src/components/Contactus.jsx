@@ -1,6 +1,6 @@
 import React from "react";
 
-const ContactUs = () => {
+const Contactus = () => {
   return (
     <div style={{ padding: "20px" }}>
       <h2>📬 Contact Us</h2>
