@@ -48,9 +48,14 @@ function CompanyHeader() {
     <div style={{
       backgroundColor: "#004080",
       color: "white",
-      padding: "10px 20px",
-      fontSize: "1.5rem",
-      fontWeight: "bold"
+      color: "white",
+      height: "100vh", // ✅ Full screen height
+      display: "flex", // ✅ Flexbox layout
+      flexDirection: "column", // ✅ Stack vertically
+      justifyContent: "center", // ✅ Center vertically
+      alignItems: "center", // ✅ Center horizontally
+      fontFamily: "sans-serif",
+      textAlign: "center"
     }}>
       {companyName}
       <div style={{ fontSize: "1rem", fontWeight: "normal", marginTop: "4px" }}>
