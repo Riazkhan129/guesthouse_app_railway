@@ -200,7 +200,8 @@ useEffect(() => {
             {/* Column 2 */}
             <div style={{ flex: "1 1 45%" }}>
               <p><strong>Guest Type:</strong> {selectedGuest.guest_type || 'N/A'}</p>
-              <label style={{ fontWeight: "bold", display: "block", marginBottom: "5px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px" }}>
+                <label style={{ fontWeight: "bold", whiteSpace: "nowrap" }}>
                 Check-in Date:
               </label>
               <DatePicker
@@ -225,7 +226,7 @@ useEffect(() => {
                 dropdownMode="select"
                 minDate={new Date()} // 🔧 Prevent dates before today
               />
-
+              </div>
 
               {availability && (
                 <div className="grid-3" style={{ marginTop: "10px" }}>
@@ -276,6 +277,7 @@ useEffect(() => {
                 </p>
               )}              
             </div>
+
         </div>
       )}
       </div>
