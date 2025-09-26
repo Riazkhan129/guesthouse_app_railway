@@ -56,7 +56,7 @@ function CompanyHeader() {
     }}>
       {companyName}
       <div style={{ fontSize: "1rem", fontWeight: "normal", marginTop: "4px" }}>
-      SmartHost — Know Your Numbers. Grow Your Business.
+      Powered by SmartHost — Know Your Numbers. Grow Your Business.
       </div>
     </div>
   );
