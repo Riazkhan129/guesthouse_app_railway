@@ -18,6 +18,8 @@ import Expenses from "./components/Expenses";
 import UserManager from "./components/User";
 import Billing from "./components/Billing";
 import Guestreport from "./components/guestreport";
+import ContactUs from "./components/ContactUs";
+import PrivacyPolicy from "./components/PrivacyPolicy";
 // import Footer from "./components/Footer";
 
 // 🏢 Top header with company name
@@ -75,6 +77,11 @@ function Footer() {
       <p style={{ fontStyle: "italic", marginTop: "4px" }}>
         Empowering guesthouse owners with financial clarity and full operational control.
       </p>
+      <p style={{ marginTop: "8px" }}>
+        <a href="/contact" style={{ color: "#004080", textDecoration: "none", marginRight: "10px" }}>Contact Us</a>
+        |
+        <a href="/privacy" style={{ color: "#004080", textDecoration: "none", marginLeft: "10px" }}>Privacy Policy</a>
+      </p>
     </footer>
   );
 }
@@ -108,6 +115,8 @@ function MainApp() {
             {!hasNavigated && (
               <Route path="*" element={<div>📋 Please select a module from the sidebar.</div>} />
             )}
+            <Route path="/contact" element={<ContactUs />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/dashboard" element={<Dashboard {...commonProps} />} />
             <Route path="/rooms" element={<Rooms {...commonProps} />} />
             <Route path="/expenses" element={<Expenses {...commonProps} />} />
