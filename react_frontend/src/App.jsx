@@ -22,34 +22,22 @@ import Guestreport from "./components/guestreport";
 
 // 🏢 Top header with company name
 function CompanyHeader() {
-  const { token } = useContext(AuthContext);
-  const { clientId } = useContext(AuthContext);
-  const [companyName, setCompanyName] = useState(() => {
-    const cachedName = localStorage.getItem("guesthouse_name");
-    alert ("Cached guesthouse_name =", cachedName)
-   // localStorage.getItem("guesthouse_name")
-    // alert (" guesthouse_name = ", guesthouse_name)
-    return cachedName || "Loading...";
-});
+  const { token, clientId } = useContext(AuthContext);
+  const [companyName, setCompanyName] = useState("Loading...");
 
   useEffect(() => {
-    console.log("Received clientId:", clientId);
-    console.log("Using token:", token);
     if (!clientId || !token) return;
 
      API.get(`/meta/guesthouse/${clientId}`, {
         headers: { Authorization: `Bearer ${token}` } // ✅ CHANGED
       })
-     .then((res) => {
-      console.log("Before IF res.data.guesthouse_name = ", res.data?.guesthouse_name);
-      if (res.data?.guesthouse_name) {
-        setCompanyName(res.data.guesthouse_name);
-        console.log("res.data.guesthouse_name = ", res.data.guesthouse_name);
-        localStorage.setItem("guesthouse_name", res.data.guesthouse_name); // ✅ Cache it
-      } else {
-        setCompanyName("Unknown Company");
+        .then((res) => {
+        if (res.data?.guesthouse_name) {
+          setCompanyName(res.data.guesthouse_name);
+        } else {
+          setCompanyName("Unknown Company");
       }
-      })
+    })
       .catch(() => setCompanyName("Unknown Company"));
    }, [clientId, token]);
 
@@ -62,6 +50,9 @@ function CompanyHeader() {
       fontWeight: "bold"
     }}>
       {companyName}
+      <div style={{ fontSize: "1rem", fontWeight: "normal", marginTop: "4px" }}>
+      SmartHos Empowering Hospitality, One Guest at a Time
+      </div>
     </div>
   );
 }
