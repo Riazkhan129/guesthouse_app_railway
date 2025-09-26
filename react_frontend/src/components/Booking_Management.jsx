@@ -238,11 +238,21 @@ useEffect(() => {
                   marginTop: "10px",
                   backgroundColor: "#f9f9f9",
                   padding: "10px",
-                  borderRadius: "6px"
+                  borderRadius: "6px",
+                  width: "100%",                  // ✅ Ensure full width
+                  maxWidth: "600px",              // ✅ Prevent over-stretching
+                  marginLeft: "auto",             // ✅ Center the container itself
+                  marginRight: "auto" 
                 }}>
-                    <div><strong>✅ Total:</strong> {availability.total_rooms}</div>
-                    <div><strong>📦 Booked:</strong> {availability.booked_rooms}</div>
-                    <div><strong>🟢 Available:</strong> {availability.available_rooms}</div>
+                  <div style={{ textAlign: "center", minWidth: "100px" }}>
+                    <strong>✅ Total:</strong> {availability.total_rooms}
+                  </div>
+                  <div style={{ textAlign: "center", minWidth: "100px" }}>
+                    <strong>📦 Booked:</strong> {availability.booked_rooms}
+                  </div>
+                  <div style={{ textAlign: "center", minWidth: "100px" }}>
+                    <strong>🟢 Available:</strong> {availability.available_rooms}
+                  </div>
                 </div> 
               )}
 
