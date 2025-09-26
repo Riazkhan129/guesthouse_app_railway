@@ -51,7 +51,7 @@ function CompanyHeader() {
     }}>
       {companyName}
       <div style={{ fontSize: "1rem", fontWeight: "normal", marginTop: "4px" }}>
-      SmartHos Empowering Hospitality, One Guest at a Time
+      SmartHost — Know Your Numbers. Grow Your Business.
       </div>
     </div>
   );
@@ -71,6 +71,9 @@ function Footer() {
     }}>
       <p>
         <strong>Developed by Aarkay's Solutions | © 2025 SmartHost</strong>
+      </p>
+      <p style={{ fontStyle: "italic", marginTop: "4px" }}>
+        Empowering guesthouse owners with financial clarity and full operational control.
       </p>
     </footer>
   );
