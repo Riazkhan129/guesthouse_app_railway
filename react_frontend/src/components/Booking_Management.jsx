@@ -232,7 +232,7 @@ useEffect(() => {
                 // <div className="grid-3" style={{ marginTop: "10px" }}>
                 <div style={{
                   display: "flex",
-                  justifyContent: "space-between", // or "center"
+                  justifyContent: "center",
                   gap: "20px",
                   marginTop: "10px",
                   backgroundColor: "#f9f9f9",
