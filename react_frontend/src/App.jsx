@@ -115,8 +115,8 @@ function MainApp() {
             {!hasNavigated && (
               <Route path="*" element={<div>📋 Please select a module from the sidebar.</div>} />
             )}
-            <Route path="/Contactus" element={<Contactus />} />
-            <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/Contactus" element={<Contactus {...commonProps} />} />
+            <Route path="/privacy" element={<PrivacyPolicy {...commonProps} />} />
             <Route path="/dashboard" element={<Dashboard {...commonProps} />} />
             <Route path="/rooms" element={<Rooms {...commonProps} />} />
             <Route path="/expenses" element={<Expenses {...commonProps} />} />
