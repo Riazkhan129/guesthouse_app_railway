@@ -179,10 +179,9 @@ useEffect(() => {
           <select onChange={(e) => { 
             const guest = guests.find(g => `${g.nic_passport_number} - ${g.name}` === e.target.value);
             setSelectedGuest(guest);
-            setBookingCreated(false);
-            
+            setBookingCreated(false);           
           }}
-          >
+        >
             <option>Select Guest</option>
             {guests.map((g) => (
               <option key={g.nic_passport_number}>{`${g.nic_passport_number} - ${g.name}`}</option>
@@ -230,19 +229,16 @@ useEffect(() => {
 
               {availability && (
                 // <div className="grid-3" style={{ marginTop: "10px" }}>
+                <div style={{ width: "100%", textAlign: "center", marginTop: "10px" }}>
                 <div style={{
-                  display: "flex",
+                  display: "inline-flex",
                   justifyContent: "center",
                   alignItems: "center",
                   gap: "40px",
                   marginTop: "10px",
                   backgroundColor: "#f9f9f9",
                   padding: "10px",
-                  borderRadius: "6px",
-                  width: "100%",                  // ✅ Ensure full width
-                  maxWidth: "600px",              // ✅ Prevent over-stretching
-                  marginLeft: "auto",             // ✅ Center the container itself
-                  marginRight: "auto" 
+                  borderRadius: "6px", 
                 }}>
                   <div style={{ textAlign: "center", minWidth: "100px" }}>
                     <strong>✅ Total:</strong> {availability.total_rooms}
@@ -254,7 +250,6 @@ useEffect(() => {
                     <strong>🟢 Available:</strong> {availability.available_rooms}
                   </div>
                 </div> 
-              )}
 
               {availability?.available_rooms > 0 ? (
                 <>
@@ -297,11 +292,13 @@ useEffect(() => {
                 </p>
               )}              
             </div>
-
+          )}
         </div>
-      )}
+      ))
       </div>
       )}
+    </div> 
+  )});
 
       {/* View All Bookings */}
       {action === "View All Bookings" && (
