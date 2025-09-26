@@ -79,7 +79,7 @@ function Footer() {
         Empowering guesthouse owners with financial clarity and full operational control.
       </p>
       <p style={{ marginTop: "8px" }}>
-        <Link to="/contact" style={{ color: "#004080", textDecoration: "none", marginRight: "10px" }}>
+        <Link to="/contactus" style={{ color: "#004080", textDecoration: "none", marginRight: "10px" }}>
         Contact Us
       </Link>
       |
