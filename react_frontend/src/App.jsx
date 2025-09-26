@@ -20,6 +20,7 @@ import Billing from "./components/Billing";
 import Guestreport from "./components/guestreport";
 import Contactus from "./components/Contactus";  
 import PrivacyPolicy from "./components/PrivacyPolicy";
+import { Link } from "react-router-dom";
 // import Footer from "./components/Footer";
 
 // 🏢 Top header with company name test
@@ -78,10 +79,14 @@ function Footer() {
         Empowering guesthouse owners with financial clarity and full operational control.
       </p>
       <p style={{ marginTop: "8px" }}>
-        <a href="/contact" style={{ color: "#004080", textDecoration: "none", marginRight: "10px" }}>Contactus</a>
-        |
-        <a href="/privacy" style={{ color: "#004080", textDecoration: "none", marginLeft: "10px" }}>PrivacyPolicy</a>
-      </p>
+        <Link to="/contact" style={{ color: "#004080", textDecoration: "none", marginRight: "10px" }}>
+        Contact Us
+      </Link>
+      |
+      <Link to="/privacy" style={{ color: "#004080", textDecoration: "none", marginLeft: "10px" }}>
+        Privacy Policy
+    </Link>
+  </p>
     </footer>
   );
 }
