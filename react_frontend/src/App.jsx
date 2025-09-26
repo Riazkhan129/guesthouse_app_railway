@@ -18,7 +18,7 @@ import Expenses from "./components/Expenses";
 import UserManager from "./components/User";
 import Billing from "./components/Billing";
 import Guestreport from "./components/guestreport";
-import Contactus from "./components/Contactus";
+import Contactus from "./components/Contactus";  
 import PrivacyPolicy from "./components/PrivacyPolicy";
 // import Footer from "./components/Footer";
 
