@@ -18,7 +18,7 @@ import Expenses from "./components/Expenses";
 import UserManager from "./components/User";
 import Billing from "./components/Billing";
 import Guestreport from "./components/guestreport";
-import Contactus from "./components/Contactus";  
+import ContactUs from "./components/ContactUs";  
 import PrivacyPolicy from "./components/PrivacyPolicy";
 // import Footer from "./components/Footer";
 
@@ -78,7 +78,7 @@ function Footer() {
         Empowering guesthouse owners with financial clarity and full operational control.
       </p>
       <p style={{ marginTop: "8px" }}>
-        <a href="/contact" style={{ color: "#004080", textDecoration: "none", marginRight: "10px" }}>Contactus</a>
+        <a href="/contact" style={{ color: "#004080", textDecoration: "none", marginRight: "10px" }}>ContactUs</a>
         |
         <a href="/privacy" style={{ color: "#004080", textDecoration: "none", marginLeft: "10px" }}>PrivacyPolicy</a>
       </p>
