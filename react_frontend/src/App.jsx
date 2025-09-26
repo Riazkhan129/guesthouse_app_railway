@@ -22,7 +22,7 @@ import ContactUs from "./components/ContactUs";
 import PrivacyPolicy from "./components/PrivacyPolicy";
 // import Footer from "./components/Footer";
 
-// 🏢 Top header with company name
+// 🏢 Top header with company name test
 function CompanyHeader() {
   const { token, clientId } = useContext(AuthContext);
   const [companyName, setCompanyName] = useState("Loading...");
