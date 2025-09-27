@@ -225,8 +225,8 @@ useEffect(() => {
 
                 {/* <div style={{ 
                   display: "flex",
-                  justifyContent: "left",
-                  alignItems: "left",
+                  justifyContent: "right",
+                  alignItems: "right",
                   gap: "40px",
                   backgroundColor: "#f9f9f9",
                   padding: "10px 20px",
