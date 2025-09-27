@@ -216,7 +216,7 @@ useEffect(() => {
                 <div
                   style={{
                     display: "flexleft",               // ✅ NEW: Make outer container a flexbox
-                    justifyContent: "left",     // ✅ NEW: Center the inner block horizontally
+                    justifyContent: "cneter",     // ✅ NEW: Center the inner block horizontally
                     marginTop: "20px",            // ✅ Optional: spacing from above
                     width: "100%",
                     marginTop: "20px"                // ✅ Ensure full width
