@@ -174,11 +174,13 @@ useEffect(() => {
           </select>
 
           {selectedGuest && !bookingCreated && (
-            <div style={{ marginTop: 10, display: "flex", flexWrap: "wrap", gap: "20px" }}>
-              {/* Column 1 */}
-              <div style={{ flex: "1 1 45%" }}>
-              <p><strong>NIC:</strong> {selectedGuest.nic_passport_number}</p>
-              <p><strong>Name:</strong> {selectedGuest.name}</p>
+            <div style={{ marginTop: 10 }}>
+              {/* 🔧 FIXED: Removed flex-wrap layout that was interfering with centering */}
+              <div style={{ display: "flex", gap: "20px" }}>
+                {/* Column 1 */}
+                <div style={{ flex: "1 1 45%" }}>
+                <p><strong>NIC:</strong> {selectedGuest.nic_passport_number}</p>
+                <p><strong>Name:</strong> {selectedGuest.name}</p>
             </div>
 
             {/* Column 2 */}
@@ -216,7 +218,8 @@ useEffect(() => {
                     display: "flex",               // ✅ NEW: Make outer container a flexbox
                     justifyContent: "center",     // ✅ NEW: Center the inner block horizontally
                     marginTop: "20px",            // ✅ Optional: spacing from above
-                    width: "100%",                // ✅ Ensure full width
+                    width: "100%",
+                    marginTop: "20px"                // ✅ Ensure full width
                   }}
                 >
 
@@ -288,7 +291,6 @@ useEffect(() => {
               )}              
             </div>
         </div>    
-      )}
     </div>
   )}
 
@@ -447,6 +449,8 @@ useEffect(() => {
         ))}
       </div>
     )}
+</div>
+)}
 </div>
 )};
 
