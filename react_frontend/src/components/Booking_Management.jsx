@@ -223,7 +223,7 @@ useEffect(() => {
                   }}
                 >
 
-                <div style={{
+                {/* <div style={{ 
                   display: "flex",
                   justifyContent: "left",
                   alignItems: "left",
@@ -236,7 +236,7 @@ useEffect(() => {
                   maxWidth: "600px",                   // ✅ Optional: limit width
                   textAlign: "left",                 // ✅ Center text inside each item
               }}
-            >
+            > */}
                   <div style={{ minWidth: "100px" }}>
                     <strong>✅ Total:</strong> {availability.total_rooms}
                   </div>
@@ -246,7 +246,7 @@ useEffect(() => {
                   <div style={{ minWidth: "100px" }}>
                     <strong>🟢 Available:</strong> {availability.available_rooms}
                   </div>
-                </div> 
+               {/*  </div> */}
               </div>
             )}
               {availability?.available_rooms > 0 ? (
