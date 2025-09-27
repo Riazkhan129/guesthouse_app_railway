@@ -245,7 +245,7 @@ useEffect(() => {
                   </div>
                  {/*</div> */}
               </div> 
-            )} 
+
               {availability?.available_rooms > 0 ? (
                 <>
                   <label style={{ fontWeight: "bold", display: "block", marginBottom: "5px" }}>
@@ -285,7 +285,10 @@ useEffect(() => {
                 <p style={{ color: "red", fontWeight: "bold" }}>
                   All Rooms are Booked for this date {checkinDate}
                 </p>
-              )}              
+              )}
+              </div>              
+            </div>
+            )}
             </div>
         </div>    
     </div>
