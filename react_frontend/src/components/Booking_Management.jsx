@@ -237,7 +237,7 @@ useEffect(() => {
                   textAlign: "left",                 // ✅ Center text inside each item
               }}
             > */}
-                  <div style={{ minWidth: "100px", justifyContent: "right", }}>
+                  <div style={{ minWidth: "100px", justifyContent: "right", alignItems: "right" }}>
                     <strong>✅ Total:</strong> {availability.total_rooms}
                   </div>
                   <div style={{ minWidth: "100px" }}>
