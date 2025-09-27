@@ -243,7 +243,6 @@ useEffect(() => {
                   <div style={{ textAlign: "left", minWidth: "100px" }}>
                     <strong>🟢 Available:</strong> {availability.available_rooms}
                   </div>
-                 {/*</div> */}
               </div> 
 
               {availability?.available_rooms > 0 ? (
