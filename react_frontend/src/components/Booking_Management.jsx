@@ -223,7 +223,7 @@ useEffect(() => {
                     padding: "10px 20px",
                     borderRadius: "6px",
                     boxShadow: "0 0 4px rgba(0,0,0,0.1)",
-                    width: "fit-content",        // ✅ Prevents stretching full width
+                    width: "100%",        // ✅ Prevents stretching full width
                     maxWidth: "100%"                // ✅ Ensure full width
                   }}
                 >
