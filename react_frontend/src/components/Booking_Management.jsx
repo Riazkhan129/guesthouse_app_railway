@@ -89,7 +89,7 @@ useEffect(() => {
     })
     .catch((err) => {console.error("Failed to fetch bookings:", err);
   });
-
+};
   const handleCheckAvailability = (date) => {
   API.get("/bookings/total", {params: { checkin_date: date } }) 
     .then((res) => {setAvailability(res.data)
@@ -445,5 +445,5 @@ useEffect(() => {
     )}
 </div>
 )};
-}
+
 export default BookingManagement;
