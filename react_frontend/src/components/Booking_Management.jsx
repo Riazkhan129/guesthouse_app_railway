@@ -237,7 +237,7 @@ useEffect(() => {
                   textAlign: "left",                 // ✅ Center text inside each item
               }}
             > */}
-                  <div style={{ minWidth: "100px" }}>
+                {/*  <div style={{ minWidth: "100px" }}>
                     <strong>✅ Total:</strong> {availability.total_rooms}
                   </div>
                   <div style={{ minWidth: "100px" }}>
@@ -246,9 +246,9 @@ useEffect(() => {
                   <div style={{ minWidth: "100px" }}>
                     <strong>🟢 Available:</strong> {availability.available_rooms}
                   </div>
-               {/*  </div> */}
-              </div>
-            )}
+                 </div> */}
+              </div> 
+            )} 
               {availability?.available_rooms > 0 ? (
                 <>
                   <label style={{ fontWeight: "bold", display: "block", marginBottom: "5px" }}>
