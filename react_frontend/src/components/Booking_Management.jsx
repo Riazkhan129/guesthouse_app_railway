@@ -216,7 +216,7 @@ useEffect(() => {
                 <div
                   style={{
                     display: "flex",               // ✅ NEW: Make outer container a flexbox
-                    justifyContent: "center",     // ✅ NEW: Center the inner block horizontally
+                    justifyContent: "left",     // ✅ NEW: Center the inner block horizontally
                     marginTop: "20px",            // ✅ Optional: spacing from above
                     width: "100%",
                     marginTop: "20px"                // ✅ Ensure full width
@@ -225,7 +225,7 @@ useEffect(() => {
 
                 <div style={{
                   display: "flex",
-                  justifyContent: "center",
+                  justifyContent: "left",
                   alignItems: "center",
                   gap: "40px",
                   backgroundColor: "#f9f9f9",
