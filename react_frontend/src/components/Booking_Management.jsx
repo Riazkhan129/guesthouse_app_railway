@@ -215,7 +215,7 @@ useEffect(() => {
               {availability && (
                 <div
                   style={{
-                    display: "flexleft",               // ✅ NEW: Make outer container a flexbox
+                    display: "flex",               // ✅ NEW: Make outer container a flexbox
                     justifyContent: "cneter",     // ✅ NEW: Center the inner block horizontally
                     marginTop: "20px",            // ✅ Optional: spacing from above
                     width: "100%",
