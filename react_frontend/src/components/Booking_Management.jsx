@@ -14,7 +14,6 @@ function BookingManagement() {
   const [checkinDate, setCheckinDate] = useState(() =>
     new Date().toISOString().split("T")[0]
   );
-  // const [checkinDate, setCheckinDate] = useState(() => new Date());
   const [checkoutDate, setCheckoutDate] = useState(() => {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
@@ -52,7 +51,6 @@ useEffect(() => {
   const fetchGuestNames = async () => {
     const nicList = bookings.map(b => b.nic_passport_number);
     const uniqueNICs = [...new Set(nicList)];
-
     const nameMap = {};
     for (const nic of uniqueNICs) {
       try {
@@ -87,25 +85,17 @@ useEffect(() => {
 
   const fetchBookings = () => {
   API.get("/bookings", { headers: { Authorization: `Bearer ${token}` } }) // 🔧 CHANGED
-    .then((res) => {
-      setBookings(res.data); // 🎯 Update list with fresh data
+    .then((res) => {setBookings(res.data) // 🎯 Update list with fresh data
     })
-    .catch((err) => {
-      console.error("Failed to fetch bookings:", err);
-    });
-};
+    .catch((err) => {console.error("Failed to fetch bookings:", err);
+  });
 
   const handleCheckAvailability = (date) => {
-    // console.log("📅 handleCheckAvailability called with:", date);
-  API.get("/bookings/total", {
-      params: { checkin_date: date },
-    }) // 🔧 CHANGED
-    .then((res) => {
-      console.log("✅ Availability data received:", res.data); // 👈 Here’s your debug log!
-      setAvailability(res.data);
+  API.get("/bookings/total", {params: { checkin_date: date } }) 
+    .then((res) => {setAvailability(res.data)
     })
     .catch(() => alert("❌ Failed to check room availability."));
-};
+  };
 
   const handleCreateBooking = () => {
     if (!selectedGuest) return;
@@ -125,8 +115,7 @@ useEffect(() => {
     API.post("/bookings/", payload) // 🔧 CHANGED
     .then(() => {
       alert("✅ Booking created successfully!");
-      setBookingCreated(true); // ✅ Move this inside .then()
-      // ✅ Refresh availability immediately
+      setBookingCreated(true); 
       console.log("📅 handleCheckAvailability from handlecreatebooking:", checkinDate);
       handleCheckAvailability(checkinDate);
     })
@@ -137,12 +126,9 @@ useEffect(() => {
   };
 
   const handleCancelBooking = (bookingId, roomNumber) => {
-  axios
-    API.put(`/bookings/cancel/${bookingId}`, { room_number: roomNumber }, { headers: { Authorization: `Bearer ${token}` } }) // 🔧 CHANGED
+    API.put(`/bookings/cancel/${bookingId}`, { room_number: roomNumber }, { headers: { Authorization: `Bearer ${token}` } })
     .then(() => {
       alert("✅ Booking cancelled.");
-
-      // 🧹 Reset selected booking state after successful cancellation
       setSelectedBookingId("");
       setSelectedBooking(null);
       fetchBookings();
@@ -170,7 +156,7 @@ useEffect(() => {
           <span>{opt}</span>
         </label>
       ))}
-    </div>
+      </div>
 
       {/* Create Booking */}
       {action === "Create Booking" && (
@@ -180,8 +166,7 @@ useEffect(() => {
             const guest = guests.find(g => `${g.nic_passport_number} - ${g.name}` === e.target.value);
             setSelectedGuest(guest);
             setBookingCreated(false);           
-          }}
-        >
+          }}>
             <option>Select Guest</option>
             {guests.map((g) => (
               <option key={g.nic_passport_number}>{`${g.nic_passport_number} - ${g.name}`}</option>
@@ -209,11 +194,9 @@ useEffect(() => {
                   if (!date) return;
                   const dateOnly = date.toISOString().split("T")[0];
                   setCheckinDate(dateOnly); 
-
                   const nextDay = new Date(date);
                   nextDay.setDate(date.getDate() + 1);
                   setCheckoutDate(nextDay);
-
                   console.log("handleCheckAvailability from createbooking:", dateOnly);
                   handleCheckAvailability(dateOnly); // 🔧 Pass raw date to your logic
                 }}
@@ -228,17 +211,22 @@ useEffect(() => {
               </div>
 
               {availability && (
-                // <div className="grid-3" style={{ marginTop: "10px" }}>
-                <div style={{ width: "100%", textAlign: "center", marginTop: "10px" }}>
+                <div style={{ marginTop: "10px" }}>
+                {/* 🔧 FIXED: Added flex wrapper to center the inner box */}
                 <div style={{
-                  display: "inline-flex",
+                  display: "flex",                 // ✅ Flex container
+                  justifyContent: "center",       // ✅ Center horizontally
+                }}>
+                <div style={{
+                  display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
                   gap: "40px",
-                  marginTop: "10px",
                   backgroundColor: "#f9f9f9",
                   padding: "10px",
                   borderRadius: "6px", 
+                  maxWidth: "600px",            // ✅ Optional: limit width
+                  width: "100%"
                 }}>
                   <div style={{ textAlign: "center", minWidth: "100px" }}>
                     <strong>✅ Total:</strong> {availability.total_rooms}
@@ -250,6 +238,7 @@ useEffect(() => {
                     <strong>🟢 Available:</strong> {availability.available_rooms}
                   </div>
                 </div> 
+              </div>
 
               {availability?.available_rooms > 0 ? (
                 <>
@@ -293,12 +282,11 @@ useEffect(() => {
               )}              
             </div>
           )}
-        </div>
-      ))
+        </div>    
       </div>
       )}
-    </div> 
-  )});
+    </div>
+  )}
 
       {/* View All Bookings */}
       {action === "View All Bookings" && (
@@ -456,5 +444,6 @@ useEffect(() => {
       </div>
     )}
 </div>
-)}
+)};
+}
 export default BookingManagement;

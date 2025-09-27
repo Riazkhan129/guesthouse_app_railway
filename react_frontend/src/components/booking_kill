@@ -1,0 +1,127 @@
+import React, { useEffect, useState, useContext } from "react";
+import axios from "axios";
+import { format } from "date-fns";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import API from "../api";
+import { AuthContext } from "../context/AuthContext";
+
+function BookingManagement() {
+  const { token } = useContext(AuthContext);
+  const [action, setAction] = useState("Create Booking");
+  const [guests, setGuests] = useState([]);
+  const [selectedGuest, setSelectedGuest] = useState(null);
+  const [checkinDate, setCheckinDate] = useState(() => new Date().toISOString().split("T")[0]);
+  const [checkoutDate, setCheckoutDate] = useState(() => {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return tomorrow.toISOString().split("T")[0];
+  });
+  const formatToDisplayDate = (isoDateStr: string) => {
+    if (!isoDateStr) return "";
+    const date = new Date(isoDateStr);
+    return date.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  };
+
+  const [availability, setAvailability] = useState(null);
+  const [bookings, setBookings] = useState([]);
+  const [selectedBookingId, setSelectedBookingId] = useState(null);
+  const [bookingCreated, setBookingCreated] = useState(false);
+  const [guestNames, setGuestNames] = useState({});
+  const [selectedBooking, setSelectedBooking] = useState(null);
+  const [bookingDate, setBookingDate] = useState(() => new Date().toISOString().split("T")[0]);
+
+  useEffect(() => {
+    if (bookingDate) {
+      handleCheckAvailability(bookingDate);
+    }
+  }, [bookingDate]);
+
+  useEffect(() => {
+    const fetchGuestNames = async () => {
+      const nicList = bookings.map(b => b.nic_passport_number);
+      const uniqueNICs = [...new Set(nicList)];
+      const nameMap = {};
+      for (const nic of uniqueNICs) {
+        try {
+          const res = await API.get(`/guests/search/${nic}`);
+          nameMap[nic] = res.data.name;
+        } catch {
+          nameMap[nic] = "Unknown Guest";
+        }
+      }
+      setGuestNames(nameMap);
+    };
+    if (bookings.length > 0) {
+      fetchGuestNames();
+    }
+  }, [bookings]);
+
+  useEffect(() => {
+    if (action === "Create Booking") {
+      API.get("/guests/all", { headers: { Authorization: `Bearer ${token}` } })
+        .then(res => setGuests(res.data))
+        .catch(() => alert("❌ Failed to load guest list."));
+    }
+    if (["View All Bookings", "Cancel Booking", "Upcoming Booking"].includes(action)) {
+      const endpoint = action === "Upcoming Booking" ? "upcoming" : "";
+      API.get(`/bookings/${endpoint}`, { headers: { Authorization: `Bearer ${token}` } })
+        .then(res => setBookings(res.data))
+        .catch(() => alert("❌ Failed to load bookings."));
+    }
+  }, [action, token]);
+
+  const fetchBookings = () => {
+    API.get("/bookings", { headers: { Authorization: `Bearer ${token}` } })
+      .then((res) => setBookings(res.data))
+      .catch((err) => console.error("Failed to fetch bookings:", err));
+  };
+
+  const handleCheckAvailability = (date) => {
+    API.get("/bookings/total", { params: { checkin_date: date } })
+      .then((res) => setAvailability(res.data))
+      .catch(() => alert("❌ Failed to check room availability."));
+  };
+
+  const handleCreateBooking = () => {
+    if (!selectedGuest) return;
+    const payload = {
+      nic_passport_number: selectedGuest.nic_passport_number,
+      room_number: 0,
+      checkin_date: checkinDate,
+      checkout_date: checkoutDate,
+      status: "booked",
+      notes: "notes",
+      advance_payment: 0,
+      total_payment: 0,
+      booked_rooms: availability?.booked_rooms,
+      total_rooms: availability?.total_rooms,
+    };
+    API.post("/bookings/", payload)
+      .then(() => {
+        alert("✅ Booking created successfully!");
+        setBookingCreated(true);
+        handleCheckAvailability(checkinDate);
+      })
+      .catch((err) => {
+        console.error("❌ Booking failed:", err.response?.data || err.message);
+        alert("❌ Failed to create booking.");
+      });
+  };
+
+  const handleCancelBooking = (bookingId, roomNumber) => {
+    API.put(`/bookings/cancel/${bookingId}`, { room_number: roomNumber }, { headers: { Authorization: `Bearer ${token}` } })
+      .then(() => {
+        alert("✅ Booking cancelled.");
+        setSelectedBookingId("");
+        setSelectedBooking(null);
+        fetchBookings();
+      })
+      .catch((err) => {
+        alert(`❌ Failed to cancel: ${err.response?.data?.detail || err.message}`);
+      });
+  };
