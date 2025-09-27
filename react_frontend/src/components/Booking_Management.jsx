@@ -215,7 +215,7 @@ useEffect(() => {
               {availability && (
                 <div
                   style={{
-                    display: "flex",               // ✅ NEW: Make outer container a flexbox
+                    display: "flexleft",               // ✅ NEW: Make outer container a flexbox
                     justifyContent: "left",     // ✅ NEW: Center the inner block horizontally
                     marginTop: "20px",            // ✅ Optional: spacing from above
                     width: "100%",
@@ -237,7 +237,7 @@ useEffect(() => {
                   textAlign: "left",                 // ✅ Center text inside each item
               }}
             > */}
-                  <div style={{ minWidth: "100px", justifyContent: "left", alignItems: "left" }}>
+                  <div style={{ minWidth: "100px" }}>
                     <strong>✅ Total:</strong> {availability.total_rooms}
                   </div>
                   <div style={{ minWidth: "100px" }}>
