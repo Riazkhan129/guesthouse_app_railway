@@ -226,7 +226,7 @@ useEffect(() => {
                 <div style={{
                   display: "flex",
                   justifyContent: "left",
-                  alignItems: "center",
+                  alignItems: "left",
                   gap: "40px",
                   backgroundColor: "#f9f9f9",
                   padding: "10px 20px",
@@ -234,7 +234,7 @@ useEffect(() => {
                   boxShadow: "0 0 4px rgba(0,0,0,0.1)", // ✅ Optional: subtle visual polish
                   minWidth: "300px",                   // ✅ Prevent collapsing
                   maxWidth: "600px",                   // ✅ Optional: limit width
-                  textAlign: "center",                 // ✅ Center text inside each item
+                  textAlign: "left",                 // ✅ Center text inside each item
               }}
             >
                   <div style={{ minWidth: "100px" }}>
