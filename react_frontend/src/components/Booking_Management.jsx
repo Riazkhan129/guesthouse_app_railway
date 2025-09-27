@@ -211,15 +211,10 @@ useEffect(() => {
                 minDate={new Date()} // 🔧 Prevent dates before today
               />
               </div>
-
+              {/* ✅ Availability Block — separated and centered */}
               {availability && (
-                <div style={{ marginTop: "20px" }}>
-                {/* 🔧 NEW: Centering wrapper */}
-                <div style={{
-                  display: "flex",               // ✅ Enables flex layout
-                  justifyContent: "center",     // ✅ Centers the inner block horizontally
-                  width: "100%"                 // ✅ Ensures full width of parent
-                }}>
+                <div style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}>
+                
                 <div
                   style={{                   
                     display: "flex",              // ✅ Enables horizontal layout
@@ -230,7 +225,7 @@ useEffect(() => {
                     padding: "10px 20px",
                     borderRadius: "6px",
                     boxShadow: "0 0 4px rgba(0,0,0,0.1)",
-                    width: "100%",        // ✅ Prevents stretching full width
+                    width: "fit-content",        // ✅ Prevents stretching full width
                     maxWidth: "100%"                // ✅ Ensure full width
                   }}>
                 
