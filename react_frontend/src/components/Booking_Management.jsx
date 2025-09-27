@@ -242,13 +242,13 @@ useEffect(() => {
                   textAlign: "left",                 // ✅ Center text inside each item
               }}
             > */}
-                  <div style={{ textAlign: "left" }}>
+                  <div style={{ textAlign: "right" }}>
                     <strong>✅ Total:</strong> {availability.total_rooms}
                   </div>
-                  <div style={{ textAlign: "left" }}>
+                  <div style={{ textAlign: "right" }}>
                     <strong>📦 Booked:</strong> {availability.booked_rooms}
                   </div>
-                  <div style={{ textAlign: "left" }}>
+                  <div style={{ textAlign: "right" }}>
                     <strong>🟢 Available:</strong> {availability.available_rooms}
                   </div>
                  {/*</div> */}
