@@ -254,10 +254,9 @@ useEffect(() => {
                     showMonthDropdown
                     showYearDropdown
                     dropdownMode="select"
-                    minDate={checkinDate} // 🔧 Prevent dates before check-in
+                    minDate={checkinDate} 
                   />
 
-                  {/* 🔧 NEW: Centered button on a new line */}
                   <div style={{ textAlign: "center", marginTop: "20px" }}>
                     <button
                       onClick={handleCreateBooking}
@@ -281,9 +280,8 @@ useEffect(() => {
                 </p>
               )}
               </div>              
-            </div>
             )}
-            </div>
+          </div>
         </div>    
     </div>
   )}
