@@ -213,6 +213,13 @@ useEffect(() => {
               </div>
 
               {availability && (
+                <div style={{ marginTop: "20px" }}>
+                {/* 🔧 NEW: Centering wrapper */}
+                <div style={{
+                  display: "flex",               // ✅ Enables flex layout
+                  justifyContent: "center",     // ✅ Centers the inner block horizontally
+                  width: "100%"                 // ✅ Ensures full width of parent
+                }}>
                 <div
                   style={{                   
                     display: "flex",              // ✅ Enables horizontal layout
@@ -225,30 +232,15 @@ useEffect(() => {
                     boxShadow: "0 0 4px rgba(0,0,0,0.1)",
                     width: "100%",        // ✅ Prevents stretching full width
                     maxWidth: "100%"                // ✅ Ensure full width
-                  }}
-                >
-
-                {/* <div style={{ 
-                  display: "flex",
-                  justifyContent: "right",
-                  alignItems: "right",
-                  gap: "40px",
-                  backgroundColor: "#f9f9f9",
-                  padding: "10px 20px",
-                  borderRadius: "6px", 
-                  boxShadow: "0 0 4px rgba(0,0,0,0.1)", // ✅ Optional: subtle visual polish
-                  minWidth: "300px",                   // ✅ Prevent collapsing
-                  maxWidth: "600px",                   // ✅ Optional: limit width
-                  textAlign: "left",                 // ✅ Center text inside each item
-              }}
-            > */}
-                  <div style={{ textAlign: "right" }}>
+                  }}>
+                
+                  <div style={{ textAlign: "left", minWidth: "100px" }}>
                     <strong>✅ Total:</strong> {availability.total_rooms}
                   </div>
-                  <div style={{ textAlign: "right" }}>
+                  <div style={{ textAlign: "left", minWidth: "100px" }}>
                     <strong>📦 Booked:</strong> {availability.booked_rooms}
                   </div>
-                  <div style={{ textAlign: "right" }}>
+                  <div style={{ textAlign: "left", minWidth: "100px" }}>
                     <strong>🟢 Available:</strong> {availability.available_rooms}
                   </div>
                  {/*</div> */}
