@@ -215,11 +215,16 @@ useEffect(() => {
               {availability && (
                 <div
                   style={{                   
-                    display: "flex",               // ✅ NEW: Make outer container a flexbox
-                    justifyContent: "flex-start",     // ✅ NEW: Center the inner block horizontally
-                    marginTop: "20px",            // ✅ Optional: spacing from above
-                    width: "100%",
-                    marginTop: "20px"                // ✅ Ensure full width
+                    display: "flex",              // ✅ Enables horizontal layout
+                    justifyContent: "flex-start",// ✅ Aligns items to the left
+                    alignItems: "center",        // ✅ Vertically centers items
+                    gap: "40px",                 // ✅ Adds spacing between fields
+                    backgroundColor: "#f9f9f9",  // ✅ Optional: visual grouping
+                    padding: "10px 20px",
+                    borderRadius: "6px",
+                    boxShadow: "0 0 4px rgba(0,0,0,0.1)",
+                    width: "fit-content",        // ✅ Prevents stretching full width
+                    maxWidth: "100%"                // ✅ Ensure full width
                   }}
                 >
 
@@ -237,13 +242,13 @@ useEffect(() => {
                   textAlign: "left",                 // ✅ Center text inside each item
               }}
             > */}
-                  <div style={{ minWidth: "100px" }}>
+                  <div style={{ textAlign: "left" }}>
                     <strong>✅ Total:</strong> {availability.total_rooms}
                   </div>
-                  <div style={{ minWidth: "100px" }}>
+                  <div style={{ textAlign: "left" }}>
                     <strong>📦 Booked:</strong> {availability.booked_rooms}
                   </div>
-                  <div style={{ minWidth: "100px" }}>
+                  <div style={{ textAlign: "left" }}>
                     <strong>🟢 Available:</strong> {availability.available_rooms}
                   </div>
                  {/*</div> */}
