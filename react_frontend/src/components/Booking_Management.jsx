@@ -224,7 +224,7 @@ useEffect(() => {
                     backgroundColor: "#f9f9f9",  
                     padding: "10px 20px",
                     borderRadius: "6px",
-                    boxShadow: "0 0 4px rgba(0,0,0,0.1)",
+                    
                     width: "fit-content",        
                     maxWidth: "100%"                
                   }}>
