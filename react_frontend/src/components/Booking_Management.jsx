@@ -229,15 +229,13 @@ useEffect(() => {
                     maxWidth: "100%"                
                   }}> */}
                 
-                  <div style={{ textAlign: "left", flex: "1 1 30%" }}>
-                    <strong>✅ Total:</strong> {availability.total_rooms}
+                  
+                  <div style={{flex: "1 1 30%" }}>
+                    <p><strong>✅ Total:</strong> {availability.total_rooms}</p>                  
+                    <p><strong>📦 Booked:</strong> {availability.booked_rooms}</p>
+                    <p><strong>🟢 Available:</strong> {availability.available_rooms}</p>
                   </div>
-                  <div style={{ textAlign: "left", flex: "1 1 30%" }}>
-                    <strong>📦 Booked:</strong> {availability.booked_rooms}
-                  </div>
-                  <div style={{ textAlign: "left", flex: "1 1 30%" }}>
-                    <strong>🟢 Available:</strong> {availability.available_rooms}
-                  </div>
+                  
                
             
               {availability?.available_rooms > 0 ? (
