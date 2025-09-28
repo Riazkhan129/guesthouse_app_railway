@@ -231,7 +231,7 @@ useEffect(() => {
                   }}> */}
                 
                   
-                 <div style={{ textAlign: "left", flex: "1 1 30%" }}>
+                 <div style={{ textAlign: "left", flex: "1 1 45%" }}>
                   <p><strong>✅ Total:</strong> {availability.total_rooms}</p>
                 </div>
                 <div style={{ textAlign: "left",flex: "1 1 30%" }}>
