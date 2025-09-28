@@ -214,9 +214,8 @@ useEffect(() => {
               {/* ✅ Availability Block — separated and centered */}
               {availability && (
                 
-                <div style={{ marginTop: 10 }}>
-              {/* 🔧 FIXED: Removed flex-wrap layout that was interfering with centering */}
-              <div style={{ display: "flex-left", gap: "20px" }}>
+                <div style={{ marginTop: 20 }}> 
+              {/*<div style={{ display: "flex", gap: "20px" }}> */}
                {/* <div
                    style={{                   
                     display: "flex",              
@@ -241,7 +240,7 @@ useEffect(() => {
                 <div style={{ flex: "1 1 30%" }}>
                   <p><strong>🟢 Available:</strong> {availability.available_rooms}</p>
                 </div>
-              </div> 
+              
                
             
               {availability?.available_rooms > 0 ? (
