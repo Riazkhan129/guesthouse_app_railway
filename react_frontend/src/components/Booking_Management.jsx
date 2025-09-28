@@ -215,8 +215,8 @@ useEffect(() => {
               {availability && (
                 <div style={{ display: "flex", justifyContent: "center", marginTop: "20px" }}>
                 
-                <div
-                  style={{                   
+               {/* <div
+                   style={{                   
                     display: "flex",              
                     justifyContent: "flex-start",
                     alignItems: "left",        
@@ -224,10 +224,10 @@ useEffect(() => {
                     backgroundColor: "#f9f9f9",  
                     padding: "10px 20px",
                     borderRadius: "6px",
-                    
+                    boxShadow: "0 0 4px rgba(0,0,0,0.1)",
                     width: "fit-content",        
                     maxWidth: "100%"                
-                  }}>
+                  }}> */}
                 
                   <div style={{ textAlign: "left", flex: "1 1 30%" }}>
                     <strong>✅ Total:</strong> {availability.total_rooms}
@@ -238,7 +238,7 @@ useEffect(() => {
                   <div style={{ textAlign: "left", flex: "1 1 30%" }}>
                     <strong>🟢 Available:</strong> {availability.available_rooms}
                   </div>
-              </div> 
+               
             
               {availability?.available_rooms > 0 ? (
                 <>
