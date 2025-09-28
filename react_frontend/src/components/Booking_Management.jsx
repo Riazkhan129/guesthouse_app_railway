@@ -178,10 +178,7 @@ useEffect(() => {
                 {/* ✅ Row 1: NIC & Guest Type */}
               <div style={{ display: "flex", gap: "20px" }}>
                 <div style={{ flex: "1 1 45%" }}>
-                  <p style={{ margin: "4px 0" }}>
-                    <strong>NIC:</strong> {selectedGuest.nic_passport_number}
-                  </p>
-
+                  <p><strong>NIC:</strong> {selectedGuest.nic_passport_number}</p>
                 </div>
                 <div style={{ flex: "1 1 45%" }}>
                   <p><strong>Name:</strong> {selectedGuest.name}</p>
@@ -191,7 +188,9 @@ useEffect(() => {
                 {/* ✅ Row 2: Name & Check-in Date */}
               <div style={{ display: "flex", gap: "20px" }}>
                 <div style={{ flex: "1 1 45%" }}>
-                  <p><strong>Guest Type:</strong> {selectedGuest.guest_type || 'N/A'}</p>
+                  <p style={{ margin: "4px 0" }}>
+                    <strong>Guest Type:</strong> {selectedGuest.guest_type || 'N/A'}
+                  </p>
                 </div>
               <div style={{ flex: "1 1 45%", display: "flex", alignItems: "center", gap: "10px" }}>
                 <label style={{ fontWeight: "bold", whiteSpace: "nowrap" }}>Check-in Date:</label>
