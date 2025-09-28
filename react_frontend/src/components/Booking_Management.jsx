@@ -140,7 +140,7 @@ useEffect(() => {
 
 
   return (
-    <div style={{ padding: 20 }}>
+    <div style={{ padding: "20px" }}>
       <h2>📋 Booking Management</h2>
 
       <div style={{ marginBottom: "20px", display: "flex", gap: "20px", flexWrap: "nowrap" }}>
@@ -239,7 +239,7 @@ useEffect(() => {
                     <strong>🟢 Available:</strong> {availability.available_rooms}
                   </div>
               </div> 
-
+            
               {availability?.available_rooms > 0 ? (
                 <>
                   <label style={{ fontWeight: "bold", display: "block", marginBottom: "5px" }}>
@@ -285,6 +285,8 @@ useEffect(() => {
         </div>    
     </div>
   )}
+  </div>
+)}
 
       {/* View All Bookings */}
       {action === "View All Bookings" && (
@@ -295,8 +297,8 @@ useEffect(() => {
               key={b.booking_id}
               style={{
                 border: "1px solid #ccc",
-                marginBottom: 10,
-                padding: 10,
+                marginBottom: "10px",
+                padding: "10px",
                 display: "flex",
                 flexWrap: "wrap",
                 gap: "10px"
@@ -389,8 +391,7 @@ useEffect(() => {
               handleCancelBooking(
                 booking.booking_id,
                 booking.room_number
-              );
-            }
+            )}
           }}
         >
           Cancel Booking
@@ -441,9 +442,8 @@ useEffect(() => {
         ))}
       </div>
     )}
-</div>
-)}
-</div>
-)};
+    </div>
+  )}
+
 
 export default BookingManagement;
