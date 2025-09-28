@@ -216,16 +216,15 @@ useEffect(() => {
               {/* ✅ Availability Block — separated and centered */}
               {availability && (
                
-               
                 <div style={{ marginTop: 10 }}>
                 <div style={{ display: "flex", gap: "20px" }}>
                   {/* Column 1 */}
-                  <div style={{ flex: "1 1 45%" }}>
-                    <p><strong>Total:</strong> {availability.total_rooms}</p>
-                    <p><strong>Name:</strong> {selectedGuest.name}</p>
-                </div>
+                {/* }  <div style={{ flex: "1 1 45%" }}>
+                    <p><strong>✅ Total:</strong> {availability.total_rooms}</p>
+                    <p><strong>📦 Booked:</strong> {availability.booked_rooms}</p>
+                </div> */}
                   
-                {/* <div style={{ textAlign: "left", flex: "1 1 45%" }}>
+                 <div style={{ textAlign: "left", flex: "1 1 45%" }}>
                   <p><strong>✅ Total:</strong> {availability.total_rooms}</p>
                 </div>
                 <div style={{ textAlign: "left",flex: "1 1 45%" }}>
@@ -233,7 +232,7 @@ useEffect(() => {
                 </div>
                 <div style={{ textAlign: "left", flex: "1 1 30%" }}>
                   <p><strong>🟢 Available:</strong> {availability.available_rooms}</p>
-                </div> */}
+                </div> 
               </div>
                
             
