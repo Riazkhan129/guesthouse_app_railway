@@ -215,20 +215,20 @@ useEffect(() => {
               {availability && (
                 
                 <div style={{ marginTop: 20 }}> 
-              <div style={{ display: "flex", gap: "20px" }}> 
-               {/* <div
+              {/* <div style={{ display: "flex", gap: "20px" }}> */}
+                <div
                    style={{                   
                     display: "flex",              
                     justifyContent: "flex-start",
-                    alignItems: "left",        
+                    alignItems: "center",        
                     gap: "40px",                 
                     backgroundColor: "#f9f9f9",  
                     padding: "10px 20px",
                     borderRadius: "6px",
                     boxShadow: "0 0 4px rgba(0,0,0,0.1)",
-                    width: "fit-content",        
+                    width: "100%",        
                     maxWidth: "100%"                
-                  }}> */}
+                  }}>
                 
                   
                  <div style={{ textAlign: "left", flex: "1 1 30%" }}>
