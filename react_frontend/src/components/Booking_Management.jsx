@@ -231,13 +231,13 @@ useEffect(() => {
                   }}> */}
                 
                   
-                 <div style={{ flex: "1 1 30%" }}>
+                 <div style={{ textAlign: "left", flex: "1 1 30%" }}>
                   <p><strong>✅ Total:</strong> {availability.total_rooms}</p>
                 </div>
-                <div style={{ flex: "1 1 30%" }}>
+                <div style={{ textAlign: "left",flex: "1 1 30%" }}>
                   <p><strong>📦 Booked:</strong> {availability.booked_rooms}</p>
                 </div>
-                <div style={{ flex: "1 1 30%" }}>
+                <div style={{ textAlign: "left", flex: "1 1 30%" }}>
                   <p><strong>🟢 Available:</strong> {availability.available_rooms}</p>
                 </div>
               
