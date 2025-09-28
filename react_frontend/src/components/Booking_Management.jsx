@@ -215,7 +215,7 @@ useEffect(() => {
               {availability && (
                 
                 <div style={{ marginTop: 20 }}> 
-              {/*<div style={{ display: "flex", gap: "20px" }}> */}
+              <div style={{ display: "flex", gap: "20px" }}> 
                {/* <div
                    style={{                   
                     display: "flex",              
@@ -240,7 +240,7 @@ useEffect(() => {
                 <div style={{ textAlign: "left", flex: "1 1 30%" }}>
                   <p><strong>🟢 Available:</strong> {availability.available_rooms}</p>
                 </div>
-              
+              </div>
                
             
               {availability?.available_rooms > 0 ? (
