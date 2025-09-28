@@ -211,6 +211,7 @@ useEffect(() => {
                 minDate={new Date()} // 🔧 Prevent dates before today
               />
               </div>
+            </div>
 
               {/* ✅ Availability Block — separated and centered */}
               {availability && (
@@ -278,7 +279,7 @@ useEffect(() => {
               </div>              
             )}
           </div>
-        </div>    
+            
     </div>
   )}
   </div>
