@@ -208,7 +208,7 @@ useEffect(() => {
                 showMonthDropdown
                 showYearDropdown
                 dropdownMode="select"
-                minDate={new Date()} // 🔧 Prevent dates before today
+                minDate={new Date()} 
               />
               </div>
             </div>
