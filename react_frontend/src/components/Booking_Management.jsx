@@ -174,21 +174,21 @@ useEffect(() => {
           </select>
 
           {selectedGuest && !bookingCreated && (
-            <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: "20px" }}>
+            <div style={{ marginTop: 5, display: "flex", flexDirection: "column", gap: "20px" }}>
                 {/* ✅ Row 1: NIC & Guest Type */}
               <div style={{ display: "flex", gap: "20px" }}>
                 <div style={{ flex: "1 1 45%" }}>
                   <p><strong>NIC:</strong> {selectedGuest.nic_passport_number}</p>
                 </div>
                 <div style={{ flex: "1 1 45%" }}>
-                  <p><strong>Guest Type:</strong> {selectedGuest.guest_type || 'N/A'}</p>
+                  <p><strong>Name:</strong> {selectedGuest.name}</p>
+                  
                 </div>
               </div>
-
                 {/* ✅ Row 2: Name & Check-in Date */}
               <div style={{ display: "flex", gap: "20px" }}>
                 <div style={{ flex: "1 1 45%" }}>
-                  <p><strong>Name:</strong> {selectedGuest.name}</p>
+                  <p><strong>Guest Type:</strong> {selectedGuest.guest_type || 'N/A'}</p>
                 </div>
               <div style={{ flex: "1 1 45%", display: "flex", alignItems: "center", gap: "10px" }}>
                 <label style={{ fontWeight: "bold", whiteSpace: "nowrap" }}>Check-in Date:</label>
