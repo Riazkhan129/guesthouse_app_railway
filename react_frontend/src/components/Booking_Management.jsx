@@ -219,7 +219,7 @@ useEffect(() => {
                   style={{                   
                     display: "flex",              // ✅ Enables horizontal layout
                     justifyContent: "flex-start",// ✅ Aligns items to the left
-                    alignItems: "center",        // ✅ Vertically centers items
+                    alignItems: "left",        // ✅ Vertically centers items
                     gap: "40px",                 // ✅ Adds spacing between fields
                     backgroundColor: "#f9f9f9",  // ✅ Optional: visual grouping
                     padding: "10px 20px",
