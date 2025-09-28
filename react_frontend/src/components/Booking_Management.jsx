@@ -193,7 +193,7 @@ useEffect(() => {
                   </p>
                 </div>
               <div style={{ flex: "1 1 45%", display: "flex", alignItems: "center", gap: "10px" }}>
-                <label style={{ fontWeight: "bold", whiteSpace: "nowrap" }}>Check-in Date:</label>
+                <label style={{ fontWeight: "bold", whiteSpace: "nowrap, margin: 0" }}>Check-in Date:</label>
                 <DatePicker
                   selected={checkinDate}
                   onChange={(date) => {
