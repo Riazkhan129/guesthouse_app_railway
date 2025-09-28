@@ -232,12 +232,16 @@ useEffect(() => {
                   }}> */}
                 
                   
-                  <div style={{flex: "1 1 30%" }}>
-                    <p><strong>✅ Total:</strong> {availability.total_rooms}</p>                  
-                    <p><strong>📦 Booked:</strong> {availability.booked_rooms}</p>
-                    <p><strong>🟢 Available:</strong> {availability.available_rooms}</p>
-                  </div>
-                 </div> 
+                 <div style={{ flex: "1 1 30%" }}>
+                  <p><strong>✅ Total:</strong> {availability.total_rooms}</p>
+                </div>
+                <div style={{ flex: "1 1 30%" }}>
+                  <p><strong>📦 Booked:</strong> {availability.booked_rooms}</p>
+                </div>
+                <div style={{ flex: "1 1 30%" }}>
+                  <p><strong>🟢 Available:</strong> {availability.available_rooms}</p>
+                </div>
+              </div> 
                
             
               {availability?.available_rooms > 0 ? (
