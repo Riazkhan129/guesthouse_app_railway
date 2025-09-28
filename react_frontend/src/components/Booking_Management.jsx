@@ -178,7 +178,10 @@ useEffect(() => {
                 {/* ✅ Row 1: NIC & Guest Type */}
               <div style={{ display: "flex", gap: "20px" }}>
                 <div style={{ flex: "1 1 45%" }}>
-                  <p><strong>NIC:</strong> {selectedGuest.nic_passport_number}</p>
+                  <p style={{ margin: "4px 0" }}>
+                    <strong>NIC:</strong> {selectedGuest.nic_passport_number}
+                  </p>
+
                 </div>
                 <div style={{ flex: "1 1 45%" }}>
                   <p><strong>Name:</strong> {selectedGuest.name}</p>
