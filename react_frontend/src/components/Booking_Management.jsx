@@ -125,6 +125,17 @@ useEffect(() => {
     });
   };
 
+  const rowStyle = {
+    display: "flex",
+    gap: "20px",
+    padding: "10px 20px",
+    backgroundColor: "#f9f9f9",
+    borderRadius: "6px",
+    boxShadow: "0 0 4px rgba(0,0,0,0.05)",
+    alignItems: "center"
+};
+
+
   const handleCancelBooking = (bookingId, roomNumber) => {
     API.put(`/bookings/cancel/${bookingId}`, { room_number: roomNumber }, { headers: { Authorization: `Bearer ${token}` } })
     .then(() => {
@@ -176,26 +187,34 @@ useEffect(() => {
           {selectedGuest && !bookingCreated && (
             <div style={{ marginBottom: "10px", display: "flex", flexDirection: "column", gap: "20px" }}>
                 {/* ✅ Row 1: NIC & Guest Type */}
-              <div style={{ display: "flex", gap: "20px" }}>
+              <div style={{  marginBottom: "10px" }}>
+                <div style={rowStyle}>
                 <div style={{ flex: "1 1 45%" }}>
-                  <p><strong>NIC:</strong> {selectedGuest.nic_passport_number}</p>
+                  <p style={{ margin: 0, lineHeight: "1.5" }}>
+                    <strong>NIC:</strong> {selectedGuest.nic_passport_number}
+                  </p>
                 </div>
                 <div style={{ flex: "1 1 45%" }}>
-                  <p><strong>Name:</strong> {selectedGuest.name}</p>
-                  
+                  <p style={{ margin: 0, lineHeight: "1.5" }}>
+                    <strong>Name:</strong> {selectedGuest.name}
+                  </p>
                 </div>
               </div>
-                {/* ✅ Row 2: Name & Check-in Date */}
-              <div style={{ marginBottom: "10px", display: "flex", gap: "12px", alignItems: "center", flexWrap: "nowrap" }}>
-                <div style={{ flex: "1 1 45%" }}>
-                  <div style={{ margin: "2px 0", lineHeight: "1.2" }}>
+              </div>
+
+                {/* ✅ Row 2: Guest Type & Check-in Date */}
+              <div style={{ marginBottom: "10px" }}>
+                <div style={rowStyle}>
+                  <div style={{ flex: "1 1 45%" }}>
+                  <p style={{ margin: 0, lineHeight: "1.5" }}>
                     <strong>Guest Type:</strong> {selectedGuest.guest_type || 'N/A'}
-                  </div>
+                  </p>
                 </div>
 
-              <div style={{ flex: "1 1 45%", display: "flex", alignItems: "center", gap: "6px",  minWidth: "0" }}>
-                <label style={{ fontWeight: "bold", whiteSpace: "nowrap", margin: "2px 0", lineHeight: "1.2" }}>
-                  Check-in Date:</label>
+              <div style={{ flex: "1 1 45%", display: "flex", gap: "6px", alignItems: "center" }}>
+                <label style={{ fontWeight: "bold", whiteSpace: "nowrap", margin: 0, lineHeight: "1.5" }}>
+                  Check-in Date:
+                </label>
               <div style={{ flex: "1", minWidth: "160px" }}>
                 <DatePicker
                   selected={checkinDate}
@@ -219,6 +238,7 @@ useEffect(() => {
             </div>
           </div>
         </div>
+      </div>
                
           {/* ✅ Row 3: Total, Booked, Available */}
           {availability && (
