@@ -217,7 +217,7 @@ useEffect(() => {
               />
             </div>
           </div>
-          </div>
+        
                
           {/* ✅ Row 3: Total, Booked, Available */}
           {availability && (
@@ -280,7 +280,7 @@ useEffect(() => {
           </p>
         )}
       </div>
-    )}
+    
   </div>
 )}
 
@@ -439,7 +439,11 @@ useEffect(() => {
       </div>
     )}
     </div>
+    )}
+    </div>
+  
   )}
+  
 
 
 export default BookingManagement;
