@@ -192,7 +192,7 @@ useEffect(() => {
                     <strong>Guest Type:</strong> {selectedGuest.guest_type || 'N/A'}
                   </div>
                 </div>
-              <div style={{ flex: "1 1 45%", display: "flex", alignItems: "center", gap: "10px" }}>
+              <div style={{ flex: "1 1 45%", display: "flex", alignItems: "center", gap: "6px" }}>
                 <label style={{ fontWeight: "bold", whiteSpace: "nowrap", margin: "2px 0", lineHeight: "1.2" }}>
                   Check-in Date:</label>
                 <DatePicker
