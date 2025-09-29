@@ -192,9 +192,10 @@ useEffect(() => {
                     <strong>Guest Type:</strong> {selectedGuest.guest_type || 'N/A'}
                   </div>
                 </div>
-              <div style={{ flex: "1 1 45%" }}>
-                <label style={{ fontWeight: "bold", whiteSpace: "nowrap", margin: "2px 0", lineHeight: "1.2", display: "block" }}>
+              <div style={{ display: "flex", gap: "6px", alignItems: "center", flexWrap: "nowrap", width: "100%" }}>
+                <label style={{ fontWeight: "bold", whiteSpace: "nowrap", margin: "2px 0", lineHeight: "1.2" }}>
                   Check-in Date:</label>
+              <div style={{ flex: "1", minWidth: "160px" }}>
                 <DatePicker
                   selected={checkinDate}
                   onChange={(date) => {
