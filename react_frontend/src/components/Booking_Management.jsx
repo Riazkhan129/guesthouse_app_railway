@@ -223,13 +223,13 @@ useEffect(() => {
           {/* ✅ Row 3: Total, Booked, Available */}
           {availability && (
             <div style={{ margin: 0, display: "flex", gap: "20px", backgroundColor: "#f9f9f9", padding: "10px 20px", borderRadius: "6px", boxShadow: "0 0 4px rgba(0,0,0,0.1)" }}>
-              <div style={{ flex: "1 1 30%" }}>
+              <div style={{ margin: 0, flex: "1 1 30%" }}>
                 <p><strong>✅ Total:</strong> {availability.total_rooms}</p>
               </div>
-              <div style={{ flex: "1 1 30%" }}>
+              <div style={{ margin: 0, flex: "1 1 30%" }}>
                 <p><strong>📦 Booked:</strong> {availability.booked_rooms}</p>
             </div>
-            <div style={{ flex: "1 1 30%" }}>
+            <div style={{ margin: 0, flex: "1 1 30%" }}>
               <p><strong>🟢 Available:</strong> {availability.available_rooms}</p>
             </div>
           </div>          
