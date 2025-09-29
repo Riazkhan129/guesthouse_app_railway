@@ -10,7 +10,7 @@ const PrivacyPolicy = () => {
         <li>All data is stored securely and used only for operational purposes.</li>
         <li>You can request access or deletion of your data at any time.</li>
       </ul>
-      <p>For more details, contact us at support@aarkaysolutions.com.</p>
+      <p>For more details, contact us at riazkhankse@gmail.com.</p>
     </div>
   );
 };
