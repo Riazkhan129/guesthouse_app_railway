@@ -186,14 +186,14 @@ useEffect(() => {
                 </div>
               </div>
                 {/* ✅ Row 2: Name & Check-in Date */}
-              <div style={{ display: "flex", gap: "12px", marginBottom: "4px" }}>
+              <div style={{ display: "flex", gap: "12px", marginBottom: "4px", flexWrap: "nowrap" }}>
                 <div style={{ flex: "1 1 45%" }}>
                   <div style={{ margin: "2px 0", lineHeight: "1.2" }}>
                     <strong>Guest Type:</strong> {selectedGuest.guest_type || 'N/A'}
                   </div>
                 </div>
-              <div style={{ flex: "1 1 45%", display: "flex", alignItems: "center", gap: "6px" }}>
-                <label style={{ fontWeight: "bold", whiteSpace: "nowrap", margin: "2px 0", lineHeight: "1.2" }}>
+              <div style={{ flex: "1 1 45%" }}>
+                <label style={{ fontWeight: "bold", whiteSpace: "nowrap", margin: "2px 0", lineHeight: "1.2", display: "block" }}>
                   Check-in Date:</label>
                 <DatePicker
                   selected={checkinDate}
