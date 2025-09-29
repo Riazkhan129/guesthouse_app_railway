@@ -186,13 +186,14 @@ useEffect(() => {
                 </div>
               </div>
                 {/* ✅ Row 2: Name & Check-in Date */}
-              <div style={{ display: "flex", gap: "12px", marginBottom: "4px", flexWrap: "nowrap" }}>
+              <div style={{ display: "flex", gap: "12px", alignItems: "center", flexWrap: "nowrap" }}>
                 <div style={{ flex: "1 1 45%" }}>
                   <div style={{ margin: "2px 0", lineHeight: "1.2" }}>
                     <strong>Guest Type:</strong> {selectedGuest.guest_type || 'N/A'}
                   </div>
                 </div>
-              <div style={{ display: "flex", gap: "6px", alignItems: "center", flexWrap: "nowrap", width: "100%" }}>
+
+              <div style={{ flex: "1 1 45%", display: "flex", alignItems: "center", gap: "6px",  minWidth: "0" }}>
                 <label style={{ fontWeight: "bold", whiteSpace: "nowrap", margin: "2px 0", lineHeight: "1.2" }}>
                   Check-in Date:</label>
               <div style={{ flex: "1", minWidth: "160px" }}>
@@ -206,18 +207,18 @@ useEffect(() => {
                     nextDay.setDate(date.getDate() + 1);
                     setCheckoutDate(nextDay);
                     handleCheckAvailability(dateOnly);
-                }}
-                dateFormat="dd MMM yyyy"
-                placeholderText="Select check-in date"
-                className="react-datepicker-input"
-                showMonthDropdown
-                showYearDropdown
-                dropdownMode="select"
-                minDate={new Date()}
+                  }}
+                  dateFormat="dd MMM yyyy"
+                  placeholderText="Select check-in date"
+                  className="react-datepicker-input"
+                  showMonthDropdown
+                  showYearDropdown
+                  dropdownMode="select"
+                  minDate={new Date()}
               />
             </div>
           </div>
-        
+        </div>
                
           {/* ✅ Row 3: Total, Booked, Available */}
           {availability && (
@@ -231,8 +232,7 @@ useEffect(() => {
             <div style={{ flex: "1 1 30%" }}>
               <p><strong>🟢 Available:</strong> {availability.available_rooms}</p>
             </div>
-          </div>
-          
+          </div>          
         )}
 
         {/* ✅ Row 4: Check-out Date */}
@@ -280,9 +280,9 @@ useEffect(() => {
           </p>
         )}
       </div>
-    
+    )}
   </div>
-)}
+)} {/* ✅ closes action === "Create Booking" */}
 
       {/* View All Bookings */}
       {action === "View All Bookings" && (
@@ -440,10 +440,6 @@ useEffect(() => {
     )}
     </div>
     )}
-    </div>
-  
-  )}
-  
 
 
 export default BookingManagement;
