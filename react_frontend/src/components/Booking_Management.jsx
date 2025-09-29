@@ -174,7 +174,7 @@ useEffect(() => {
           </select>
 
           {selectedGuest && !bookingCreated && (
-            <div style={{  display: "flex", flexDirection: "column", gap: "20px" }}>
+            <div style={{ marginBottom: "10px", display: "flex", flexDirection: "column", gap: "20px" }}>
                 {/* ✅ Row 1: NIC & Guest Type */}
               <div style={{ display: "flex", gap: "20px" }}>
                 <div style={{ flex: "1 1 45%" }}>
@@ -186,7 +186,7 @@ useEffect(() => {
                 </div>
               </div>
                 {/* ✅ Row 2: Name & Check-in Date */}
-              <div style={{ display: "flex", gap: "12px", alignItems: "center", flexWrap: "nowrap" }}>
+              <div style={{ marginBottom: "10px", display: "flex", gap: "12px", alignItems: "center", flexWrap: "nowrap" }}>
                 <div style={{ flex: "1 1 45%" }}>
                   <div style={{ margin: "2px 0", lineHeight: "1.2" }}>
                     <strong>Guest Type:</strong> {selectedGuest.guest_type || 'N/A'}
@@ -222,7 +222,7 @@ useEffect(() => {
                
           {/* ✅ Row 3: Total, Booked, Available */}
           {availability && (
-            <div style={{ display: "flex", gap: "20px", backgroundColor: "#f9f9f9", padding: "10px 20px", borderRadius: "6px", boxShadow: "0 0 4px rgba(0,0,0,0.1)" }}>
+            <div style={{ margin: 0, display: "flex", gap: "20px", backgroundColor: "#f9f9f9", padding: "10px 20px", borderRadius: "6px", boxShadow: "0 0 4px rgba(0,0,0,0.1)" }}>
               <div style={{ flex: "1 1 30%" }}>
                 <p><strong>✅ Total:</strong> {availability.total_rooms}</p>
               </div>
