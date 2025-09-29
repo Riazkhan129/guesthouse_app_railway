@@ -199,13 +199,13 @@ useEffect(() => {
                 <DatePicker
                   selected={checkinDate}
                   onChange={(date) => {
-                  if (!date) return;
-                  const dateOnly = date.toISOString().split("T")[0];
-                  setCheckinDate(dateOnly); 
-                  const nextDay = new Date(date);
-                  nextDay.setDate(date.getDate() + 1);
-                  setCheckoutDate(nextDay);
-                  handleCheckAvailability(dateOnly);
+                    if (!date) return;
+                    const dateOnly = date.toISOString().split("T")[0];
+                    setCheckinDate(dateOnly); 
+                    const nextDay = new Date(date);
+                    nextDay.setDate(date.getDate() + 1);
+                    setCheckoutDate(nextDay);
+                    handleCheckAvailability(dateOnly);
                 }}
                 dateFormat="dd MMM yyyy"
                 placeholderText="Select check-in date"
@@ -216,6 +216,7 @@ useEffect(() => {
                 minDate={new Date()}
               />
             </div>
+          </div>
           </div>
                
           {/* ✅ Row 3: Total, Booked, Available */}
@@ -231,6 +232,7 @@ useEffect(() => {
               <p><strong>🟢 Available:</strong> {availability.available_rooms}</p>
             </div>
           </div>
+          
         )}
 
         {/* ✅ Row 4: Check-out Date */}
