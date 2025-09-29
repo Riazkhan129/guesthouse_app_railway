@@ -174,7 +174,7 @@ useEffect(() => {
           </select>
 
           {selectedGuest && !bookingCreated && (
-            <div style={{ marginBottom: "10px", display: "flex", flexDirection: "column", gap: "20px" }}>
+            <div style={{  display: "flex", flexDirection: "column", gap: "20px" }}>
                 {/* ✅ Row 1: NIC & Guest Type */}
               <div style={{ display: "flex", gap: "20px" }}>
                 <div style={{ flex: "1 1 45%" }}>
