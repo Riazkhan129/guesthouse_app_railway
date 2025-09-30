@@ -70,6 +70,7 @@ const GuestReport = () => {
           // const filtered = res.data.filter(b => b.actual_checkin_time);
           const filtered = res.data.filter(b => b.actual_checkin_time || b.actual_checkout_time); // ✅ FIXED: Include bookings with either check-in or check-out
           console.log("✅ Filtered bookings :", filtered);
+          console.log("b.acutal_checkout_time -------->", b.actual_checkout_time)
           setBookings(filtered);
         })
         .catch(err => console.error("❌ Booking fetch error", err));
