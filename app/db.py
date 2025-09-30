@@ -239,7 +239,7 @@ def initialize_database(db_path_or_conn, client_id):
     invoice_id_column = (
         "invoice_id SERIAL PRIMARY KEY"
         if DB_MODE == "multi-tenant"
-        else "invoice_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY"
+        else "invoice_id INTEGER PRIMARY KEY AUTOINCREMENT"
 )
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS invoices (
