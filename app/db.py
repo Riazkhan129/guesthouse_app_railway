@@ -32,7 +32,7 @@ def get_available_drives():
 def find_or_create_ghms_folder():
     drives = get_available_drives()
     for drive in drives:
-        ghms_path = os.path.join(drive, "ghms")if not result:
+        ghms_path = os.path.join(drive, "ghms") if not result:
                 raise RuntimeError(f"❌ No DB URL found for client '{client_id}'")  # ✅ ADDED: Error if missing
         try:
             os.makedirs(ghms_path, exist_ok=True)
