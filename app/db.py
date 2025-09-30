@@ -241,25 +241,27 @@ def initialize_database(db_path_or_conn, client_id):
         if DB_MODE == "multi-tenant"
         else "invoice_id INTEGER PRIMARY KEY AUTOINCREMENT")
         
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS invoices (
-            {invoice_id_column},
-            nic_passport_number TEXT,
-            guest_name TEXT,
-            room_number TEXT,
-            room_price INTEGER,
-            checkin_date TEXT,
-            checkout_date TEXT,
-            total_nights INTEGER,
-            room_charges INTEGER,
-            laundry REAL,
-            meals REAL,
-            damages REAL,
-            total_amount REAL,
-            booking_id INTEGER,
-            FOREIGN KEY (booking_id) REFERENCES bookings(booking_id)
+    query = f"""
+    CREATE TABLE IF NOT EXISTS invoices (
+        {invoice_id_column},
+        nic_passport_number TEXT,
+        guest_name TEXT,
+        room_number TEXT,
+        room_price INTEGER,
+        checkin_date TEXT,
+        checkout_date TEXT,
+        total_nights INTEGER,
+        room_charges INTEGER,
+        laundry REAL,
+        meals REAL,
+        damages REAL,
+        total_amount REAL,
+        booking_id INTEGER,
+        FOREIGN KEY (booking_id) REFERENCES bookings(booking_id)
         )
-    """)
+    """
+
+    cursor.execute(query)
 
     print("✅ 'invoices' table creation executed")  # ✅ ADDED: Debug log
 
