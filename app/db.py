@@ -236,7 +236,7 @@ def initialize_database(db_path_or_conn, client_id):
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS invoices (
-            invoice_id INTEGER,
+            invoice_id INTEGER PRIMARY KEY AUTOINCREMENT,
             nic_passport_number TEXT,
             guest_name TEXT,
             room_number TEXT,

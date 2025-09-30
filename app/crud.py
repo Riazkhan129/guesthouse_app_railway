@@ -539,6 +539,7 @@ def create_invoice(client_id: str, invoice_data: InvoiceCreate):
                     {placeholder}, {placeholder}, {placeholder},
                     {placeholder}, {placeholder}, {placeholder}, {placeholder},
                     {placeholder}, {placeholder})
+            RETURNING invoice_id
         """  # ✅ Dynamic placeholders
         cursor.execute(query, (
             invoice_data.guest_nic,
@@ -556,7 +557,7 @@ def create_invoice(client_id: str, invoice_data: InvoiceCreate):
             invoice_data.booking_id
         ))
         conn.commit()
-        invoice_id = cursor.lastrowid
+        invoice_id = cursor.fetchone()[0]
         print("IN CRUD - CREATE_INVOICE = ", invoice_id)
         conn.close()
         return {**invoice_data.dict(), "id": invoice_id}  # returns BillingOut
