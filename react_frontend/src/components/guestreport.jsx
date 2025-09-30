@@ -66,7 +66,7 @@ const GuestReport = () => {
   useEffect(() => {
     if (!clientId || !token) return;
 
-    API.get("/guests/all/${clientId}", {
+    API.get('/guests/all/${clientId}', {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => setGuests(res.data))
