@@ -76,13 +76,13 @@ const GuestReport = () => {
   // Load guest and all bookings
   useEffect(() => {
     if (selectedNic && clientId) {
-      API.get(`/guests/search/${clientId}/${selectedNic}`, {
+      API.get(`/guests/search/${selectedNic}`, {
         headers: { Authorization: `Bearer ${token}` }
       })
         .then(res => setGuest(res.data))
         .catch(err => console.error("❌ Guest fetch error", err));
 
-      API.get(`/bookings/by_nic/${clientId}/${selectedNic}`, {
+      API.get(`/bookings/by_nic/${selectedNic}`, {
         headers: { Authorization: `Bearer ${token}` }
       })
         .then(res => {
