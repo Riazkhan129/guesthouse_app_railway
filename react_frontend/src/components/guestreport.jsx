@@ -4,7 +4,7 @@ import { AuthContext } from "../context/AuthContext"; // ✅ ADDED: For token
 
 
 const GuestReport = () => {
-  const { token } = useContext(AuthContext); // ✅ ADDED
+  const { token, clientId } = useContext(AuthContext); // ✅ ADDED
 
   const [guests, setGuests] = useState([]);
   const [selectedNic, setSelectedNic] = useState("");
@@ -64,7 +64,9 @@ const GuestReport = () => {
 
   // Load NICs from bookings with actual_checkin_time
   useEffect(() => {
-    API.get("/guests/all", {
+    if (!clientId || !token) return;
+
+    API.get("/guests/all/${clientId}", {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then(res => setGuests(res.data))
@@ -73,14 +75,14 @@ const GuestReport = () => {
 
   // Load guest and all bookings
   useEffect(() => {
-    if (selectedNic) {
-      API.get(`/guests/search/${selectedNic}`, {
+    if (selectedNic && clientId) {
+      API.get(`/guests/search/${clientId}/${selectedNic}`, {
         headers: { Authorization: `Bearer ${token}` }
       })
         .then(res => setGuest(res.data))
         .catch(err => console.error("❌ Guest fetch error", err));
 
-      API.get(`/bookings/by_nic/${selectedNic}`, {
+      API.get(`/bookings/by_nic/${clientId}/${selectedNic}`, {
         headers: { Authorization: `Bearer ${token}` }
       })
         .then(res => {
