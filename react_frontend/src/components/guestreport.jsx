@@ -12,9 +12,27 @@ const GuestReport = () => {
   const [bookings, setBookings] = useState([]);
   const [runtime, setRuntime] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [companyName, setCompanyName] = useState("Loading...");
   const totalPages = Math.ceil(bookings.length / 15); // assuming 5 bookings per page
 
-  
+
+// ✅ ADDED: Fetch company name from backend
+  useEffect(() => {
+    if (!clientId || !token) return;
+
+    API.get(`/meta/guesthouse/${clientId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then((res) => {
+        if (res.data?.guesthouse_name) {
+          setCompanyName(res.data.guesthouse_name); // ✅ FIXED: Set company name
+        } else {
+          setCompanyName("Unknown Company");
+        }
+      })
+      .catch(() => setCompanyName("Unknown Company"));
+  }, [clientId, token]);
+
   function formatDate(dateString) {
     if (!dateString) return ""; // Handle null or undefined
     const date = new Date(dateString);
@@ -96,7 +114,7 @@ const GuestReport = () => {
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "20px" }}>
             <div>{runtime}</div>
             <div style={{ textAlign: "center", flex: 1, fontWeight: "bold", fontSize: "18px" }}>
-              🏨 Nursery Guest House
+              🏨 {companyName}
             </div>
             <div style={{ width: "100px" }}></div>
           </div>
@@ -137,7 +155,7 @@ const GuestReport = () => {
         <div style={{ marginTop: "40px", textAlign: "center", fontStyle: "italic" }}>
           Page {currentPage} of {totalPages}
           <br />
-          Developed by Aarkay's Solutions | © {new Date().getFullYear()} LodgeControl
+          Developed by Aarkay's Solutions | © {new Date().getFullYear()} SmartHost
         </div>
       </div>
       )}
