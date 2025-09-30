@@ -82,6 +82,7 @@ function Checkout() {
 
       const checkinDate = new Date(booking.checkin_date);
       const today = new Date();
+      
       const diffTime = Math.abs(today - checkinDate);
       const nights = Math.max(Math.ceil(diffTime / (1000 * 60 * 60 * 24)), 1);
       setTotalNights(nights);

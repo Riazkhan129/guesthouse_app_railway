@@ -2,8 +2,6 @@ import React, { useEffect, useState, useContext } from "react";
 import API from "../api"; // ✅ ADDED: Centralized Axios instance
 import { AuthContext } from "../context/AuthContext"; // ✅ ADDED: For token
 
-const API_URL = "http://localhost:8000"; // Replace with your actual backend
-const headers = { Authorization: "Bearer your_token_here" }; // Add auth if needed
 
 const GuestReport = () => {
   const { token } = useContext(AuthContext); // ✅ ADDED
@@ -51,7 +49,6 @@ const GuestReport = () => {
     API.get("/guests/all", {
       headers: { Authorization: `Bearer ${token}` }
     })
-
       .then(res => setGuests(res.data))
       .catch(err => console.error("❌ Failed to load guests", err));
   }, []);
@@ -70,8 +67,9 @@ const GuestReport = () => {
       })
         .then(res => {
           console.log("📦 Raw booking data:", res.data);
-          const filtered = res.data.filter(b => b.actual_checkin_time);
-          console.log("✅ Filtered bookings (with check-in):", filtered);
+          // const filtered = res.data.filter(b => b.actual_checkin_time);
+          const filtered = res.data.filter(b => b.actual_checkin_time || b.actual_checkout_time); // ✅ FIXED: Include bookings with either check-in or check-out
+          console.log("✅ Filtered bookings :", filtered);
           setBookings(filtered);
         })
         .catch(err => console.error("❌ Booking fetch error", err));
@@ -130,7 +128,7 @@ const GuestReport = () => {
             <div style={{ flex: 1 }}>{formatDateOnly(b.checkin_date)}</div>
             <div style={{ flex: 1 }}>{formatDateOnly(b.checkout_date)}</div>
             <div style={{ flex: 1 }}>{formatDate(b.actual_checkin_time)}</div>
-            <div style={{ flex: 1 }}>{formatDate(b.actual_checkout_date)}</div>
+            <div style={{ flex: 1 }}>{formatDate(b.actual_checkout_time)}</div>
             <div style={{ flex: 1 }}>{b.room_number}</div>
           </div>
         ))}
