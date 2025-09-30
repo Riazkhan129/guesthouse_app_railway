@@ -152,7 +152,7 @@ class BookingOut(BaseModel):
     notes: Optional[str]
     actual_checkin_time: Optional[str] = None
     advance_payment: Optional[int] = None
-    actual_checkout_date: Optional[str] = None
+    actual_checkout_time: Optional[str] = None
     total_payment: Optional[int] = None
 
 class BookingOutCheckIn(BaseModel):
