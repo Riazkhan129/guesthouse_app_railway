@@ -14,6 +14,7 @@ import psycopg2
 
 # ✅ Load environment variables from .env (only works locally)
 load_dotenv()
+DB_MODE = os.getenv("DB_MODE", "local")
 
 
 # ✅ Define base_path globally
@@ -81,17 +82,22 @@ def read_root():
 
 @app.get("/meta/guesthouse/{client_id}")
 def get_guesthouse_name(client_id: str):
-    config_url = os.getenv("CONFIG_DB_URL")
-    config_conn = psycopg2.connect(config_url)
-    config_cursor = config_conn.cursor()
-    config_cursor.execute("SELECT client_name FROM client_databases WHERE client_id = %s", (client_id,))
-    result = config_cursor.fetchone()
-    print("Config_cursor.fetchone = ", result)
-    config_conn.close()  # ✅ ADDED: Close config DB connection
+    if DB_MODE == "multi-tenant":
+        config_url = os.getenv("CONFIG_DB_URL")
+        config_conn = psycopg2.connect(config_url)
+        config_cursor = config_conn.cursor()
+        config_cursor.execute("SELECT client_name FROM client_databases WHERE client_id = %s", (client_id,))
+        result = config_cursor.fetchone()
+        print("Config_cursor.fetchone = ", result)
+        config_conn.close()  # ✅ ADDED: Close config DB connection
 
-    if result:
-        return {"guesthouse_name": result[0]}
-    return JSONResponse(status_code=404, content={"error": "Guesthouse not found"})
+        if result:
+            return {"guesthouse_name": result[0]}
+        
+        return JSONResponse(status_code=404, content={"error": "Guesthouse not found"})
+    else:
+        validate_license()  # ✅ ADDED: Run license check manually
+        return {"guesthouse_name": app.state.guesthouse_name}
 
 # === Utility: Read client code from file ===
 def read_client_code():
@@ -149,6 +155,7 @@ def license_check():
             encrypted = lf.read()
         decrypted = cipher.decrypt(encrypted)
         license_data = json.loads(decrypted.decode())
+        print("license data =======", license_date)
 
         expiry = license_data.get("expiry")
         guesthouse = license_data.get("guesthouse", "Unknown")
@@ -171,7 +178,7 @@ def license_check():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"License check failed: {str(e)}")
 # === FastAPI Startup Event ===
-@app.on_event("startup")
+# @app.on_event("startup")
 def validate_license():
     try:        
         client_code = read_client_code()
@@ -200,6 +207,9 @@ def validate_license():
                 raise Exception(f"License expired on {expiry_date}")
 
         print(f"✅ License valid for: {app.state.guesthouse_name}")
+        guesthouse_name = app.state.guesthouse_name
+        print(f"✅ GUESTHOUSE_NAME =====", guesthouse_name)
+        
 
         # ✅ ADDED: Initialize DB for this client
         # conn, _ = get_or_create_client_db(client_code)  # ✅ UPDATED
