@@ -1,3 +1,5 @@
+require('dotenv').config(); // ✅ Load .env variables
+
 const { execSync } = require('child_process');
 
 const isRailway = process.env.RAILWAY_ENVIRONMENT_NAME;

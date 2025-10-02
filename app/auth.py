@@ -34,12 +34,14 @@ def login(
         query = f"SELECT username, password, role FROM users WHERE username = {placeholder}"
         cursor.execute(query, (username,))
         user = cursor.fetchone()
+        print("IN AUTH.PY ==== ", user)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"❌ Query failed: {e}")
 
     if user:
         db_username, db_encrypted_password, db_role = user
         key = get_encryption_key(client_id)
+        print("encryptuin_key =====", key)
         if not key:
             raise HTTPException(status_code=500, detail="Encryption key not found")
 

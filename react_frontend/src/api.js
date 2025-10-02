@@ -1,8 +1,10 @@
 import axios from "axios";
 
 // ✅ Detect environment
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "https://ghmsbackend-production.up.railway.app"; // 🔧 UPDATED: fallback added
+const API_BASE_URL = process.env.REACT_APP_API_URL || "https://ghmsbackend-production.up.railway.app";
+
+// const API_BASE_URL =
+//  import.meta.env.VITE_API_BASE_URL || "https://ghmsbackend-production.up.railway.app"; // 🔧 UPDATED: fallback added
 // const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 
 // ✅ Create Axios instance

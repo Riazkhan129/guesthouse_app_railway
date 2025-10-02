@@ -25,24 +25,32 @@ function Login() {
   console.log("📝 Login payload:", { username, password, client_id: clientId });
   
   try {
-    const res = await API.post(
-      "/token",
-      qs.stringify({ username, password, client_id: clientId }),
-      { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
-    );
+      // ✅ ADDED: Initialize backend with correct client_id
+      await API.post(
+        "/meta/init",
+        qs.stringify({ client_id: clientId }),
+        { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
+      );
+      console.log("✅ Backend initialized for client:", clientId);
 
-    console.log("✅ Login response:", res.data);
-    localStorage.setItem("client_id", res.data.clientId); // ✅ Store client_id for interceptors
-    login(res.data.access_token, username, res.data.role, res.data.client_id); // ✅ Pass client_id
-  } catch (err) {
-    console.error("❌ Login error:", err.response?.data || err.message);
-    setError("Invalid username, password or client id.");
-    setPassword("");
-  } finally {
-    setLoading(false);
-  }
-};
+      // ✅ Proceed with login
+      const res = await API.post(
+        "/token",
+        qs.stringify({ username, password, client_id: clientId }),
+        { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
+      );
 
+      console.log("✅ Login response:", res.data);
+      localStorage.setItem("client_id", res.data.client_id); // ✅ Store client_id
+      login(res.data.access_token, username, res.data.role, res.data.client_id); // ✅ Pass client_id
+    } catch (err) {
+      console.error("❌ Login error:", err.response?.data || err.message);
+      setError("Invalid username, password or client ID.");
+      setPassword("");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div style={{

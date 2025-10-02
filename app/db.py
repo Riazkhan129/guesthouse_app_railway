@@ -31,8 +31,8 @@ def get_available_drives():
 # ---------- Create or Find ghms Folder ----------
 def find_or_create_ghms_folder():
     drives = get_available_drives()
-    if not result:
-        raise RuntimeError(f"❌ No DB URL found for client '{client_id}'")  # ✅ Error if missing
+    #if not result:
+    #    raise RuntimeError(f"❌ No DB URL found for client '{client_id}'")  # ✅ Error if missing
     for drive in drives:
         ghms_path = os.path.join(drive, "ghms")
         try:
@@ -43,35 +43,6 @@ def find_or_create_ghms_folder():
     
     raise RuntimeError("❌ Could not create ghms folder on any available drive.")
 
-# ---------- Get DB Connection ----------
-#def get_connection():
-#    if DB_MODE == "multi-tenant":
-#        db_url = os.getenv("DB_URL")  # ✅ Railway PostgreSQL URL
-#        if not db_url:
-#            raise RuntimeError("❌ DB_URL environment variable not set")
-#        try:
-#            conn = psycopg2.connect(db_url)
-#            conn.autocommit = True
-#            print("✅ Connected to Railway PostgreSQL")
-#            return conn
-#        except Exception as e:
-#            raise RuntimeError(f"❌ Failed to connect to Railway DB: {e}")
-#    else:
-#        ghms_folder = find_or_create_ghms_folder()  # ✅ Use client drive logic
-#        db_path = os.path.join(ghms_folder, "guesthouse.sqlite")  # ✅ Fixed local path
-#        print("📌 Checking DB at:", db_path)
-#        if not os.path.exists(db_path):
-#            print("⚠️ DB not found. Creating it...")
-#            initialize_database(db_path)
-#        try:
-#            with open(db_path, 'rb') as f:
-#                f.read(1)
-#            print("✅ DB file is readable")
-#        except Exception as e:
-#            raise RuntimeError(f"❌ Cannot read DB file: {e}")
-#        conn = sqlite3.connect(db_path)
-#        conn.execute("PRAGMA foreign_keys = ON")
-#        return conn
 
 # ✅ ADDED: Unified DB setup for local and multi-tenant
 
@@ -104,7 +75,8 @@ def get_or_create_client_db(client_id):
             print(f"🔧 Initializing DB for client: {client_id}")
         else:
             ghms_folder = find_or_create_ghms_folder()
-            db_path = os.path.join(ghms_folder, f"{client_id}.sqlite")
+            db_path = os.path.join(ghms_folder, "smarthost.sqlite")
+            # db_path = os.path.join(ghms_folder, f"{client_id}.sqlite")
             if not os.path.exists(db_path):
                 print(f"⚠️ Local DB for client '{client_id}' not found. Creating...")
             conn = sqlite3.connect(db_path)
@@ -307,6 +279,7 @@ def initialize_database(db_path_or_conn, client_id):
         cursor.execute("SELECT COUNT(*) FROM users WHERE username = ?", ("admin2",))
     if cursor.fetchone()[0] == 0:
         encrypted_pw = encrypt_password("admin2", encryption_key)
+        print ("In DB.PY encryption key ====", encryption_key)
         if DB_MODE == "multi-tenant":
             cursor.execute("INSERT INTO users (username, password, role, name) VALUES (%s, %s, %s, %s)",
                            ("admin2", encrypted_pw, "Management", "Admin Two"))

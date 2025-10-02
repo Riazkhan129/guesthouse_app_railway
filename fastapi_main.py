@@ -5,12 +5,12 @@ from datetime import datetime
 from cryptography.fernet import Fernet
 from dotenv import load_dotenv  # ✅ NEW: Load .env for local testing
 from fastapi.middleware.cors import CORSMiddleware
-# ✅ ADDED: Import DB initializer
-from app.db import get_or_create_client_db  # ✅ ADDED: Initialize DB per client
-from fastapi import APIRouter, Depends, Request
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI, HTTPException, APIRouter, Depends, Request
+from fastapi.responses import JSONResponse, PlainTextResponse
 import psycopg2
 
+# from app.db import get_or_create_client_db  # ✅ ADDED: Initialize DB per client
+# /meta/guesthouse
 
 # ✅ Load environment variables from .env (only works locally)
 load_dotenv()
@@ -27,12 +27,13 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 
 # FastAPI imports
-from fastapi import FastAPI, HTTPException
-from fastapi.responses import PlainTextResponse
-from fastapi.middleware.cors import CORSMiddleware
+#from fastapi import FastAPI, HTTPException
+#from fastapi.responses import PlainTextResponse
+#from fastapi.middleware.cors import CORSMiddleware
 from app.auth import auth_router
-from app.db import initialize_database
-from app.crud import get_all_bookings  # Optional: only if you use it somewhere
+from app.db import get_or_create_client_db  # ✅ ADDED
+#from app.db import initialize_database
+#from app.crud import get_all_bookings  # Optional: only if you use it somewhere
 
 # Local module imports
 from app.routes import (
@@ -88,13 +89,6 @@ def get_guesthouse_name(client_id: str):
     print("Config_cursor.fetchone = ", result)
     config_conn.close()  # ✅ ADDED: Close config DB connection
 
-    # ------------
-    #cursor = conn.cursor()
-    #cursor.execute("SELECT client_name FROM client_databases WHERE client_id = %s", (client_id,))
-    #result = config_cursor.fetchone()
-    #print ("IN FASTAPI_MAIN = ", result)
-    #cursor.close()
-    #conn.close()
     if result:
         return {"guesthouse_name": result[0]}
     return JSONResponse(status_code=404, content={"error": "Guesthouse not found"})
@@ -208,14 +202,27 @@ def validate_license():
         print(f"✅ License valid for: {app.state.guesthouse_name}")
 
         # ✅ ADDED: Initialize DB for this client
-        conn, _ = get_or_create_client_db(client_code)  # ✅ UPDATED
-        conn.close()  # ✅ Now this works correctly
+        # conn, _ = get_or_create_client_db(client_code)  # ✅ UPDATED
+        # conn.close()  # ✅ Now this works correctly
 
     except Exception as e:
         print("❌ License validation failed:", str(e))
         raise e
 
-
+# === ✅ NEW: Initialization Endpoint ===
+@app.post("/meta/init")
+async def initialize_client(request: Request):
+    form = await request.form()
+    client_id = form.get("client_id")
+    if not client_id:
+        raise HTTPException(status_code=400, detail="Missing client_id")
+    try:
+        print(f"🚀 Initializing backend for client_id: {client_id}")
+        conn, _ = get_or_create_client_db(client_id)
+        conn.close()
+        return {"status": "initialized", "client_id": client_id}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Initialization failed: {str(e)}")
 #-----------------------------------------
 
 # For development or running standalone
