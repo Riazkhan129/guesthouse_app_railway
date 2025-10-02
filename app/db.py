@@ -191,11 +191,11 @@ def initialize_database(db_path_or_conn, client_id):
 
     print("✅ 'booking' table creation executed")  # ✅ ADDED: Debug log
 
-    expense_id_column = "expense_id SERIAL PRIMARY KEY" if DB_MODE == "multi-tenant" else "expeense_id INTEGER PRIMARY KEY AUTOINCREMENT"
+    id_column = "expense_id SERIAL PRIMARY KEY" if DB_MODE == "multi-tenant" else "expeense_id INTEGER PRIMARY KEY AUTOINCREMENT"
     
     cursor.execute(f"""
         CREATE TABLE IF NOT EXISTS expenses (
-            {expense_id_column},
+            {id_column},
             title TEXT NOT NULL,
             amount REAL NOT NULL,
             category TEXT NOT NULL,

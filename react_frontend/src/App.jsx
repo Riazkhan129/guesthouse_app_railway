@@ -21,7 +21,7 @@ import Guestreport from "./components/guestreport";
 import Contactus from "./components/Contactus";  
 import PrivacyPolicy from "./components/PrivacyPolicy";
 import { Link } from "react-router-dom";
-// import Footer from "./components/Footer";
+
 
 // 🏢 Top header with company name test
 function CompanyHeader() {

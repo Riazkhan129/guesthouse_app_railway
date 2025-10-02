@@ -55,7 +55,7 @@ useEffect(() => {
     for (const nic of uniqueNICs) {
       try {
         const res = await API.get(`/guests/search/${nic}`);
-        nameMap[nic] = res.data.name; 
+        nameMap[nic] = res.data.name; // ⬅️ Adjust if the field is different
       } catch {
         nameMap[nic] = "Unknown Guest";
       }
@@ -125,6 +125,17 @@ useEffect(() => {
     });
   };
 
+  const rowStyle = {
+    display: "flex",
+    gap: "20px",
+    padding: "10px 20px",
+    backgroundColor: "#f9f9f9",
+    borderRadius: "6px",
+    boxShadow: "0 0 4px rgba(0,0,0,0.05)",
+    alignItems: "center"
+};
+
+
   const handleCancelBooking = (bookingId, roomNumber) => {
     API.put(`/bookings/cancel/${bookingId}`, { room_number: roomNumber }, { headers: { Authorization: `Bearer ${token}` } })
     .then(() => {
@@ -174,118 +185,124 @@ useEffect(() => {
           </select>
 
           {selectedGuest && !bookingCreated && (
-            <div style={{ marginTop: 10 }}>
-              {/* 🔧 FIXED: Removed flex-wrap layout that was interfering with centering */}
-              <div style={{ display: "flex", gap: "20px" }}>
-                {/* Column 1 */}
+            <div style={{ marginBottom: "5px", display: "flex", flexDirection: "column", gap: "20px" }}>
+                {/* ✅ Row 1: NIC & Guest Type */}
+              <div style={{  marginBottom: "5px" }}>
+                <div style={rowStyle}>
                 <div style={{ flex: "1 1 45%" }}>
-                <p><strong>NIC:</strong> {selectedGuest.nic_passport_number}</p>
-                <p><strong>Name:</strong> {selectedGuest.name}</p>
-            </div>
+                  <p style={{ margin: 0, lineHeight: "1.5" }}>
+                    <strong>NIC:</strong> {selectedGuest.nic_passport_number}
+                  </p>
+                </div>
+                <div style={{ flex: "1 1 45%" }}>
+                  <p style={{ margin: 0, lineHeight: "1.5" }}>
+                    <strong>Name:</strong> {selectedGuest.name}
+                  </p>
+                </div>
+              </div>
+              </div>
 
-            {/* Column 2 */}
-            <div style={{ flex: "1 1 45%" }}>
-              <p><strong>Guest Type:</strong> {selectedGuest.guest_type || 'N/A'}</p>
-              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px" }}>
-                <label style={{ fontWeight: "bold", whiteSpace: "nowrap" }}>
-                Check-in Date:
-              </label>
-              <DatePicker
-                selected={checkinDate} // 🔧 Pass Date object
-                onChange={(date) => {
-                  if (!date) return;
-                  const dateOnly = date.toISOString().split("T")[0];
-                  setCheckinDate(dateOnly); 
-                  const nextDay = new Date(date);
-                  nextDay.setDate(date.getDate() + 1);
-                  setCheckoutDate(nextDay);
-                  console.log("handleCheckAvailability from createbooking:", dateOnly);
-                  handleCheckAvailability(dateOnly); // 🔧 Pass raw date to your logic
-                }}
-                dateFormat="dd MMM yyyy" // 🔧 Format as "12 Aug 2025"
-                placeholderText="Select check-in date"
-                className="react-datepicker-input"
-                showMonthDropdown
-                showYearDropdown
-                dropdownMode="select"
-                minDate={new Date()} 
+                {/* ✅ Row 2: Guest Type & Check-in Date */}
+              <div style={{ marginBottom: "5px" }}>
+                <div style={rowStyle}>
+                  <div style={{ flex: "1 1 45%" }}>
+                  <p style={{ margin: 0, lineHeight: "1.5" }}>
+                    <strong>Guest Type:</strong> {selectedGuest.guest_type || 'N/A'}
+                  </p>
+                </div>
+
+              <div style={{ flex: "1 1 45%", display: "flex", gap: "6px", alignItems: "center" }}>
+                <label style={{ fontWeight: "bold", whiteSpace: "nowrap", margin: 0, lineHeight: "1.5" }}>
+                  Check-in Date:
+                </label>
+              <div style={{ flex: "1", minWidth: "160px" }}>
+                <DatePicker
+                  selected={checkinDate}
+                  onChange={(date) => {
+                    if (!date) return;
+                    const dateOnly = date.toISOString().split("T")[0];
+                    setCheckinDate(dateOnly); 
+                    const nextDay = new Date(date);
+                    nextDay.setDate(date.getDate() + 1);
+                    setCheckoutDate(nextDay);
+                    handleCheckAvailability(dateOnly);
+                  }}
+                  dateFormat="dd MMM yyyy"
+                  placeholderText="Select check-in date"
+                  className="react-datepicker-input"
+                  showMonthDropdown
+                  showYearDropdown
+                  dropdownMode="select"
+                  minDate={new Date()}
               />
-              </div>
             </div>
-
-              {/* ✅ Availability Block — separated and centered */}
-              {availability && (
-               
-                <div style={{ marginTop: 10 }}>
-                <div style={{ display: "flex", gap: "20px" }}>
-                  {/* Column 1 */}
-                <div style={{ flex: "1 1 45%" }}>
-                    <p><strong>✅ Total:</strong> {availability.total_rooms}</p>
-                    <p><strong>📦 Booked:</strong> {availability.booked_rooms}</p>
-                </div> 
-                  
-                {/* <div style={{ textAlign: "left", flex: "1 1 45%" }}>
-                  <p><strong>✅ Total:</strong> {availability.total_rooms}</p>
-                </div>
-                <div style={{ textAlign: "left",flex: "1 1 45%" }}>
-                            <p><strong>📦 Booked:</strong> {availability.booked_rooms}</p>
-                </div>
-                <div style={{ textAlign: "left", flex: "1 1 30%" }}>
-                  <p><strong>🟢 Available:</strong> {availability.available_rooms}</p>
-                </div> */}
-              </div>
-               
-            
-              {availability?.available_rooms > 0 ? (
-                <>
-                  <label style={{ fontWeight: "bold", display: "block", marginBottom: "5px" }}>
-                    Check-out Date:
-                  </label>
-                  <DatePicker
-                    selected={checkoutDate}
-                    onChange={(date) => setCheckoutDate(date)}
-                    dateFormat="dd MMM yyyy"
-                    placeholderText="Select check-out date"
-                    className="react-datepicker-input"
-                    showMonthDropdown
-                    showYearDropdown
-                    dropdownMode="select"
-                    minDate={checkinDate} 
-                  />
-
-                  </>
-                  ) : (
-                    <p style={{ color: "red", fontWeight: "bold" }}>
-                      New - All Rooms are Booked for this date {checkinDate}
-                    </p>
-                  )}
-
-                  <div style={{ textAlign: "center", marginTop: "20px" }}>
-                    <button
-                      onClick={handleCreateBooking}
-                      disabled={availability?.available_rooms <= 0}
-                      style={{
-                        padding: "10px 20px",
-                        backgroundColor: "green",
-                        color: "white",
-                        border: "none",
-                        borderRadius: "4px",
-                        cursor: availability?.available_rooms <= 0 ? "not-allowed" : "pointer",  // ✅ ADDED: Cursor change
-                        fontSize: "16px"
-                      }}
-                    >
-                      ✅ Create Booking
-                    </button>
-                  </div>
-                
-              </div>              
-            )}
           </div>
-            
-    </div>
-  )}
+        </div>
+      </div>
+               
+          {/* ✅ Row 3: Total, Booked, Available */}
+          {availability && (
+            <div style={{ margin: 0, display: "flex", gap: "20px", backgroundColor: "#f9f9f9", padding: "10px 20px", borderRadius: "6px", boxShadow: "0 0 4px rgba(0,0,0,0.1)" }}>
+              <div style={{ margin: 0, flex: "1 1 30%" }}>
+                <p><strong>✅ Total:</strong> {availability.total_rooms}</p>
+              </div>
+              <div style={{ margin: 0, flex: "1 1 30%" }}>
+                <p><strong>📦 Booked:</strong> {availability.booked_rooms}</p>
+            </div>
+            <div style={{ margin: 0, flex: "1 1 30%" }}>
+              <p><strong>🟢 Available:</strong> {availability.available_rooms}</p>
+            </div>
+          </div>          
+        )}
+
+        {/* ✅ Row 4: Check-out Date */}
+        {availability?.available_rooms > 0 && (
+          <div>
+            <label style={{ fontWeight: "bold", display: "block", marginBottom: "5px" }}>
+              Check-out Date:
+            </label>
+            <DatePicker
+              selected={checkoutDate}
+              onChange={(date) => setCheckoutDate(date)}
+              dateFormat="dd MMM yyyy"
+              placeholderText="Select check-out date"
+              className="react-datepicker-input"
+              showMonthDropdown
+              showYearDropdown
+              dropdownMode="select"
+              minDate={checkinDate}
+            />
+          </div>
+        )}
+
+        {/* ✅ Row 5: Create Booking Button */}
+        <div style={{ textAlign: "center", marginTop: "20px" }}>
+          <button
+            onClick={handleCreateBooking}
+            style={{
+              padding: "10px 20px",
+              backgroundColor: "green",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer",
+              fontSize: "16px"
+            }}
+          >
+            ✅ Create Booking
+          </button>
+        </div>
+
+        {/* ✅ Fallback if no rooms available */}
+        {availability?.available_rooms === 0 && (
+          <p style={{ color: "red", fontWeight: "bold" }}>
+            All Rooms are Booked for this date {checkinDate}
+          </p>
+        )}
+      </div>
+    )}
   </div>
-)}
+)} {/* ✅ closes action === "Create Booking" */}
 
       {/* View All Bookings */}
       {action === "View All Bookings" && (
@@ -442,7 +459,7 @@ useEffect(() => {
       </div>
     )}
     </div>
-  )}
+    )}
 
 
 export default BookingManagement;

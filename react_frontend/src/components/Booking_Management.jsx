@@ -255,6 +255,13 @@ useEffect(() => {
           </div>          
         )}
 
+        {/* ✅ Fallback if no rooms available */}
+        {availability?.available_rooms === 0 && (
+          <p style={{ color: "red", fontWeight: "bold" }}>
+            All Rooms are Booked for this date {checkinDate}
+          </p>
+        )}
+
         {/* ✅ Row 4: Check-out Date */}
         {availability?.available_rooms > 0 && (
           <div>
@@ -276,6 +283,7 @@ useEffect(() => {
         )}
 
         {/* ✅ Row 5: Create Booking Button */}
+        {availability?.available_rooms > 0 && (
         <div style={{ textAlign: "center", marginTop: "20px" }}>
           <button
             onClick={handleCreateBooking}
@@ -292,12 +300,6 @@ useEffect(() => {
             ✅ Create Booking
           </button>
         </div>
-
-        {/* ✅ Fallback if no rooms available */}
-        {availability?.available_rooms === 0 && (
-          <p style={{ color: "red", fontWeight: "bold" }}>
-            All Rooms are Booked for this date {checkinDate}
-          </p>
         )}
       </div>
     )}

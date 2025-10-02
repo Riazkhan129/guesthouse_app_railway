@@ -31,10 +31,10 @@ def get_client_id(request: Request) -> str:
 #    return crud.get_all_users(conn)
 
 @router.post("/add")
-def create_user( user_data: UserCreate, user=Depends(get_current_user)):
+def create_user( request: Request, user_data: UserCreate, user=Depends(get_current_user)):
     client_id = get_client_id(request)
     conn, placeholder = get_or_create_client_db(client_id)
-    return crud.create_user(conn, user_data)
+    return crud.create_user(client_id, user_data)
     conn.close()
     return result
 
@@ -42,15 +42,16 @@ def create_user( user_data: UserCreate, user=Depends(get_current_user)):
 def update_user(request: Request, user_id: int, user_data: UserUpdate):
     client_id = get_client_id(request)
     conn, placeholder = get_or_create_client_db(client_id)
-    result = crud.update_user(conn, user_id, user_data)
+    result = crud.update_user(client_id, user_id, user_data, conn)
     conn.close()
     return result
+
 
 @router.delete("/delete/{user_id}")
 def delete_user(request: Request, user_id: int, user=Depends(get_current_user)):
     client_id = get_client_id(request)
     conn, placeholder = get_or_create_client_db(client_id)
-    crud.delete_user(conn, user_id)
+    crud.delete_user(client_id, user_id, conn)
     conn.close()
     return {"message": "Deleted"}
 
@@ -58,5 +59,5 @@ def delete_user(request: Request, user_id: int, user=Depends(get_current_user)):
 def get_all_users(request: Request, user: str = Depends(get_current_user)):
     client_id = get_client_id(request)
     conn, placeholder = get_or_create_client_db(client_id)
-    return crud.get_all_users(conn)
+    return crud.get_all_users(client_id, conn)
 

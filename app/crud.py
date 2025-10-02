@@ -628,6 +628,7 @@ def get_all_expenses(client_id: str):
     """
     cursor.execute(query)
     rows = cursor.fetchall()
+    print("GET_ALL_EXPENSES ROWS =", rows)
     conn.close()
 
     return [
@@ -691,14 +692,14 @@ def verify_password(plain_password: str, encrypted_password: str) -> bool:
 
 #---------------------
 
-def add_user(client_id: str, data):
-    conn, placeholder = get_or_create_client_db(client_id)
-    password_encrypted = encrypt_password(data["password"])
-    query = f"INSERT INTO users (name, username, password, role) VALUES ({placeholder}, {placeholder}, {placeholder}, {placeholder})"
-    cursor = conn.cursor()
-    cursor.execute(query, (data["name"], data["username"], password_encrypted, data["role"]))
-    conn.commit()
-    conn.close()
+#def add_user(client_id: str, data):
+#    conn, placeholder = get_or_create_client_db(client_id)
+#    password_encrypted = encrypt_password(data["password"])
+#    query = f"INSERT INTO users (name, username, password, role) VALUES ({placeholder}, {placeholder}, {placeholder}, {placeholder})"
+#    cursor = conn.cursor()
+#    cursor.execute(query, (data["name"], data["username"], password_encrypted, data["role"]))
+#    conn.commit()
+#    conn.close()
 
 #---------------
 def login_user(client_id: str, user: UserLogin):
@@ -739,7 +740,7 @@ def create_user(client_id: str, user_data):
 
 #-------
 
-def get_all_users(conn):
+def get_all_users(client_id: str, conn):
     # conn, _ = get_or_create_client_db(client_id)  # ✅ UPDATED
     cursor = conn.cursor()
     cursor.execute("SELECT user_id, name, username, password, role FROM users")
@@ -761,29 +762,36 @@ def get_all_users(conn):
     #conn.close()
     return users
 
+
 #----------------
-def update_user(client_id: str, user_id: int, data):
+def update_user(client_id: str, user_id: int, data, conn):
     conn, placeholder = get_or_create_client_db(client_id)  # ✅ UPDATED
     cursor = conn.cursor()
     if data.password:
         encrypted_password = encrypt_password(data.password)
-        query = f"UPDATE users SET name={placeholder}, role={placeholder}, password={placeholder} WHERE user_id={placeholder}"
-    else:  # Password is not being updated
         cursor.execute(
-            "UPDATE users SET name = ?, role = ? WHERE user_id = ?",
-            (data.name, data.role, user_id)
+        f"UPDATE users SET name = {placeholder}, role = {placeholder}, password = {placeholder} WHERE user_id = {placeholder}",
+        (data.name, data.role, encrypted_password, user_id)
+        
+        # query = f"UPDATE users SET name={placeholder}, role={placeholder}, password={placeholder} WHERE user_id={placeholder}"
+    # else:  # Password is not being updated
+    #    cursor.execute(
+    #        "UPDATE users SET name = ?, role = ? WHERE user_id = ?",
+    #        (data.name, data.role, user_id)
         )
 
-    db.commit()
+    conn.commit()
     return {"message": "User updated successfully"}
 
 
 #------------------
 
-def delete_user(db, user_id):
-    cursor = db.cursor()
+
+
+def delete_user(client_id: str, user_id, conn):
+    cursor = conn.cursor()
     cursor.execute("DELETE FROM users WHERE user_id = ?", (user_id,))
-    db.commit()
+    conn.commit()
     return {"message": "User deleted"}
 
 

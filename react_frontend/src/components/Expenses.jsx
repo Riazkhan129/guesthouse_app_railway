@@ -7,7 +7,6 @@ import "react-datepicker/dist/react-datepicker.css";
 
 function Expenses() {
   const { token } = useContext(AuthContext);
-  // const API_URL = "http://localhost:8000";
 
   const [action, setAction] = useState("Add");
   const [expenses, setExpenses] = useState([]);
@@ -40,8 +39,10 @@ function Expenses() {
   const fetchExpenses = async () => {
     try {
       const res = await API.get("/expenses/", {
-        headers: { Authorization: `Bearer ${token}` } // ✅ CHANGED
+        headers: { Authorization: `Bearer ${token}` } 
       });
+      
+      console.log("RES_DATA = :", res.data);
       if (res.status === 200) setExpenses(res.data);
     } catch (err) {
       alert("❌ Failed to load expenses");
