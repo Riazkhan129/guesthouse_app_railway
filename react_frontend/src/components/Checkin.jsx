@@ -13,6 +13,7 @@ function Checkin() {
   const [selectedBookingId, setSelectedBookingId] = useState("");
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [selectedRoom, setSelectedRoom] = useState("");
+  
   const [checkoutDate, setCheckoutDate] = useState(() => {
     const today = new Date();
     const tomorrow = new Date(today);
@@ -47,6 +48,10 @@ const formatDateTime = () => {
 const [actualCheckinDate, setActualCheckinDate] = useState(formatDateTime);
 const [advancePayment, setAdvancePayment] = useState("");
 const [statusMessage, setStatusMessage] = useState("");
+const [roomRate, setRoomRate] = useState(""); // ✅ ADDED
+const [companion, setCompanion] = useState(""); // ✅ ADDED
+const [roomType, setRoomType] = useState(""); // ✅ ADDED
+
 
   useEffect(() => {
     fetchTodayBookings();
@@ -98,7 +103,10 @@ const [statusMessage, setStatusMessage] = useState("");
       checkout_date: checkoutDate,
       actual_checkin_time: actualCheckinTime,
       advance_payment: parseFloat(advancePayment) || 0,
-      status: "checked_in"
+      status: "checked_in",
+      room_rate: parseFloat(roomRate) || 0,       // ✅ ADDED
+      companion: companion.trim(),                // ✅ ADDED
+      room_type: roomType                         // ✅ ADDED
     };
 
     try {
@@ -117,6 +125,9 @@ const [statusMessage, setStatusMessage] = useState("");
         setCheckoutDate(new Date().toISOString().split("T")[0]);
         setActualCheckinDate(new Date().toISOString().split("T")[0]);
         setAdvancePayment("");
+        setRoomRate("");       // ✅ ADDED
+        setCompanion("");      // ✅ ADDED
+        setRoomType("");       // ✅ ADDED
 
         // Refresh data
         fetchTodayBookings();
@@ -210,7 +221,36 @@ const [statusMessage, setStatusMessage] = useState("");
                 ))}
               </select>
             </div>
+            
+            <div style={{ flex: 1 }}>
+              <label style={{ fontWeight: "bold", marginBottom: "5px", display: "block" }}>
+                Room Rate (Rs.):
+              </label>
+              <input
+                type="number"
+                value={roomRate}
+                onChange={(e) => setRoomRate(e.target.value)}
+                style={{ padding: "8px", width: "100%" }}
+              />
+            </div>
+          </div>
 
+          <div style={{ display: "flex", gap: "50px", marginBottom: "15px" }}>
+            <div style={{ flex: 1 }}>
+              <label style={{ fontWeight: "bold", marginBottom: "5px", display: "block" }}>
+                Room Type:
+              </label>
+              <select
+                value={roomType}
+                onChange={(e) => setRoomType(e.target.value)}
+                style={{ padding: "8px", width: "100%" }}
+              />
+                <option value="">-- Select Room Type --</option>
+                <option value="AC">AC</option>
+                <option value="Non-AC">Non-AC</option>
+            </div>
+          </div>
+            
             <div style={{ flex: 1 }}>
               <label style={{ fontWeight: "bold", marginBottom: "5px", display: "block" }}>
                 Actual Check-in Date:
@@ -223,7 +263,7 @@ const [statusMessage, setStatusMessage] = useState("");
                  style={{ padding: "8px", width: "100%", backgroundColor: "#f0f0f0", cursor: "not-allowed" }}
               />
             </div>
-          </div>
+          
 
           <div style={{ display: "flex", gap: "50px", marginBottom: "15px" }}>
             <div style={{ flex: 1 }}>
@@ -240,9 +280,21 @@ const [statusMessage, setStatusMessage] = useState("");
                     showYearDropdown
                     dropdownMode="select"
                   />
-
               </div>
 
+            {/* ✅ ADDED: Companion Input Field */}
+            <div style={{ flex: 1 }}>
+              <label style={{ fontWeight: "bold", marginBottom: "5px", display: "block" }}>
+                Companion Name:
+              </label>
+              <input
+                type="text"
+                value={companion}
+                onChange={(e) => setCompanion(e.target.value)}
+                style={{ padding: "8px", width: "100%" }}
+              />
+            </div>
+          </div>
             <div style={{ flex: 1 }}>
               <label style={{ fontWeight: "bold", marginBottom: "5px", display: "block" }}>
                 Advance Payment (Rs.):
@@ -254,7 +306,7 @@ const [statusMessage, setStatusMessage] = useState("");
                 style={{ padding: "8px", width: "100%" }}
               />
             </div>
-          </div>
+          
 
           {/* Submit */}
           <button

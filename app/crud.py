@@ -429,8 +429,11 @@ def checkin_booking(client_id: str, booking_id: int, data):
     
     # Extract each field from the CheckinData object
     room_number = str(data.room_number)
+    room_type = str(data.room_type)
+    room_rate = int(data.room_rate) 
     checkout_date = str(data.checkout_date)
     actual_checkin_time = str(data.actual_checkin_time)
+    companions = int(data.companions)
     advance_payment = float(data.advance_payment)
     status = str(data.status)
 
@@ -438,16 +441,22 @@ def checkin_booking(client_id: str, booking_id: int, data):
     query_booking = f"""
     UPDATE bookings SET
         room_number = {placeholder},
+        room_type = {placeholder},
+        room_rate = {placeholder},
         checkout_date = {placeholder},
         actual_checkin_time = {placeholder},
+        companions = {placeholder},
         advance_payment = {placeholder},
         status = {placeholder}
         WHERE booking_id = {placeholder}
     """  # ✅ Dynamic placeholders
     cursor.execute(query_booking, (
         room_number,
+        room_type,
+        room_rate,
         checkout_date,
         actual_checkin_time,
+        companions,
         advance_payment,
         status,
         booking_id
