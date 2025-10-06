@@ -12,6 +12,11 @@ from passlib.context import CryptContext
 from .models import UserCreate, UserLogin, UserOut, Client_keysGet
 import hashlib
 import sqlite3
+from cryptography.fernet import Fernet
+
+def decrypt_password(encrypted_password: str, key: str) -> str:
+    fernet = Fernet(key.encode())  # Ensure key is in bytes
+    return fernet.decrypt(encrypted_password.encode()).decode()
 
 #------------- encryption Key ------------
 
@@ -426,6 +431,7 @@ def get_bookings_by_nic(client_id: str, nic_passport_number: str):
 def checkin_booking(client_id: str, booking_id: int, data):
     conn, placeholder = get_or_create_client_db(client_id)  # ✅ UPDATED
     cursor = conn.cursor()
+    print("✅ Received check-in payload:", data)
     
     # Extract each field from the CheckinData object
     room_number = str(data.room_number)
@@ -749,15 +755,23 @@ def create_user(client_id: str, user_data):
 
 #-------
 
+
 def get_all_users(client_id: str, conn):
     # conn, _ = get_or_create_client_db(client_id)  # ✅ UPDATED
     cursor = conn.cursor()
     cursor.execute("SELECT user_id, name, username, password, role FROM users")
     rows = cursor.fetchall()
+
+    key = get_encryption_key(client_id)
+
+    if not key:
+        raise ValueError(f"❌ No encryption key found for client_id: {client_id}")
+     
     users = []
     for row in rows:
         try:
-            decrypted_password = decrypt_password(row[3])  # row[3] is password
+            decrypted_password = decrypt_password(row[3], key)  # row[3] is password
+            print("DECRYPTED PASSWORD ===", decrypted_password)
         except Exception as e:
             decrypted_password = "[Error decrypting]"
 

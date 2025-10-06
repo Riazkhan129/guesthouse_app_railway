@@ -175,12 +175,12 @@ def initialize_database(db_path_or_conn, client_id):
         CREATE TABLE IF NOT EXISTS bookings (
             {booking_id_column},
             nic_passport_number TEXT,
-            room_number TEXT,
-            room_type TEXT,
-            rooam_rate INTEGER
             checkin_date TEXT,
             checkout_date TEXT,
             status TEXT,
+            room_number TEXT,
+            room_type TEXT,
+            room_rate INTEGER,
             notes TEXT,
             actual_checkin_time TEXT,
             companions INTEGER,

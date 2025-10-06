@@ -51,6 +51,8 @@ function Sidebar({ onNavigate }) {
           <button style={sidebarButtonStyle} onClick={() => handleClick("/bookings")}>🗓️ Booking Management</button>
           <button style={sidebarButtonStyle} onClick={() => handleClick("/checkin")}>✅ Check-In</button>
           <button style={sidebarButtonStyle} onClick={() => handleClick("/checkout")}>🚪 Check-Out</button>
+          <button style={sidebarButtonStyle} onClick={() => handleClick("/gueststayreport")}>📑 Guest Stay Report</button>
+
         </>
       ) : (
         <>

@@ -67,6 +67,7 @@ function Checkout() {
     setSelectedBooking(booking);
     const nic = booking.nic_passport_number;
     const roomNumber = booking.room_number;
+    
 
     try {
       console.log("IN CHECKOUT - before getting GUEST_NAME");
@@ -74,11 +75,12 @@ function Checkout() {
         headers: { Authorization: `Bearer ${token}` } // ✅ CHANGED
       });
       setGuest(guestRes.status === 200 ? guestRes.data : { name: "Unknown" });
-      console.log("IN CHECKOUT - before getting ROOMNUMBER");
+      {/* console.log("IN CHECKOUT - before getting ROOMNUMBER");
       const roomRes = await API.get(`/checkin_checkout/${roomNumber}`, {
         headers: { Authorization: `Bearer ${token}` } // ✅ CHANGED
       });
-      setRoomPrice(roomRes.status === 200 ? roomRes.data.price : 0);
+      setRoomPrice(roomRes.status === 200 ? roomRes.data.price : 0); */}
+      setRoomPrice(booking.room_rate ?? 0);
 
       const checkinDate = new Date(booking.checkin_date);
       const today = new Date();

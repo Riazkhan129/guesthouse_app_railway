@@ -28,6 +28,7 @@ def get_client_id(request: Request) -> str:
 
 @router.put("/checkin/{booking_id}")
 def checkin_guest(request: Request, booking_id: int, data: CheckinData):
+    print("✅ Received check-in payload:", data)
     client_id = get_client_id(request)
     success = crud.checkin_booking(client_id, booking_id, data)
     if success:

@@ -112,12 +112,12 @@ class BookingIDResponse(BaseModel):
 class BookingBase(BaseModel):
     booking_id: int
     nic_passport_number: str
-    room_number: Optional[str]
-    room_type: str
-    room_rate: int
     checkin_date: str
     checkout_date: str
     status: str
+    room_number: Optional[str]
+    room_type: str
+    room_rate: int
     notes: Optional[str] = None
     actual_checkin_time: Optional[str] = None
     companions: int
@@ -148,33 +148,37 @@ class BookingOut(BaseModel):
     booking_id: int
     nic_passport_number: str
     room_number: Optional[str]  # allow None for future bookings
+    room_type: Optional[str]
+    room_rate: Optional[int]
     #room_number: str
     checkin_date: str
     checkout_date: str
     status: str
     notes: Optional[str]
     actual_checkin_time: Optional[str] = None
+    companions: Optional[int]
     advance_payment: Optional[int] = None
     actual_checkout_time: Optional[str] = None
     total_payment: Optional[int] = None
+    
 
 class BookingOutCheckIn(BaseModel):
     booking_id: int
     nic_passport_number: str
-    room_number: Optional[str]
-    room_type: str
-    room_rate: int
     checkin_date: str
-    checkout_date: str
+    checkout_date: str    
     status: str
+    room_number: Optional[str]
+    room_type: Optional[str]
+    room_rate: Optional[int]
     notes: Optional[str]
     actual_checkin_time: Optional[str] = None
-    companins: int
+    companions: Optional[int]
     advance_payment: Optional[int] = None
     actual_checkout_date: Optional[str] = None
-    # actual_checkout_time: Optional[str] = None
     total_payment: Optional[int] = None
     guest_name: Optional[str]
+
 
 class BookingSummary(BaseModel):
     booking_id: int
@@ -186,8 +190,11 @@ class BookingSummary(BaseModel):
     
 class CheckinData(BaseModel):
     room_number: str
+    room_type: str
+    room_rate: int
     checkout_date: str
     actual_checkin_time: str
+    companions: int
     advance_payment: float
     status: str
     

@@ -49,7 +49,7 @@ const [actualCheckinDate, setActualCheckinDate] = useState(formatDateTime);
 const [advancePayment, setAdvancePayment] = useState("");
 const [statusMessage, setStatusMessage] = useState("");
 const [roomRate, setRoomRate] = useState(""); // ✅ ADDED
-const [companion, setCompanion] = useState(""); // ✅ ADDED
+const [companions, setCompanions] = useState("0"); // ✅ ADDED
 const [roomType, setRoomType] = useState(""); // ✅ ADDED
 
 
@@ -105,7 +105,7 @@ const [roomType, setRoomType] = useState(""); // ✅ ADDED
       advance_payment: parseFloat(advancePayment) || 0,
       status: "checked_in",
       room_rate: parseFloat(roomRate) || 0,       // ✅ ADDED
-      companion: companion.trim(),                // ✅ ADDED
+      companions: companions.trim(),                // ✅ ADDED
       room_type: roomType                         // ✅ ADDED
     };
 
@@ -126,7 +126,7 @@ const [roomType, setRoomType] = useState(""); // ✅ ADDED
         setActualCheckinDate(new Date().toISOString().split("T")[0]);
         setAdvancePayment("");
         setRoomRate("");       // ✅ ADDED
-        setCompanion("");      // ✅ ADDED
+        setCompanions("");      // ✅ ADDED
         setRoomType("");       // ✅ ADDED
 
         // Refresh data
@@ -180,6 +180,7 @@ const [roomType, setRoomType] = useState(""); // ✅ ADDED
 
       {/* Booking Info */}
       {selectedBooking && (
+        <>
         <div
           style={{
             background: "#f9f9f9",
@@ -197,12 +198,9 @@ const [roomType, setRoomType] = useState(""); // ✅ ADDED
           <p><strong>Guest Name:</strong> {selectedBooking.guest_name}</p>
           <p><strong>Check-in:</strong> {formatToDisplayDate(selectedBooking.checkin_date)}</p>
           <p><strong>Planned Check-out:</strong> {formatToDisplayDate(selectedBooking.checkout_date)}</p>
-        </div>
-      )}
-
-      {/* Form Inputs */}
-      {selectedBooking && (
-        <>
+        </div>    
+          
+          {/* 🔧 ROW 1: Room No + Room Type */}
           <div style={{ display: "flex", gap: "50px", marginBottom: "15px" }}>
             <div style={{ flex: 1 }}>
               <label style={{ fontWeight: "bold", marginBottom: "5px", display: "block" }}>
@@ -210,7 +208,14 @@ const [roomType, setRoomType] = useState(""); // ✅ ADDED
               </label>
               <select
                 value={selectedRoom}
-                onChange={(e) => setSelectedRoom(e.target.value)}
+                onChange={(e) => {
+                  const roomNumber = e.target.value;
+                  setSelectedRoom(roomNumber);
+                  const selected = vacantRooms.find((r) => r.room_number === roomNumber);    
+                  if (selected) {
+                    setRoomRate(selected.price || "");
+                  }
+                }}                 
                 style={{ padding: "8px", width: "100%" }}
               >
                 <option value="">-- Select vacant room --</option>
@@ -219,9 +224,28 @@ const [roomType, setRoomType] = useState(""); // ✅ ADDED
                     Room {room.room_number} ({room.type})
                   </option>
                 ))}
-              </select>
-            </div>
+                </select>
+              </div>
             
+
+            {/* Room Type */}
+            <div style={{ flex: 1 }}>
+              <label style={{ fontWeight: "bold", marginBottom: "5px", display: "block" }}>
+                Room Type:
+              </label>
+              <select
+                value={roomType}
+                onChange={(e) => setRoomType(e.target.value)}
+                style={{ padding: "8px", width: "100%" }}
+              >
+                <option value="">-- Select Room Type --</option>
+                <option value="AC">AC</option>
+                <option value="Non-AC">Non-AC</option>
+              </select> 
+              </div>
+            
+
+            {/* 🔧 ROW 2: Room Rate + Companion */}
             <div style={{ flex: 1 }}>
               <label style={{ fontWeight: "bold", marginBottom: "5px", display: "block" }}>
                 Room Rate (Rs.):
@@ -233,27 +257,25 @@ const [roomType, setRoomType] = useState(""); // ✅ ADDED
                 style={{ padding: "8px", width: "100%" }}
               />
             </div>
-          </div>
-
-          <div style={{ display: "flex", gap: "50px", marginBottom: "15px" }}>
+                
             <div style={{ flex: 1 }}>
               <label style={{ fontWeight: "bold", marginBottom: "5px", display: "block" }}>
-                Room Type:
+                Companions :
               </label>
-              <select
-                value={roomType}
-                onChange={(e) => setRoomType(e.target.value)}
+              <input
+                type="number"
+                value={companions}
+                onChange={(e) => setCompanions(e.target.value)}
                 style={{ padding: "8px", width: "100%" }}
               />
-                <option value="">-- Select Room Type --</option>
-                <option value="AC">AC</option>
-                <option value="Non-AC">Non-AC</option>
             </div>
           </div>
-            
-            <div style={{ flex: 1 }}>
-              <label style={{ fontWeight: "bold", marginBottom: "5px", display: "block" }}>
-                Actual Check-in Date:
+          
+            {/* 🔧 ROW 3: Check-in Date + Planned Check-out + Advance Payment */}
+            <div style={{ display: "flex", gap: "150px", marginBottom: "15px" }}>
+              <div style={{ flex: 1 }}>
+                <label style={{ fontWeight: "bold", marginBottom: "5px", display: "block" }}>
+                Check-in :
               </label>
               <input
                 type="text"
@@ -261,14 +283,14 @@ const [roomType, setRoomType] = useState(""); // ✅ ADDED
                 readOnly
                 // onChange={(e) => setActualCheckinDate(e.target.value)}
                  style={{ padding: "8px", width: "100%", backgroundColor: "#f0f0f0", cursor: "not-allowed" }}
+                 
               />
             </div>
           
 
-          <div style={{ display: "flex", gap: "50px", marginBottom: "15px" }}>
             <div style={{ flex: 1 }}>
               <label style={{ fontWeight: "bold", marginBottom: "5px", display: "block" }}>
-                Planned Check-out Date:
+                Planned Check-out:
               </label>
                 <DatePicker
                     selected={checkoutDate}
@@ -279,23 +301,11 @@ const [roomType, setRoomType] = useState(""); // ✅ ADDED
                     showMonthDropdown
                     showYearDropdown
                     dropdownMode="select"
+                    style={{ padding: "8px", width: "100%" }}
                   />
               </div>
 
-            {/* ✅ ADDED: Companion Input Field */}
-            <div style={{ flex: 1 }}>
-              <label style={{ fontWeight: "bold", marginBottom: "5px", display: "block" }}>
-                Companion Name:
-              </label>
-              <input
-                type="text"
-                value={companion}
-                onChange={(e) => setCompanion(e.target.value)}
-                style={{ padding: "8px", width: "100%" }}
-              />
-            </div>
-          </div>
-            <div style={{ flex: 1 }}>
+              <div style={{ flex: 1 }}>
               <label style={{ fontWeight: "bold", marginBottom: "5px", display: "block" }}>
                 Advance Payment (Rs.):
               </label>
@@ -306,9 +316,10 @@ const [roomType, setRoomType] = useState(""); // ✅ ADDED
                 style={{ padding: "8px", width: "100%" }}
               />
             </div>
-          
+          </div>
 
           {/* Submit */}
+          <div style={{ textAlign: "center", marginTop: "20px" }}>
           <button
             onClick={handleCheckin}
             style={{
@@ -317,11 +328,13 @@ const [roomType, setRoomType] = useState(""); // ✅ ADDED
               padding: "10px 20px",
               border: "none",
               borderRadius: "4px",
-              cursor: "pointer"
+              cursor: "pointer",
+              fontSize: "16px"
             }}
           >
             ✅ Confirm Check-in
           </button>
+        </div>
 
           {/* Status message */}
           {statusMessage && (
@@ -331,8 +344,9 @@ const [roomType, setRoomType] = useState(""); // ✅ ADDED
           )}
         </>
       )}
-    </div>
-  );
-}
+     </div>
+        )}
+      
+        
 
 export default Checkin;

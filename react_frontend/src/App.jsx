@@ -18,6 +18,7 @@ import Expenses from "./components/Expenses";
 import UserManager from "./components/User";
 import Billing from "./components/Billing";
 import Guestreport from "./components/guestreport";
+import Gueststayreport from "./components/Gusetstayreport";
 import Contactus from "./components/Contactus";  
 import PrivacyPolicy from "./components/PrivacyPolicy";
 import { Link } from "react-router-dom";
@@ -134,6 +135,7 @@ function MainApp() {
             <Route path="/checkout" element={<CheckoutGuest {...commonProps} />} />
             <Route path="/billing" element={<Billing {...commonProps} />} />
             <Route path="/guestreport" element={<Guestreport {...commonProps} />} />
+            <Route path="/gueststayreport" element={<Gueststayreport {...commonProps} />} />
             <Route path="*" element={<div>❌ Page Not Found</div>} />
           </Routes>
           <Footer /> {/* ✅ Inline footer added here */}
