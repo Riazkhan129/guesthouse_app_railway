@@ -13,6 +13,10 @@ function Checkin() {
   const [selectedBookingId, setSelectedBookingId] = useState("");
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [selectedRoom, setSelectedRoom] = useState("");
+  const [modeOfPayment, setModeOfPayment] = useState("");
+  const [profession, setProfession] = useState("");
+  const [purposeOfVisit, setPurposeOfVisit] = useState("");
+
   
   const [checkoutDate, setCheckoutDate] = useState(() => {
     const today = new Date();
@@ -106,7 +110,10 @@ const [roomType, setRoomType] = useState(""); // ✅ ADDED
       status: "checked_in",
       room_rate: parseFloat(roomRate) || 0,       // ✅ ADDED
       companions: companions.trim(),                // ✅ ADDED
-      room_type: roomType                         // ✅ ADDED
+      room_type: roomType,                         // ✅ ADDED
+      mode_of_payment: modeOfPayment.trim(),       // ✅ NEW
+      profession: profession.trim(),               // ✅ NEW
+      purpose_of_visit: purposeOfVisit.trim()      // ✅ NEW
     };
 
     try {
@@ -128,6 +135,7 @@ const [roomType, setRoomType] = useState(""); // ✅ ADDED
         setRoomRate("");       // ✅ ADDED
         setCompanions("");      // ✅ ADDED
         setRoomType("");       // ✅ ADDED
+
 
         // Refresh data
         fetchTodayBookings();
@@ -181,29 +189,32 @@ const [roomType, setRoomType] = useState(""); // ✅ ADDED
       {/* Booking Info */}
       {selectedBooking && (
         <>
-        <div
-          style={{
-            background: "#f9f9f9",
-            padding: "15px",
-            borderRadius: "6px",
-            marginBottom: "20px",
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            columnGap: "20px",
-            rowGap: "10px",
-            border: "1px solid #ccc"
-          }}
-        >
-          <p><strong>NIC:</strong> {selectedBooking.nic_passport_number}</p>
-          <p><strong>Guest Name:</strong> {selectedBooking.guest_name}</p>
-          <p><strong>Check-in:</strong> {formatToDisplayDate(selectedBooking.checkin_date)}</p>
-          <p><strong>Planned Check-out:</strong> {formatToDisplayDate(selectedBooking.checkout_date)}</p>
-        </div>    
+        <div style={{ display: "flex", gap: "20px", marginBottom: "20px" }}>
+          <div style={{ flex: 1, display: "flex", alignItems: "center", gap: "8px" }}>
+            <label style={{ fontWeight: "bold", whiteSpace: "nowrap" }}>NIC:</label>
+            <div>{selectedBooking.nic_passport_number}</div>
+          </div>
+
+          <div style={{ flex: 1, display: "flex", alignItems: "center", gap: "8px" }}>
+            <label style={{ fontWeight: "bold", whiteSpace: "nowrap" }}>Guest Name:</label>
+            <div>{selectedBooking.guest_name}</div>
+          </div>
+
+          {selectedBooking.corporate_name && (
+            <div style={{ flex: 1, display: "flex", alignItems: "center", gap: "8px" }}>
+              <label style={{ fontWeight: "bold", whiteSpace: "nowrap" }}>Company:</label>
+              <div>{selectedBooking.corporate_name}</div>
+            </div>
+          )}
+        </div>
+
+      
           
           {/* 🔧 ROW 1: Room No + Room Type */}
           <div style={{ display: "flex", gap: "50px", marginBottom: "15px" }}>
-            <div style={{ flex: 1 }}>
-              <label style={{ fontWeight: "bold", marginBottom: "5px", display: "block" }}>
+            {/* Assign Room */}
+            <div style={{ flex: 1, display: "flex", alignItems: "center", gap: "10px" }}>
+              <label style={{ fontWeight: "bold", whiteSpace: "nowrap" }}>
                 Assign Room:
               </label>
               <select
@@ -216,7 +227,7 @@ const [roomType, setRoomType] = useState(""); // ✅ ADDED
                     setRoomRate(selected.price || "");
                   }
                 }}                 
-                style={{ padding: "8px", width: "100%" }}
+                style={{ width: "200px", padding: "8px" }}
               >
                 <option value="">-- Select vacant room --</option>
                 {vacantRooms.map((room) => (
@@ -229,67 +240,113 @@ const [roomType, setRoomType] = useState(""); // ✅ ADDED
             
 
             {/* Room Type */}
-            <div style={{ flex: 1 }}>
-              <label style={{ fontWeight: "bold", marginBottom: "5px", display: "block" }}>
+            <div style={{ flex: 1, display: "flex", alignItems: "center", gap: "10px" }}>
+              <label style={{ fontWeight: "bold", whiteSpace: "nowrap" }}>
                 Room Type:
               </label>
               <select
                 value={roomType}
                 onChange={(e) => setRoomType(e.target.value)}
-                style={{ padding: "8px", width: "100%" }}
+                style={{ width: "200px", padding: "8px", }}
               >
                 <option value="">-- Select Room Type --</option>
                 <option value="AC">AC</option>
                 <option value="Non-AC">Non-AC</option>
               </select> 
               </div>
-            
+            </div>
 
             {/* 🔧 ROW 2: Room Rate + Companion */}
-            <div style={{ flex: 1 }}>
-              <label style={{ fontWeight: "bold", marginBottom: "5px", display: "block" }}>
+            <div style={{ display: "flex", gap: "50px", marginBottom: "15px" }}>
+              <div style={{ flex: 1, display: "flex", alignItems: "center", gap: "10px" }}>
+              <label style={{ fontWeight: "bold", whiteSpace: "nowrap" }}>
                 Room Rate (Rs.):
               </label>
               <input
                 type="number"
                 value={roomRate}
                 onChange={(e) => setRoomRate(e.target.value)}
-                style={{ padding: "8px", width: "100%" }}
+                style={{ width: "200px", padding: "8px" }}
               />
             </div>
                 
-            <div style={{ flex: 1 }}>
-              <label style={{ fontWeight: "bold", marginBottom: "5px", display: "block" }}>
+            <div style={{ flex: 1, display: "flex", alignItems: "center", gap: "10px" }}>
+              <label style={{ fontWeight: "bold", whiteSpace: "nowrap" }}>
                 Companions :
               </label>
               <input
                 type="number"
                 value={companions}
                 onChange={(e) => setCompanions(e.target.value)}
-                style={{ padding: "8px", width: "100%" }}
+                style={{ width: "200px", padding: "8px" }}
               />
             </div>
           </div>
-          
-            {/* 🔧 ROW 3: Check-in Date + Planned Check-out + Advance Payment */}
-            <div style={{ display: "flex", gap: "150px", marginBottom: "15px" }}>
-              <div style={{ flex: 1 }}>
-                <label style={{ fontWeight: "bold", marginBottom: "5px", display: "block" }}>
+
+          {/* 🔧 ROW 3: Mode of Payment + Profession */}
+          <div style={{ display: "flex", gap: "50px", marginBottom: "15px" }}>
+            {/* Mode of Payment */}
+            <div style={{ flex: 1, display: "flex", alignItems: "center", gap: "10px" }}>
+              <label style={{ fontWeight: "bold", whiteSpace: "nowrap" }}>
+                Mode of Payment:
+              </label>
+              <input
+                type="text"
+                value={modeOfPayment}
+                onChange={(e) => setModeOfPayment(e.target.value)}
+                style={{ width: "200px", padding: "8px" }}
+              />
+            </div>
+
+            {/* Profession */}
+            <div style={{ flex: 1, display: "flex", alignItems: "center", gap: "10px" }}>
+              <label style={{ fontWeight: "bold", whiteSpace: "nowrap" }}>
+                Profession:
+              </label>
+              <input
+                type="text"
+                value={profession}
+                onChange={(e) => setProfession(e.target.value)}
+                style={{ width: "200px", padding: "8px" }}
+              />
+            </div>
+            </div>
+
+            {/* Row 4 Purpose of Visit + checkin date*/}
+            <div style={{  display: "flex", gap: "50px", marginBottom: "15px" }}>
+              <div style={{ flex: 1, display: "flex", alignItems: "center", gap: "10px" }}> 
+              <label style={{ fontWeight: "bold", whiteSpace: "nowrap" }}>
+                Purpose of Visit:
+              </label>
+              <input
+                type="text"
+                value={purposeOfVisit}
+                onChange={(e) => setPurposeOfVisit(e.target.value)}
+                style={{ width: "200px", padding: "8px" }}
+              />
+            </div>
+
+              {/* Check-in Date */}
+              <div style={{ flex: 1, display: "flex", alignItems: "center", gap: "10px" }}>
+                <label style={{ fontWeight: "bold", whiteSpace: "nowrap" }}>
                 Check-in :
               </label>
               <input
                 type="text"
                 value={actualCheckinDate}
                 readOnly
+                style={{ padding: "8px", width: "200px", backgroundColor: "#f0f0f0", cursor: "not-allowed" }}
                 // onChange={(e) => setActualCheckinDate(e.target.value)}
-                 style={{ padding: "8px", width: "100%", backgroundColor: "#f0f0f0", cursor: "not-allowed" }}
-                 
+                // style={{ padding: "8px", width: "100%", backgroundColor: "#f0f0f0", cursor: "not-allowed" }}
               />
             </div>
+            </div>
           
-
-            <div style={{ flex: 1 }}>
-              <label style={{ fontWeight: "bold", marginBottom: "5px", display: "block" }}>
+            {/* Row 5 Planned Check-out + Advance*/}
+            <div style={{ display: "flex", gap: "50px", marginBottom: "15px"}}>
+              {/* ✅ Planned Check-out */}
+            <div style={{ flex: 1, display: "flex", alignItems: "center", gap: "10px" }}> {/* ✅ Wrapped in flex container */}
+              <label style={{ fontWeight: "bold", whiteSpace: "nowrap" }}>
                 Planned Check-out:
               </label>
                 <DatePicker
@@ -301,19 +358,20 @@ const [roomType, setRoomType] = useState(""); // ✅ ADDED
                     showMonthDropdown
                     showYearDropdown
                     dropdownMode="select"
-                    style={{ padding: "8px", width: "100%" }}
+                    style={{ width: "200px", padding: "8px" }}
                   />
               </div>
 
-              <div style={{ flex: 1 }}>
-              <label style={{ fontWeight: "bold", marginBottom: "5px", display: "block" }}>
-                Advance Payment (Rs.):
+              {/* Advance Payment */}
+              <div style={{ flex: 1, display: "flex", alignItems: "center", gap: "10px" }}>
+              <label style={{ fontWeight: "bold", whiteSpace: "nowrap" }}>
+                Advance (Rs.):
               </label>
               <input
                 type="number"
                 value={advancePayment}
                 onChange={(e) => setAdvancePayment(e.target.value)}
-                style={{ padding: "8px", width: "100%" }}
+                style={{ width: "200px", padding: "8px" }}
               />
             </div>
           </div>
@@ -342,11 +400,9 @@ const [roomType, setRoomType] = useState(""); // ✅ ADDED
               {statusMessage}
             </div>
           )}
-        </>
+      </>
       )}
-     </div>
-        )}
-      
-        
+        </div> 
+      )};  
 
 export default Checkin;

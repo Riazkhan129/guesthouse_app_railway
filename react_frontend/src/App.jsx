@@ -1,5 +1,5 @@
 import { useContext, useState, useEffect } from "react";
-import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
+import { HashRouter, Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
  import axios from "axios";
 import API from "./api";
 import { AuthContext } from "./context/AuthContext";
@@ -11,6 +11,7 @@ import Sidebar from "./components/Sidebar";
 import Guest_Management from "./components/Guest_Management";
 import Bookings from "./components/Booking_Management";
 import CheckInGuest from "./components/Checkin";
+import CheckInReport from "./components/Checkinreport";
 import CheckoutGuest from "./components/Checkout";
 import Dashboard from "./components/Dashboard";
 import Rooms from "./components/Rooms";
@@ -19,6 +20,10 @@ import UserManager from "./components/User";
 import Billing from "./components/Billing";
 import Guestreport from "./components/guestreport";
 import Gueststayreport from "./components/Gusetstayreport";
+import PerformanceReport from "./components/Performancereport";
+import Expensecategories from "./components/Expensecatogaries";
+import Expenseitems from "./components/Expenseitems";
+import Roomservice from "./components/Roomservice";
 import Contactus from "./components/Contactus";  
 import PrivacyPolicy from "./components/PrivacyPolicy";
 import { Link } from "react-router-dom";
@@ -26,8 +31,15 @@ import { Link } from "react-router-dom";
 
 // 🏢 Top header with company name test
 function CompanyHeader() {
-  const { token, clientId } = useContext(AuthContext);
-  const [companyName, setCompanyName] = useState("Loading...");
+  const {
+    token,
+    clientId,
+    companyName,
+    companyLogo,
+    setCompanyName,     // ✅ Use context setter
+    setCompanyLogo      // ✅ Use context setter
+  } = useContext(AuthContext);
+
 
   useEffect(() => {
     if (!clientId || !token) return;
@@ -36,32 +48,53 @@ function CompanyHeader() {
         headers: { Authorization: `Bearer ${token}` } // ✅ CHANGED
       })
         .then((res) => {
-        if (res.data?.guesthouse_name) {
+          console.log("API response:", res.data);
+
+        // if (res.data?.guesthouse_name) {
           setCompanyName(res.data.guesthouse_name);
-        } else {
-          setCompanyName("Unknown Company");
-      }
-    })
-      .catch(() => setCompanyName("Unknown Company"));
+          setCompanyLogo(res.data?.logo || null);
+      })
+      .catch(() => {
+        setCompanyName("Unknown Company")
+        setCompanyLogo(null);
+        });
    }, [clientId, token]);
+  
 
   return (
+    
     <div style={{
-      backgroundColor: "#004080",
-      color: "white",
-      padding: "10px 20px",
-      fontSize: "1.5rem",
-      fontWeight: "bold",
-      textAlign: "center", // ✅ Center text horizontally
-      fontFamily: "sans-serif"  
-    }}>
-      {companyName}
+    backgroundColor: "#004080",
+    color: "white",
+    padding: "10px 20px",
+    fontFamily: "sans-serif",
+    display: "flex", // ✅ ADDED: Flex layout
+    alignItems: "center",
+    justifyContent: "space-between"
+  }}>
+    {/* ✅ Logo on the left */}
+    {companyLogo ? (
+      <img
+        src={companyLogo}
+        alt="Company Logo"
+        style={{ maxHeight: "80px", objectFit: "contain" }}
+      />
+    ) : (
+      <div style={{ height: "60px", width: "60px", backgroundColor: "#ccc", marginRight: "20px" }} />
+    )}
+
+    {/* ✅ Company name and tagline */}
+    <div style={{ flexGrow: 1 }}>
+      <div style={{ fontSize: "1.5rem", fontWeight: "bold" }}>
+        {companyName}
+      </div>
       <div style={{ fontSize: "1rem", fontWeight: "normal", marginTop: "4px" }}>
-      Powered by SmartHost — Know Your Numbers. Grow Your Business.
+        Powered by SmartHost — Know Your Numbers. Grow Your Business.
       </div>
     </div>
-  );
-}
+  </div>
+)};
+
 
 // 🧾 Footer component (inline)
 function Footer() {
@@ -76,7 +109,7 @@ function Footer() {
       marginTop: "20px"
     }}>
       <p>
-        <strong>Developed by Aarkay's Solutions | © 2025 SmartHost</strong>
+        <strong>Developed by Aarkay's Solutions | © 2025 SmartHost v2.0</strong>
       </p>
       <p style={{ fontStyle: "italic", marginTop: "4px" }}>
         Empowering guesthouse owners with financial clarity and full operational control.
@@ -132,10 +165,15 @@ function MainApp() {
             <Route path="/guest_management" element={<Guest_Management {...commonProps} />} />
             <Route path="/bookings" element={<Bookings {...commonProps} />} />
             <Route path="/checkin" element={<CheckInGuest {...commonProps} />} />
+            <Route path="/checkinreport" element={<CheckInReport {...commonProps} />} />
             <Route path="/checkout" element={<CheckoutGuest {...commonProps} />} />
             <Route path="/billing" element={<Billing {...commonProps} />} />
             <Route path="/guestreport" element={<Guestreport {...commonProps} />} />
             <Route path="/gueststayreport" element={<Gueststayreport {...commonProps} />} />
+            <Route path="/Performancereport" element={<PerformanceReport {...commonProps} />} />
+            <Route path="/Expensecategories" element={<Expensecategories {...commonProps} />} />
+            <Route path="/Expenseitems" element={<Expenseitems {...commonProps} />} />
+            <Route path="/Roomservice" element={<Roomservice {...commonProps} />} />
             <Route path="*" element={<div>❌ Page Not Found</div>} />
           </Routes>
           <Footer /> {/* ✅ Inline footer added here */}
@@ -148,9 +186,10 @@ function MainApp() {
 // 🧭 Router wrapper
 function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <MainApp />
-    </BrowserRouter>
-  );
+    </HashRouter>
+  )
 }
+
 export default App;

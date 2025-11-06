@@ -29,8 +29,14 @@ def create_room(request: Request, room: RoomIn, user: str = Depends(get_current_
 # ---------- Get Vacant Rooms ----------
 @router.get("/vacant", response_model=list[RoomOut])
 def get_vacant_rooms(request: Request, user: str = Depends(get_current_user)):
-    client_id = get_client_id(request)  # ✅ ADDED
-    return crud.get_vacant_rooms(client_id)  # ✅ UPDATED
+    client_id = get_client_id(request)  
+    return crud.get_vacant_rooms(client_id)
+
+# ---------- Get Checked-In Rooms ----------
+@router.get("/checked_in", response_model=list[RoomOut])
+def get_vacant_rooms(request: Request, user: str = Depends(get_current_user)):
+    client_id = get_client_id(request)  
+    return crud.get_checkedin_rooms(client_id)  
 
 # ----------- Update Room Status i.e. Vacant etc. ------------------
 @router.put("/update_status/{room_number}")

@@ -11,6 +11,9 @@ const blankGuestForm = {
   nationality: "",
   guest_type: "",
   address: "",
+  corporate_name: "",             // 🔧 NEW
+  corporate_contact_person: "",   // 🔧 NEW
+  corporate_address: "",          // 🔧 NEW
 };
 
 const GuestForm = ({ form, onChange, editable = true, onSubmit, buttonLabel }) => {
@@ -42,6 +45,40 @@ const GuestForm = ({ form, onChange, editable = true, onSubmit, buttonLabel }) =
         <label>Address:</label>
         <textarea name="address" rows={3} value={form?.address || ""} onChange={onChange} style={{ width: "100%" }} />
       </div>
+
+      {/* 🔧 CORPORATE FIELDS */}
+      {guest_type === "Corporate" && (
+        <>
+          <div>
+            <label>Corporate Name:</label>
+            <input
+              name="corporate_name"
+              value={form?.corporate_name || ""}
+              onChange={onChange}
+              style={{ width: "100%", padding: "6px" }}
+            />
+          </div>
+          <div>
+            <label>Contact Person:</label>
+            <input
+              name="corporate_contact_person"
+              value={form?.corporate_contact_person || ""}
+              onChange={onChange}
+              style={{ width: "100%", padding: "6px" }}
+            />
+          </div>
+          <div>
+            <label>Corporate Address:</label>
+            <textarea
+              name="corporate_address"
+              rows={3}
+              value={form?.corporate_address || ""}
+              onChange={onChange}
+              style={{ width: "100%" }}
+            />
+          </div>
+        </>
+      )}
       <div style={{ gridColumn: "span 2" }}>
         <button onClick={onSubmit} style={{ padding: "8px 16px" }}>{buttonLabel}</button>
       </div>

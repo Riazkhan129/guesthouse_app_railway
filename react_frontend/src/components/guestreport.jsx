@@ -1,10 +1,9 @@
 import React, { useEffect, useState, useContext } from "react";
-import API from "../api"; // ✅ ADDED: Centralized Axios instance
-import { AuthContext } from "../context/AuthContext"; // ✅ ADDED: For token
+import API from "../api";
+import { AuthContext } from "../context/AuthContext";
 
-
-const GuestReport = () => {
-  const { token, clientId } = useContext(AuthContext); // ✅ ADDED
+const GuestStayReport = () => {
+  const { token, clientId } = useContext(AuthContext);
 
   const [guests, setGuests] = useState([]);
   const [selectedNic, setSelectedNic] = useState("");
@@ -12,11 +11,10 @@ const GuestReport = () => {
   const [bookings, setBookings] = useState([]);
   const [runtime, setRuntime] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [companyLogo, setCompanyLogo] = useState([]);
   const [companyName, setCompanyName] = useState("Loading...");
-  const totalPages = Math.ceil(bookings.length / 15); // assuming 5 bookings per page
+  const totalPages = Math.ceil(bookings.length / 15);
 
-
-// ✅ ADDED: Fetch company name from backend
   useEffect(() => {
     if (!clientId || !token) return;
 
@@ -24,36 +22,12 @@ const GuestReport = () => {
       headers: { Authorization: `Bearer ${token}` }
     })
       .then((res) => {
-        if (res.data?.guesthouse_name) {
-          setCompanyName(res.data.guesthouse_name); // ✅ FIXED: Set company name
-        } else {
-          setCompanyName("Unknown Company");
-        }
+        setCompanyName(res.data?.guesthouse_name || "Unknown Company");
+        setCompanyLogo(res.data?.logo || null);
       })
       .catch(() => setCompanyName("Unknown Company"));
   }, [clientId, token]);
 
-  function formatDate(dateString) {
-    if (!dateString) return ""; // Handle null or undefined
-    const date = new Date(dateString);
-    return date.toLocaleString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit"
-    });
-  }
-
-  function formatDateOnly(dateString) {
-    if (!dateString) return ""; // Handle null or undefined
-    const date = new Date(dateString);
-    return date.toLocaleString("en-GB", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
-  }
   useEffect(() => {
     const now = new Date();
     setRuntime(now.toLocaleString("en-GB", {
@@ -62,7 +36,6 @@ const GuestReport = () => {
     }));
   }, []);
 
-  // Load NICs from bookings with actual_checkin_time
   useEffect(() => {
     if (!clientId || !token) return;
 
@@ -73,7 +46,6 @@ const GuestReport = () => {
       .catch(err => console.error("❌ Failed to load guests", err));
   }, []);
 
-  // Load guest and all bookings
   useEffect(() => {
     if (selectedNic && clientId) {
       API.get(`/guests/search/${selectedNic}`, {
@@ -86,19 +58,27 @@ const GuestReport = () => {
         headers: { Authorization: `Bearer ${token}` }
       })
         .then(res => {
-          console.log("📦 Raw booking data:", res.data);
-          // const filtered = res.data.filter(b => b.actual_checkin_time);
-          const filtered = res.data.filter(b => b.actual_checkin_time || b.actual_checkout_time); // ✅ FIXED: Include bookings with either check-in or check-out
-          console.log("✅ Filtered bookings :", filtered);
+          const filtered = res.data.filter(b => b.actual_checkin_time || b.actual_checkout_time || b.room_type || b.room_rate || b.companions);
           setBookings(filtered);
         })
         .catch(err => console.error("❌ Booking fetch error", err));
     }
   }, [selectedNic]);
 
+  function formatDate(dateString) {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+  }
+
   return (
     <div style={{ padding: "20px", fontFamily: "Arial" }}>
-      {/* Guest Selection */}
       <label>Select Guest:</label>
       <select onChange={(e) => setSelectedNic(e.target.value)} value={selectedNic}>
         <option value="">-- Select Guest --</option>
@@ -109,21 +89,31 @@ const GuestReport = () => {
         ))}
       </select>
 
-      {/* Report Layout */}
       {selectedNic && (
-        <div id="report-section" style={{ marginTop: "30px", border: "1px solid #ccc", padding: "20px" }}>
-          {/* Top Line */}
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "20px" }}>
-            <div>{runtime}</div>
-            <div style={{ textAlign: "center", flex: 1, fontWeight: "bold", fontSize: "18px" }}>
-              🏨 {companyName}
-            </div>
-            <div style={{ width: "100px" }}></div>
-          </div>
+      <div id="report-section" style={{ marginTop: "30px", border: "1px solid #ccc", padding: "20px" }}>
+          {/* ✅ HEADER WITH LOGO AND NAME */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+        <div>{runtime}</div>
 
-          {/* Guest Identity */}
-         
-          {/* Guest Details */}
+        {/* ✅ UPDATED: Logo and name side-by-side */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flex: 1 }}>
+          {companyLogo && (
+            <img
+              src={companyLogo}
+              alt="Company Logo"
+              style={{ maxHeight: "50px", marginRight: "12px" }} // ✅ CHANGED: marginRight instead of marginBottom
+            />
+          )}
+          <div style={{ fontWeight: "bold", fontSize: "18px" }}>
+            {companyName}
+          </div>
+        </div>
+
+        <div style={{ width: "100px" }}></div>
+      </div>
+
+            
+
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", rowGap: "8px", marginBottom: "20px" }}>
             <div><strong>NIC:</strong> {guest.nic_passport_number}</div>
             <div><strong>Name:</strong> {guest.name}</div>
@@ -134,35 +124,36 @@ const GuestReport = () => {
             <div><strong>Address:</strong> {guest.address}</div>
           </div>
 
-          {/* Booking Header */}
+          {/* ✅ UPDATED Booking Header */}
           <div style={{ display: "flex", fontWeight: "bold", borderBottom: "1px solid #000", paddingBottom: "5px" }}>
-            <div style={{ flex: 1 }}>Planned Check-in</div>
-            <div style={{ flex: 1 }}>Planned Check-out</div>            
             <div style={{ flex: 1 }}>Actual Check-in</div>
             <div style={{ flex: 1 }}>Actual Check-out</div>
             <div style={{ flex: 1 }}>Room</div>
+            <div style={{ flex: 1 }}>Type</div>
+            <div style={{ flex: 1 }}>Rate</div>
+            <div style={{ flex: 1 }}>Companions</div>
           </div>
-        {/* Booking Rows */}
-        {bookings.map((b, index) => (
-          <div key={index} style={{ display: "flex", paddingTop: "5px", borderBottom: "1px dotted #aaa" }}>
-            <div style={{ flex: 1 }}>{formatDateOnly(b.checkin_date)}</div>
-            <div style={{ flex: 1 }}>{formatDateOnly(b.checkout_date)}</div>
-            <div style={{ flex: 1 }}>{formatDate(b.actual_checkin_time)}</div>
-            <div style={{ flex: 1 }}>{formatDate(b.actual_checkout_time)}</div>
-            <div style={{ flex: 1 }}>{b.room_number}</div>
-          </div>
-        ))}
 
-        {/* Footer */}
-        <div style={{ marginTop: "40px", textAlign: "center", fontStyle: "italic" }}>
-          Page {currentPage} of {totalPages}
-          <br />
-          Developed by Aarkay's Solutions | © {new Date().getFullYear()} SmartHost
+          {/* ✅ UPDATED Booking Rows */}
+          {bookings.map((b, index) => (
+            <div key={index} style={{ display: "flex", paddingTop: "5px", borderBottom: "1px dotted #aaa" }}>
+              <div style={{ flex: 1 }}>{formatDate(b.actual_checkin_time)}</div>
+              <div style={{ flex: 1 }}>{formatDate(b.actual_checkout_time)}</div>
+              <div style={{ flex: 1 }}>{b.room_number}</div>
+              <div style={{ flex: 1 }}>{b.room_type}</div>
+              <div style={{ flex: 1 }}>Rs. {b.room_rate?.toLocaleString()}</div>
+              <div style={{ flex: 1 }}>{b.companions}</div>
+            </div>
+          ))}
+
+          <div style={{ marginTop: "40px", textAlign: "center", fontStyle: "italic" }}>
+            Page {currentPage} of {totalPages}
+            <br />
+            Developed by Aarkay's Solutions | © {new Date().getFullYear()} SmartHost
+          </div>
         </div>
-      </div>
       )}
 
-      {/* Print Button */}
       <button onClick={() => window.print()} style={{ marginTop: "20px" }}>
         🖨️ Print / Export PDF
       </button>
@@ -170,4 +161,4 @@ const GuestReport = () => {
   );
 };
 
-export default GuestReport;
+export default GuestStayReport;
