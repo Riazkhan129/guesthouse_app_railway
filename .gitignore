@@ -11,7 +11,4 @@ venv/
 .idea/
 .vscode/
 
-react_frontend/my-react-web-app/
-
-
 rm 'lucid-shuttle-457710-e3-f80b8df2c4dd.json'

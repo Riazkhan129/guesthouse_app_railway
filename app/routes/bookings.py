@@ -91,11 +91,9 @@ def cancel_booking_by_id(request: Request, booking_id: int, data: CancelBookingR
 @router.get("/upcoming")
 def get_upcoming(request: Request,):
     client_id = get_client_id(request)
+    print("IN GET_UPCOMING BEFORE CRUD")
     return crud.get_upcoming_bookings(client_id)
-
-    success = crud.checkout_booking(booking_id, final_payment)
-    if success:
-        return {"message": "Guest checked out successfully"}
-    raise HTTPException(status_code=400, detail="Check-out failed")
+    print("AFTER GET_UPCOMING BEFORE CRUD")
+    
 
 

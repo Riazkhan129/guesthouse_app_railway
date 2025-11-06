@@ -1,5 +1,15 @@
 {
   "dependencies": {
-    "serve": "^14.2.5"
+    "axios": "^1.12.2",
+    "dayjs": "^1.11.18",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-router-dom": "^7.9.4",
+    "react-scripts": "^5.0.1"
+  },
+  "devDependencies": {
+    "cross-env": "^10.1.0",
+    "electron": "^38.3.0",
+    "electron-builder": "^26.0.12"
   }
 }

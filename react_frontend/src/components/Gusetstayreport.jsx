@@ -11,6 +11,7 @@ const GuestStayReport = () => {
   const [bookings, setBookings] = useState([]);
   const [runtime, setRuntime] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [companyLogo, setCompanyLogo] = useState([]);
   const [companyName, setCompanyName] = useState("Loading...");
   const totalPages = Math.ceil(bookings.length / 15);
 
@@ -22,6 +23,7 @@ const GuestStayReport = () => {
     })
       .then((res) => {
         setCompanyName(res.data?.guesthouse_name || "Unknown Company");
+        setCompanyLogo(res.data?.logo || null);
       })
       .catch(() => setCompanyName("Unknown Company"));
   }, [clientId, token]);
@@ -88,14 +90,29 @@ const GuestStayReport = () => {
       </select>
 
       {selectedNic && (
-        <div id="report-section" style={{ marginTop: "30px", border: "1px solid #ccc", padding: "20px" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "20px" }}>
-            <div>{runtime}</div>
-            <div style={{ textAlign: "center", flex: 1, fontWeight: "bold", fontSize: "18px" }}>
-              🏨 {companyName}
-            </div>
-            <div style={{ width: "100px" }}></div>
+      <div id="report-section" style={{ marginTop: "30px", border: "1px solid #ccc", padding: "20px" }}>
+          {/* ✅ HEADER WITH LOGO AND NAME */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+        <div>{runtime}</div>
+
+        {/* ✅ UPDATED: Logo and name side-by-side */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", flex: 1 }}>
+          {companyLogo && (
+            <img
+              src={companyLogo}
+              alt="Company Logo"
+              style={{ maxHeight: "50px", marginRight: "12px" }} // ✅ CHANGED: marginRight instead of marginBottom
+            />
+          )}
+          <div style={{ fontWeight: "bold", fontSize: "18px" }}>
+            {companyName}
           </div>
+        </div>
+
+        <div style={{ width: "100px" }}></div>
+      </div>
+
+            
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", rowGap: "8px", marginBottom: "20px" }}>
             <div><strong>NIC:</strong> {guest.nic_passport_number}</div>
