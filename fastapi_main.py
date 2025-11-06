@@ -8,9 +8,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, HTTPException, APIRouter, Depends, Request
 from fastapi.responses import JSONResponse, PlainTextResponse
 import psycopg2
-import base64
-import imghdr
 
+# from app.db import get_or_create_client_db  # ✅ ADDED: Initialize DB per client
+# /meta/guesthouse
 
 # ✅ Load environment variables from .env (only works locally)
 load_dotenv()
@@ -26,19 +26,20 @@ else:
 sys.path.insert(0, base_path)
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-import os
-import base64
-import imghdr
-import psycopg2
-from fastapi.responses import JSONResponse
+
+# FastAPI imports
+#from fastapi import FastAPI, HTTPException
+#from fastapi.responses import PlainTextResponse
+#from fastapi.middleware.cors import CORSMiddleware
 from app.auth import auth_router
 from app.db import get_or_create_client_db  # ✅ ADDED
+#from app.db import initialize_database
+#from app.crud import get_all_bookings  # Optional: only if you use it somewhere
 
 # Local module imports
 from app.routes import (
     billing, bookings, checkin_checkout, checkout, guests,
-    expenses, users, reports, rooms, invoices, dashboard, performancereport,
-    expense_categories, expense_items, roomservice
+    expenses, users, reports, rooms, invoices, dashboard
 )
 
 # Initialize FastAPI app
@@ -72,11 +73,7 @@ app.include_router(dashboard.router)
 app.include_router(rooms.router)
 app.include_router(expenses.router)
 app.include_router(reports.router)
-app.include_router(performancereport.router)
 app.include_router(users.router)
-app.include_router(expense_categories.router)
-app.include_router(expense_items.router)
-app.include_router(roomservice.router)
 
     
 @app.get("/")
@@ -89,64 +86,66 @@ def get_guesthouse_name(client_id: str):
         config_url = os.getenv("CONFIG_DB_URL")
         config_conn = psycopg2.connect(config_url)
         config_cursor = config_conn.cursor()
-        config_cursor.execute(
-            "SELECT client_name, logo FROM client_databases WHERE client_id = %s", (client_id,))
+        config_cursor.execute("SELECT client_name FROM client_databases WHERE client_id = %s", (client_id,))
         result = config_cursor.fetchone()
         print("Config_cursor.fetchone = ", result)
         config_conn.close()  # ✅ ADDED: Close config DB connection
 
         if result:
-            guesthouse_name = result[0]
-            logo_binary = result[1]
-            print("🔍 logo_binary type -- :", type(logo_binary))
-            print("🔍 logo_binary repr --:", repr(logo_binary))
-            # ✅ ADDED: Encode logo if present
-            if logo_binary:
-                # ✅ Force correct byte extraction
-                if isinstance(logo_binary, memoryview):
-                    logo_bytes = logo_binary.tobytes()
-                elif isinstance(logo_binary, bytes):
-                    logo_bytes = logo_binary
-                else:
-                    print("❌ Unexpected logo_binary type:", type(logo_binary))
-                    logo_bytes = None
-
-                if logo_bytes:
-                    print("✅ logo_bytes preview:", logo_bytes[:20])
-                    logo_base64 = base64.b64encode(logo_bytes).decode("utf-8")
-                    mime = imghdr.what(None, h=logo_bytes) or "jpeg"
-                    print("🧪 Detected MIME type:", mime)
-                    logo_data_url = f"data:image/{mime};base64,{logo_base64}"
-                    print("✅ logo_data_url preview:", logo_data_url[:100])
-                else:
-                    print("⚠️ Could not extract valid image bytes")
-            else:
-                print("⚠️ No logo found for client")
-
-            return {
-                "guesthouse_name": guesthouse_name,
-                "logo": logo_data_url
-            }
-
+            return {"guesthouse_name": result[0]}
+        
         return JSONResponse(status_code=404, content={"error": "Guesthouse not found"})
-
     else:
-        validate_license(client_id)
-        return {
-            "guesthouse_name": app.state.guesthouse_name,
-            "logo": app.state.logo_data_url
-        }
+        validate_license()  # ✅ ADDED: Run license check manually
+        return {"guesthouse_name": app.state.guesthouse_name}
 
-def validate_license(client_code: str):
-    try:        
-        license_path, key_path, logo_path = get_license_paths(client_code)
+# === Utility: Read client code from file ===
+def read_client_code():
+    env_client_id = os.getenv("CLIENT_ID")
+    if env_client_id:
+        print(f"✅ Using CLIENT_ID from environment: {env_client_id}")
+        return env_client_id
 
-        if not os.path.exists(license_path):
-            raise FileNotFoundError(f"License file not found for client: {client_code}")
-        if not os.path.exists(key_path):
-            raise FileNotFoundError(f"Key file not found for client: {client_code}")
-        if not os.path.exists(logo_path):
-            raise FileNotFoundError(f"Logo file not found for client: {client_code}")
+    # Fallback to reading from client_code.txt
+    try:
+        package_dir = os.path.join(base_path, "package")
+        for folder in os.listdir(package_dir):
+            client_code_path = os.path.join(package_dir, folder, "client_code.txt")
+            if os.path.exists(client_code_path):
+                with open(client_code_path, "r") as f:
+                    return f.read().strip()
+        print("❌ No client_code.txt found in package folders.")
+        return "default_client"
+    except Exception as e:
+        print(f"❌ Error reading client_code.txt: {e}")
+        return "default_client"
+
+# === ✅ Utility: Get license and key paths from package/{client}/ ===
+def get_license_paths(client_code):
+    # ✅ Use LICENSE_PATH from env if available
+    env_license_path = os.getenv("LICENSE_PATH")
+    if env_license_path:
+        license_path = env_license_path
+        key_path = env_license_path.replace(".license", ".key")
+        print(f"✅ Using LICENSE_PATH from environment: {license_path}")
+    else:
+        client_folder = os.path.join(base_path, "package", client_code)
+        license_path = os.path.join(client_folder, f"{client_code}.license")  # ✅ Changed from licenses/
+        key_path = os.path.join(client_folder, f"{client_code}.key")          # ✅ Changed from keys/
+    return license_path, key_path
+
+# === ✅ NEW: License Check Endpoint ===
+@app.get("/meta/license-check")
+def license_check():
+    try:
+        client_code = read_client_code()
+        license_path, key_path = get_license_paths(client_code)
+
+        license_exists = os.path.exists(license_path)
+        key_exists = os.path.exists(key_path)
+
+        if not license_exists or not key_exists:
+            raise FileNotFoundError("License or key file missing")
 
         with open(key_path, "rb") as kf:
             key = kf.read()
@@ -154,23 +153,62 @@ def validate_license(client_code: str):
 
         with open(license_path, "rb") as lf:
             encrypted = lf.read()
-            
+        decrypted = cipher.decrypt(encrypted)
+        license_data = json.loads(decrypted.decode())
+        print("license data =======", license_date)
+
+        expiry = license_data.get("expiry")
+        guesthouse = license_data.get("guesthouse", "Unknown")
+        if expiry:
+            expiry_date = datetime.strptime(expiry, "%Y-%m-%d").date()
+            expired = expiry_date < datetime.today().date()
+        else:
+            expired = False
+
+        return {
+            "client_id": client_code,
+            "guesthouse": guesthouse,
+            "license_expiry": expiry,
+            "license_expired": expired,
+            "license_path": license_path,
+            "key_path": key_path,
+            "license_valid": not expired
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"License check failed: {str(e)}")
+# === FastAPI Startup Event ===
+# @app.on_event("startup")
+def validate_license():
+    try:        
+        client_code = read_client_code()
+        license_path, key_path = get_license_paths(client_code)
+
+        if not os.path.exists(license_path):
+            raise FileNotFoundError(f"License file not found for client: {client_code}")
+        if not os.path.exists(key_path):
+            raise FileNotFoundError(f"Key file not found for client: {client_code}")
+
+        with open(key_path, "rb") as kf:
+            key = kf.read()
+        cipher = Fernet(key)
+
+        with open(license_path, "rb") as lf:
+            encrypted = lf.read()
         decrypted = cipher.decrypt(encrypted)
         license_data = json.loads(decrypted.decode())
 
         app.state.guesthouse_name = license_data.get("guesthouse", "Unknown")
-        print("logo_path", logo_path)
-        app.state.logo_data_url = encode_logo_file(logo_path)
-        
+
         expiry = license_data.get("expiry")
         if expiry:
             expiry_date = datetime.strptime(expiry, "%Y-%m-%d").date()
             if expiry_date < datetime.today().date():
                 raise Exception(f"License expired on {expiry_date}")
 
-        #print(f"✅ License valid for: {app.state.guesthouse_name}")
-        #guesthouse_name = app.state.guesthouse_name
-        #print(f"✅ GUESTHOUSE_NAME =====", guesthouse_name)
+        print(f"✅ License valid for: {app.state.guesthouse_name}")
+        guesthouse_name = app.state.guesthouse_name
+        print(f"✅ GUESTHOUSE_NAME =====", guesthouse_name)
         
 
         # ✅ ADDED: Initialize DB for this client
@@ -180,40 +218,6 @@ def validate_license(client_code: str):
     except Exception as e:
         print("❌ License validation failed:", str(e))
         raise e
-
-
-
-# === ✅ Utility: Get license and key paths from package/{client}/ ===
-def get_license_paths(client_code):
-        client_folder = os.path.join(base_path, "package", client_code)
-        print("Client Folder ====", client_folder)
-        license_path = os.path.join(client_folder, f"{client_code}.license")
-        print("LICENSE_PATH = ", license_path)
-        # ✅ Changed from licenses/
-        key_path = os.path.join(client_folder, f"{client_code}.key")
-        print("KEY_PATH = ", key_path)
-              
-        logo_path = os.path.join(client_folder, f"{client_code}_logo.png")
-        print("LOGO_PATH = ", logo_path)
-        
-        return license_path, key_path, logo_path
-
-# === Utility: Load and encode logo file ===
-def encode_logo_file(logo_path):
-    if not os.path.exists(logo_path):
-        print(f"⚠️ Logo file not found: {logo_path}")
-        return None
-    try:
-        with open(logo_path, "rb") as lf:
-            logo_bytes = lf.read()
-        mime = imghdr.what(None, h=logo_bytes) or "jpeg"
-        logo_base64 = base64.b64encode(logo_bytes).decode("utf-8")
-        logo_data_url = f"data:image/{mime};base64,{logo_base64}"
-        print("✅ Encoded logo preview:", logo_data_url[:100])
-        return logo_data_url
-    except Exception as e:
-        print(f"❌ Error encoding logo file: {e}")
-        return None
 
 # === ✅ NEW: Initialization Endpoint ===
 @app.post("/meta/init")
@@ -235,7 +239,6 @@ async def initialize_client(request: Request):
 if __name__ == "__main__":
     import uvicorn
     import os
-    from fastapi_main import app
     print("Starting FastAPI app from executable...")
-    uvicorn.run("fastapi_main:app", host="0.0.0.0", port=port, reload=False)
+    uvicorn.run("fastapi_main:app", host="0.0.0.0", port=port, reload=True)
 

@@ -65,83 +65,6 @@ class RoomOut(BaseModel):
     price: float
     status: str
     notes: Optional[str] = None
-
-# schemas.py
-#from pydantic import BaseModel
-
-class ExpenseCategoryBase(BaseModel):
-    category_name: str
-    category_active: bool = True
-
-class ExpenseCategoryCreate(ExpenseCategoryBase):
-    pass
-
-class ExpenseCategoryUpdate(ExpenseCategoryBase):
-    pass
-    
-
-class ExpenseCategoryOut(ExpenseCategoryBase):
-    id: int
-
-
-    class Config:
-        orm_mode = True
-
-#----------------
-
-class ExpenseItemBase(BaseModel):
-    category_id: int
-    expense_name: str
-    default_price: int
-    unit: str
-    is_activated: bool = True
-
-class ExpenseItemCreate(ExpenseItemBase):
-    pass
-
-class ExpenseItemUpdate(ExpenseItemBase):
-    pass
-
-class ExpenseItemOut(ExpenseItemBase):
-    expense_item_id: int
-    created: str
-
-    class Config:
-        orm_mode = True
-
-#---------------- Room Service --------------
-
-class RoomServiceRequestIn(BaseModel):
-    room_id: str
-    nic_passport_number: str
-    category_id: int
-    expense_item_id: int
-    quantity: int
-    unit_price: int
-    total_price: int
-    notes: Optional[str] = None
-    requested_at: Optional[str] = None
-    booking_id: int
-    
-    
-
-class RoomServiceRequestOut(RoomServiceRequestIn):
-    id: int
-    total_price: int
-
-class RoomServiceSummaryOut(BaseModel):
-    category_name: str
-    total_amount: int
-
-class RoomServiceItemDetail(BaseModel):
-    category_name: str
-    expense_name: str
-    total_price: int
-
-class RoomServiceItemGroupByDate(BaseModel):
-    date: str
-    items: list[RoomServiceItemDetail]
-
     
 
 # --------- Guest ---------
@@ -155,9 +78,6 @@ class GuestBase(BaseModel):
     nationality: Optional[str] = None
     emergency_contact: Optional[str] = None
     guest_type: Optional[str] = None
-    corporate_name: Optional[str] = None
-    corporate_contact_person: Optional[str] = None
-    corporate_address: Optional[str] = None
 
 # ---------- Create ----------
 class GuestCreate(GuestBase):
@@ -180,9 +100,6 @@ class GuestUpdate(BaseModel):
     nationality: Optional[str]
     emergency_contact: Optional[str]
     guest_type: Optional[str]
-    corporate_name: Optional[str] = None
-    corporate_contact_person: Optional[str] = None
-    corporate_address: Optional[str] = None
 
 
 # ---------- Booking Response ----------
@@ -207,11 +124,6 @@ class BookingBase(BaseModel):
     advance_payment: Optional[int] = None
     actual_checkout_date: Optional[str] = None
     total_payment: Optional[int] = None
-    corporate_name: Optional[str] = None
-    payment_mode: Optional[str] = None
-    profession: Optional[str] = None
-    visit_purpose: Optional[str] = None
-    payment_status: Optional[str] = None
     invoice_id: Optional[int] = None
 
 class BookingUpdate(BaseModel):
@@ -231,7 +143,6 @@ class BookingCreate(BaseModel):
     total_payment: Optional[int]
     booked_rooms: Optional[int]
     total_rooms: Optional[int]
-    corporate_name: Optional[str] = None
 
 class BookingOut(BaseModel):
     booking_id: int
@@ -249,8 +160,6 @@ class BookingOut(BaseModel):
     advance_payment: Optional[int] = None
     actual_checkout_time: Optional[str] = None
     total_payment: Optional[int] = None
-    corporate_name: Optional[str] = None
-    
     
 
 class BookingOutCheckIn(BaseModel):
@@ -269,8 +178,6 @@ class BookingOutCheckIn(BaseModel):
     actual_checkout_date: Optional[str] = None
     total_payment: Optional[int] = None
     guest_name: Optional[str]
-    corporate_name: Optional[str] = None
-    
 
 
 class BookingSummary(BaseModel):
@@ -280,17 +187,14 @@ class BookingSummary(BaseModel):
     checkout_date: str
     status: str
 
-
+    
 class CheckinData(BaseModel):
     room_number: str
     room_type: str
     room_rate: int
-    companions: int
-    mode_of_payment: str
-    profession: str
-    purpose_of_visit: str
-    actual_checkin_time: str
     checkout_date: str
+    actual_checkin_time: str
+    companions: int
     advance_payment: float
     status: str
     
@@ -343,40 +247,20 @@ class BillingOut(BillingIn):
     id: int
 
 # --------- Expense ---------
-
-# --------- Expense Models ---------
 from pydantic import BaseModel
 from typing import Optional
 
+# --------- Expense Models ---------
 class ExpenseBase(BaseModel):
-    category_id: int
-    expense_item_id: int
+    title: str
     amount: float
+    category: str = "Salary"
     notes: Optional[str] = None
-    timestamp: str
     date: str
 
 class ExpenseCreate(ExpenseBase):
-    category_id: int
-    expense_item_id: int
-    amount: float
-    notes: Optional[str] = None
-    timestamp: str
-    date: str
+    pass
 
 class ExpenseOut(ExpenseBase):
-    expense_id: int
-    category_id: int
-    category_name: str
-    expense_item_id: int
-    expense_name: str
-    amount: float
-    notes: Optional[str] = None
-    timestamp: str
-    date: str
-
-class ExpenseUpdate (BaseModel):
-    amount: float
-    notes: Optional[str] = None
-    timestamp: str
-    date: str
+    id: int
+    

@@ -31,7 +31,8 @@ def get_available_drives():
 # ---------- Create or Find ghms Folder ----------
 def find_or_create_ghms_folder():
     drives = get_available_drives()
-    
+    #if not result:
+    #    raise RuntimeError(f"❌ No DB URL found for client '{client_id}'")  # ✅ Error if missing
     for drive in drives:
         ghms_path = os.path.join(drive, "ghms")
         try:
@@ -55,7 +56,7 @@ def get_or_create_client_db(client_id):
             config_cursor = config_conn.cursor()
             config_cursor.execute("SELECT db_url, client_name FROM client_databases WHERE client_id = %s", (client_id,))
             result = config_cursor.fetchone()
-            # print("Config_cursor.fetchone = ", result)
+            print("Config_cursor.fetchone = ", result)
             config_conn.close()  # ✅ ADDED: Close config DB connection
             
             
@@ -69,9 +70,9 @@ def get_or_create_client_db(client_id):
             conn = psycopg2.connect(db_url)
             conn.autocommit = True
             placeholder = "%s"  # ✅ PostgreSQL placeholder
-            # print(f"✅ Connected to PostgreSQL DB for client: {client_id}")
-            # print(f"🔧 DB_MODE: {DB_MODE}")
-            # print(f"🔧 Initializing DB for client: {client_id}")
+            print(f"✅ Connected to PostgreSQL DB for client: {client_id}")
+            print(f"🔧 DB_MODE: {DB_MODE}")
+            print(f"🔧 Initializing DB for client: {client_id}")
         else:
             ghms_folder = find_or_create_ghms_folder()
             db_path = os.path.join(ghms_folder, "smarthost.sqlite")
@@ -87,7 +88,13 @@ def get_or_create_client_db(client_id):
         return conn, placeholder  # ✅ Return both values
     except Exception as e:
         raise RuntimeError(f"❌ Failed to prepare DB for client '{client_id}': {e}")
-
+# ---------- FastAPI Dependency ----------
+#def get_db():
+#    db = get_connection()
+#    try:
+#        yield db
+#    finally:
+#        db.close()
 
 # ---------- Encrypt password ----------
 def encrypt_password(password: str, key: str) -> str:
@@ -118,7 +125,7 @@ def initialize_database(db_path_or_conn, client_id):
         )
     """) 
 
-    # print("✅ 'client_keys' table creation executed")  # ✅ ADDED: Debug log
+    print("✅ 'client_keys' table creation executed")  # ✅ ADDED: Debug log
 
     user_id_column = "user_id SERIAL PRIMARY KEY" if DB_MODE == "multi-tenant" else "user_id INTEGER PRIMARY KEY AUTOINCREMENT"    
     
@@ -134,7 +141,7 @@ def initialize_database(db_path_or_conn, client_id):
 
     cursor.execute(sql_users)
 
-    # print("✅ 'users' table creation executed")  # ✅ ADDED: Debug log
+    print("✅ 'users' table creation executed")  # ✅ ADDED: Debug log
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS guests (
@@ -145,20 +152,15 @@ def initialize_database(db_path_or_conn, client_id):
             address TEXT,
             nationality TEXT,
             emergency_contact TEXT,
-            guest_type TEXT,
-            corporate_name TEXT,
-            corporate_contact_person TEXT,
-            corporate_address TEXT
+            guest_type TEXT
         )
     """)
 
-    # print("✅ 'guests' table creation executed")  # ✅ ADDED: Debug log
-
-    
+    print("✅ 'guests' table creation executed")  # ✅ ADDED: Debug log
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS rooms (
-            room_number TEXT PRIMARY KEY,
+            room_number TEXT NOT NULL,
             type TEXT NOT NULL,
             price REAL NOT NULL,
             status TEXT NOT NULL,
@@ -166,7 +168,7 @@ def initialize_database(db_path_or_conn, client_id):
         )
     """)
 
-    # print("✅ 'rooms' table creation executed")  # ✅ ADDED: Debug log
+    print("✅ 'rooms' table creation executed")  # ✅ ADDED: Debug log
 
     booking_id_column = "booking_id SERIAL PRIMARY KEY" if DB_MODE == "multi-tenant" else "booking_id INTEGER PRIMARY KEY AUTOINCREMENT"
     cursor.execute(f"""
@@ -182,89 +184,31 @@ def initialize_database(db_path_or_conn, client_id):
             notes TEXT,
             actual_checkin_time TEXT,
             companions INTEGER,
-            mode_of_payment TEXT,
-            profession TEXT,
-            purpose_of_visit TEXT,
             advance_payment REAL,
             actual_checkout_time TEXT,
             total_payment REAL,
-            corporate_name TEXT,
-            payment_status TEXT,
             invoice_id INTEGER,
             FOREIGN KEY (nic_passport_number) REFERENCES guests(nic_passport_number)
         )
     """)
 
-    # print("✅ 'booking' table creation executed")  # ✅ ADDED: Debug log
-
-   
-    category_id_column = "id SERIAL PRIMARY KEY" if DB_MODE == "multi-tenant" else "id INTEGER PRIMARY KEY AUTOINCREMENT"
-    cursor.execute(f"""
-        CREATE TABLE IF NOT EXISTS expense_categories (
-            {category_id_column},
-            category_name TEXT NOT NULL UNIQUE,
-            category_active bool
-        )
-    """)
-
-    # print("✅ 'expense categories' table creation executed")  # ✅ ADDED: Debug log
-
-    expense_id_column = "expense_item_id PRIMARY KEY" if DB_MODE == "multi-tenant" else "expense_item_id INTEGER PRIMARY KEY AUTOINCREMENT"
-    cursor.execute(f"""
-    CREATE TABLE IF NOT EXISTS expense_items (
-        {expense_id_column},
-        category_id INTEGER,
-        expense_name TEXT NOT NULL UNIQUE,
-        default_price INTEGER,
-        unit TEXT,
-        is_activated REAL,
-        requested_on TEXT,
-        FOREIGN KEY(category_id) REFERENCES expense_categories(id)
-)
-""")
-
-    # print("✅ 'expense items' table creation executed")  # ✅ ADDED: Debug log
-
-
-    id_column = "id SERIAL PRIMARY KEY" if DB_MODE == "multi-tenant" else "id INTEGER PRIMARY KEY AUTOINCREMENT"
-    
-    cursor.execute(f"""
-        CREATE TABLE IF NOT EXISTS room_service (
-            {id_column},
-            room_id TEXT NOT NULL,
-            nic_passport_number TEXT NOT NULL,
-            category_id INTEGER NOT NULL,
-            expense_item_id INTEGER NOT NULL,
-            quantity INTEGER NOT NULL,
-            unit_price INTEGER NOT NULL,
-            total_price INTEGER NOT NULL,
-            notes TEXT,
-            requested_at TEXT,
-            booking_id Integer,
-            FOREIGN KEY(booking_id) REFERENCES bookings(booking_id),
-            FOREIGN KEY(expense_item_id) REFERENCES expense_items(expense_item_id)
-            FOREIGN KEY("room_id") REFERENCES rooms("room_number")
-            )
-    """)
-
-
+    print("✅ 'booking' table creation executed")  # ✅ ADDED: Debug log
 
     id_column = "expense_id SERIAL PRIMARY KEY" if DB_MODE == "multi-tenant" else "expeense_id INTEGER PRIMARY KEY AUTOINCREMENT"
     
     cursor.execute(f"""
-    CREATE TABLE IF NOT EXISTS expenses (
-        {id_column},
-        category_id INTEGER NOT NULL,
-        expense_item_id INTEGER NOT NULL,
-        amount REAL NOT NULL,
-        notes TEXT,
-        timestamp TEXT,
-        date TEXT,
-        FOREIGN KEY(category_id) REFERENCES expense_categories(id),
-        FOREIGN KEY(expense_item_id) REFERENCES expense_items(expense_item_id)
-    )
+        CREATE TABLE IF NOT EXISTS expenses (
+            {id_column},
+            title TEXT NOT NULL,
+            amount REAL NOT NULL,
+            category TEXT NOT NULL,
+            notes TEXT,
+            timestamp TEXT,
+            date TEXT
+        )
     """)
-    # print("✅ 'expenses' table creation executed")  # ✅ ADDED: Debug log
+
+    print("✅ 'expenses' table creation executed")  # ✅ ADDED: Debug log
 
 
     invoice_id_column = (
@@ -294,7 +238,7 @@ def initialize_database(db_path_or_conn, client_id):
 
     cursor.execute(query)
 
-    #print("✅ 'invoices' table creation executed")  # ✅ ADDED: Debug log
+    print("✅ 'invoices' table creation executed")  # ✅ ADDED: Debug log
 
 # ---------- Encryption Key ----------
     
@@ -306,7 +250,7 @@ def initialize_database(db_path_or_conn, client_id):
     
     if result:
         encryption_key = result[0]
-        # print(f"🔐 Existing encryption key found")
+        print(f"🔐 Existing encryption key found")
     else:
         encryption_key = Fernet.generate_key().decode()
         if DB_MODE == "multi-tenant":
@@ -338,7 +282,7 @@ def initialize_database(db_path_or_conn, client_id):
         cursor.execute("SELECT COUNT(*) FROM users WHERE username = ?", ("admin2",))
     if cursor.fetchone()[0] == 0:
         encrypted_pw = encrypt_password("admin2", encryption_key)
-        # print ("In DB.PY encryption key ====", encryption_key)
+        print ("In DB.PY encryption key ====", encryption_key)
         if DB_MODE == "multi-tenant":
             cursor.execute("INSERT INTO users (username, password, role, name) VALUES (%s, %s, %s, %s)",
                            ("admin2", encrypted_pw, "Management", "Admin Two"))
@@ -347,7 +291,7 @@ def initialize_database(db_path_or_conn, client_id):
                            ("admin2", encrypted_pw, "Management", "Admin Two"))
 
     conn.commit()
-    # print(f"✅ Database initialized for client: {client_id}")
+    print(f"✅ Database initialized for client: {client_id}")
     
 
 # ---------- Run only once to initialize ----------

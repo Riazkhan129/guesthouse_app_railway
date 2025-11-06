@@ -35,7 +35,6 @@ function BookingManagement() {
   const [bookingCreated, setBookingCreated] = useState(false);
   const [guestNames, setGuestNames] = useState({}); // 📦 {nic: name}
   const [selectedBooking, setSelectedBooking] = useState(null);
-  const [selectedcorporate_name, setcorporate_name] = useState(null);
   const [bookingDate, setBookingDate] = useState(() =>
     new Date().toISOString().split("T")[0]
   ); // ✅ Clean and correct
@@ -78,7 +77,6 @@ useEffect(() => {
     }
     if (["View All Bookings", "Cancel Booking", "Upcoming Booking"].includes(action)) {
       const endpoint = action === "Upcoming Booking" ? "upcoming" : "";
-      console.log("ENDPOINT = ", {endpoint})
       API.get(`/bookings/${endpoint}`, { headers: { Authorization: `Bearer ${token}` } }) // 🔧 CHANGED
         .then(res => setBookings(res.data))
         .catch(() => alert("❌ Failed to load bookings."));
@@ -88,7 +86,6 @@ useEffect(() => {
   const fetchBookings = () => {
   API.get("/bookings", { headers: { Authorization: `Bearer ${token}` } }) // 🔧 CHANGED
     .then((res) => {setBookings(res.data) // 🎯 Update list with fresh data
-      console.log("Booking record:", res.data)
     })
     .catch((err) => {console.error("Failed to fetch bookings:", err);
   });
@@ -113,10 +110,9 @@ useEffect(() => {
       total_payment: 0,
       booked_rooms: availability?.booked_rooms,
       total_rooms: availability?.total_rooms,
-      corporate_name: selectedGuest.corporate_name,
     };
     
-    API.post("/bookings/", payload) 
+    API.post("/bookings/", payload) // 🔧 CHANGED
     .then(() => {
       alert("✅ Booking created successfully!");
       setBookingCreated(true); 
@@ -268,9 +264,7 @@ useEffect(() => {
 
         {/* ✅ Row 4: Check-out Date */}
         {availability?.available_rooms > 0 && (
-          <div style={{ display: "flex", gap: "40px", marginBottom: "20px", alignItems: "center" }}>
-          {/* 🔧 Check-out Date Field */}
-           <div style={{ display: "flex", alignItems: "center", gap: "10px", flex: 1 }}>
+          <div>
             <label style={{ fontWeight: "bold", display: "block", marginBottom: "5px" }}>
               Check-out Date:
             </label>
@@ -286,22 +280,7 @@ useEffect(() => {
               minDate={checkinDate}
             />
           </div>
-
-            {selectedGuest.corporate_name && (
-              <div style={{ display: "flex", alignItems: "center", gap: "10px", flex: 1 }}>
-                <label style={{ fontWeight: "bold", display: "block", marginBottom: "5px" }}>
-                  Corporate Name:
-              </label>
-              <input
-                type="text"
-                value={selectedGuest.corporate_name}
-                readOnly
-                style={{ padding: "6px", width: "100%" }}
-              />
-            </div>
-          )}
-          </div>
-          )}  
+        )}
 
         {/* ✅ Row 5: Create Booking Button */}
         {availability?.available_rooms > 0 && (
@@ -358,12 +337,11 @@ useEffect(() => {
               <div style={{ width: "48%" }}>
                 <strong>Status:</strong> {b.status}
               </div>
-              
-           {b.corporate_name && ( 
-              <div style={{ width: "48%" }}>
-                <strong>Corporate:</strong> {b.corporate_name}
-              </div>
-            )}
+              {b.notes && (
+                <div style={{ width: "48%" }}>
+                  <strong>Notes:</strong> {b.notes}
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -416,11 +394,6 @@ useEffect(() => {
             <p>
               <strong>Status:</strong> {selectedBooking.status}
             </p>
-            {selectedBooking.corporate_name && (
-              <p>
-                <strong>Corporate:</strong> {selectedBooking.corporate_name}
-              </p>
-            )}
           </div>
         )}
 
@@ -446,9 +419,7 @@ useEffect(() => {
     {action === "Upcoming Booking" && (
       <div>
         <h3>📅 Upcoming Bookings</h3>
-      
-        
-        {bookings.map((b => (
+        {bookings.map((b) => (
           <div
             key={b.booking_id}
             style={{
@@ -473,23 +444,20 @@ useEffect(() => {
               <strong>Check-in:</strong> {formatToDisplayDate(b.checkin_date)}
             </div>
             <div style={{ width: "48%" }}>
-                 <strong>Check-out:</strong> {formatToDisplayDate(b.checkout_date)}
-            </div>  
+              <strong>Check-out:</strong> {formatToDisplayDate(b.checkout_date)}
+            </div>
 
             {/* 3rd Row: Status & Notes */}
             <div style={{ width: "48%" }}>
               <strong>Status:</strong> {b.status}
             </div>
-            {b.corporate_name && ( 
+            {b.notes && (
               <div style={{ width: "48%" }}>
-                <strong>Corporate:</strong> {b.corporate_name}
+                <strong>Notes:</strong> {b.notes}
               </div>
             )}
-
-
           </div>
-        ))
-      )}
+        ))}
       </div>
     )}
     </div>

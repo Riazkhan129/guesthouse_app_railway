@@ -14,8 +14,6 @@ function Checkout() {
   const [roomPrice, setRoomPrice] = useState(0);
   const [totalNights, setTotalNights] = useState(1);
   const [statusMessage, setStatusMessage] = useState("");
-  const [roomServiceSummary, setRoomServiceSummary] = useState([]);
-  const [roomServiceItemsByDate, setRoomServiceItemsByDate] = useState([]);
 
   const formatDateTime = (isoDateStr) => {
   if (!isoDateStr) return "";
@@ -57,28 +55,6 @@ function Checkout() {
     }
   };
 
-  const fetchRoomServiceSummary = async (bookingId) => {
-  try {
-    const res = await API.get(`/roomservice/summary/by_booking/${bookingId}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    if (res.status === 200) setRoomServiceSummary(res.data);
-  } catch (err) {
-    console.error("❌ Failed to fetch room service summary", err);
-  }
-};
-
-const fetchRoomServiceItems = async (bookingId) => {
-  try {
-    const res = await API.get(`/roomservice/items/by_booking/${bookingId}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    if (res.status === 200) setRoomServiceItemsByDate(res.data);
-  } catch (err) {
-    console.error("❌ Failed to fetch room service items", err);
-  }
-};
-
   const handleBookingSelect = async (bookingId) => {
     setSelectedBookingId(bookingId);
     const booking = bookings.find((b) => b.booking_id === parseInt(bookingId));
@@ -89,8 +65,6 @@ const fetchRoomServiceItems = async (bookingId) => {
     }
 
     setSelectedBooking(booking);
-    await fetchRoomServiceSummary(booking.booking_id);
-    await fetchRoomServiceItems(booking.booking_id);
     const nic = booking.nic_passport_number;
     const roomNumber = booking.room_number;
     
@@ -101,6 +75,11 @@ const fetchRoomServiceItems = async (bookingId) => {
         headers: { Authorization: `Bearer ${token}` } // ✅ CHANGED
       });
       setGuest(guestRes.status === 200 ? guestRes.data : { name: "Unknown" });
+      {/* console.log("IN CHECKOUT - before getting ROOMNUMBER");
+      const roomRes = await API.get(`/checkin_checkout/${roomNumber}`, {
+        headers: { Authorization: `Bearer ${token}` } // ✅ CHANGED
+      });
+      setRoomPrice(roomRes.status === 200 ? roomRes.data.price : 0); */}
       setRoomPrice(booking.room_rate ?? 0);
 
       const checkinDate = new Date(booking.checkin_date);
@@ -179,7 +158,8 @@ const fetchRoomServiceItems = async (bookingId) => {
           <p style={{ margin: "4px 0" }}><strong>Total Nights:</strong> {totalNights}</p>
         </div>
 
-        
+
+
           {/* Billing component */}
           <div style={{ marginTop: "20px" }}>
             <Billing
@@ -187,8 +167,6 @@ const fetchRoomServiceItems = async (bookingId) => {
               guest={guest}
               roomPrice={roomPrice}
               totalNights={totalNights}
-              roomServiceSummary={roomServiceSummary}
-              roomServiceItemsByDate={roomServiceItemsByDate} 
               // 🔧 UPDATED: Add callback to reset view after checkout
               onCheckoutComplete={() => {
                 setSelectedBooking(null); // 🔧 Clear booking
@@ -198,12 +176,10 @@ const fetchRoomServiceItems = async (bookingId) => {
               }}
             />
           </div>
-
         </div>
       )}
     </div>
   );
 }
- 
 
 export default Checkout;

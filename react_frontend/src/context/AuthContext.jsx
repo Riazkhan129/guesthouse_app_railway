@@ -6,9 +6,7 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState("");
   const [username, setUsername] = useState("");
   const [role, setRole] = useState("");
-  const [clientId, setClientId] = useState(null); 
-  const [companyName, setCompanyName] = useState(""); // ✅ NEW: Track company name
-  const [companyLogo, setCompanyLogo] = useState(null); // ✅ NEW: Track logo as base64
+  const [clientId, setClientId] = useState(null); // ✅ ADDED: Track client_id in context
 
   const login = (token, username, role, clientId) => {
     setToken(token);
@@ -19,16 +17,14 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem("token", token);
     localStorage.setItem("username", username);
     localStorage.setItem("role", role);
-    localStorage.setItem("client_id", clientId); 
+    localStorage.setItem("client_id", clientId); // ✅ ADDED: Persist client_id for interceptors
   };
 
   const logout = () => {
     setToken("");
     setUsername("");
     setRole("");
-    setClientId(null); 
-    setCompanyName(""); // ✅ Clear company name
-    setCompanyLogo(null); // ✅ Clear logo
+    setClientId(null); // ✅ ADDED: Clear client_id from state
 
     localStorage.removeItem("token");
     localStorage.removeItem("username");
@@ -42,11 +38,7 @@ export const AuthProvider = ({ children }) => {
         token,
         username,
         role,
-        clientId,
-        companyName,       // ✅ Expose company name
-        companyLogo,       // ✅ Expose logo
-        setCompanyName,    // ✅ Setter for name
-        setCompanyLogo,    // ✅ Setter for logo
+        clientId, // ✅ ADDED: Expose client_id to consumers
         login,
         logout,
       }}

@@ -1,5 +1,5 @@
 {
-  "name": "SmartHost",
+  "name": "guesthouse-app",
   "version": "1.0.0",
   "description": "React + Electron based Guest House Frontend",
   "author": "Riaz",
@@ -7,38 +7,32 @@
   "main": "main.js",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "electron:start": "electron .",
-    "electron:build": "electron-builder",
+    "build": "NODE_ENV=production vite build",
     "start": "node scripts/start.js"
   },
   "dependencies": {
-    "axios": "^1.12.2",
+    "axios": "^1.11.0",
     "date-fns": "^4.1.0",
-    "dayjs": "^1.11.18",
+    "dayjs": "^1.11.13",
     "express": "^5.1.0",
     "open": "^10.2.0",
-    "react": "^19.2.0",
+    "react": "^19.1.0",
     "react-datepicker": "^8.4.0",
-    "react-dom": "^19.2.0",
-    "react-router-dom": "^7.9.4",
+    "react-dom": "^19.1.0",
+    "react-router-dom": "^7.8.0",
     "react-scripts": "^5.0.1",
-    "react-to-print": "^3.1.1",
     "react-toastify": "^11.0.5",
     "serve": "^14.2.0"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.6.0",
-    "cross-env": "^10.1.0",
-    "electron": "^37.7.0",
+    "electron": "^37.2.5",
     "electron-builder": "^26.0.12",
     "tailwindcss": "^4.1.11",
     "vite": "^7.0.4"
   },
   "build": {
-    "extends": null,
     "appId": "com.riaz.guesthouse.app",
-    "productName": "SmartHost",
     "directories": {
       "buildResources": "assets",
       "app": "./",
@@ -50,9 +44,6 @@
     ],
     "win": {
       "target": "nsis"
-    },
-  "extraMetadata": {
-    "main": "main.js"
     }
   },
   "keywords": [],

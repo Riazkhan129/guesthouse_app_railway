@@ -8,7 +8,7 @@ from typing import List
 router = APIRouter(prefix="/expenses", tags=["Expenses"])
 
 # ✅ USE THIS INSTEAD
-from ..models import ExpenseCreate, ExpenseOut, ExpenseUpdate
+from ..models import ExpenseCreate, ExpenseOut
 
 # ✅ Extract client_id from headers
 def get_client_id(request: Request) -> str:
@@ -20,7 +20,7 @@ def get_client_id(request: Request) -> str:
 @router.post("/add", response_model=ExpenseOut)
 def add_expense(request: Request, expense: ExpenseCreate, user: str = Depends(get_current_user)):
     client_id = get_client_id(request)
-
+    
     return crud.add_expense(client_id, expense)
 
 @router.get("/", response_model=List[ExpenseOut])
@@ -29,8 +29,10 @@ def get_all_expenses(request: Request, user: str = Depends(get_current_user)):
     # conn, placeholder = get_or_create_client_db(client_id)
     return crud.get_all_expenses(client_id)
 
+
+
 @router.put("/update/{expense_id}", response_model=ExpenseOut)
-def update_expense(request: Request, expense_id: int, expense: ExpenseUpdate, user: str = Depends(get_current_user)):
+def update_expense(request: Request, expense_id: int, expense: ExpenseCreate, user: str = Depends(get_current_user)):
     client_id = get_client_id(request)
     # conn, placeholder = get_or_create_client_db(client_id)
     return crud.update_expense(client_id, expense_id, expense)

@@ -4,17 +4,15 @@ from fastapi import HTTPException
 from .db import get_or_create_client_db
 from sqlalchemy.orm import Session
 from datetime import datetime, date
-# from .crypto_utils import encrypt_password
+from .crypto_utils import encrypt_password
 # from .crypto_utils import decrypt_password
 #from datetime import datetime
 from .models import InvoiceCreate, GuestIn
 from passlib.context import CryptContext
-from .models import UserCreate, UserLogin, UserOut, Client_keysGet, RoomServiceRequestIn, RoomServiceRequestOut
+from .models import UserCreate, UserLogin, UserOut, Client_keysGet
 import hashlib
 import sqlite3
 from cryptography.fernet import Fernet
-
-
 
 def decrypt_password(encrypted_password: str, key: str) -> str:
     fernet = Fernet(key.encode())  # Ensure key is in bytes
@@ -34,240 +32,6 @@ def get_encryption_key(client_id: str) -> str:
 
     return result[0] if result else None
 
-# ------- Expense Categories --------------
-
-
-def get_all_expense_categories(client_id: str):
-    conn, _ = get_or_create_client_db(client_id)
-    cursor = conn.cursor()
-    cursor.execute("SELECT id, category_name, category_active FROM expense_categories")
-    rows = cursor.fetchall()
-    conn.close()
-
-    return [
-        {
-            "id": row[0],  # ✅ renamed from category_id
-            "category_name": row[1],
-            "category_active": row[2]
-        }
-        for row in rows
-    ]
-
-
-
-def create_expense_category(client_id: str, category_data):
-    conn, placeholder = get_or_create_client_db(client_id)
-    cursor = conn.cursor()
-
-    print("Received category_data in CRUD:", category_data)
-    # Check if category already exists
-    query_check = f"SELECT * FROM expense_categories WHERE category_name = {placeholder}"
-    cursor.execute(query_check, (category_data.category_name,))
-    existing = cursor.fetchone()
-    if existing:
-        raise HTTPException(status_code=400, detail="Expense category already exists")
-
-    # Insert new category
-    query_insert = f"""
-        INSERT INTO expense_categories (category_name, category_active)
-        VALUES ({placeholder}, {placeholder})
-    """
-    cursor.execute(query_insert, (
-        category_data.category_name,
-        category_data.category_active
-    ))
-    conn.commit()
-    category_id = cursor.lastrowid
-    conn.close()
-
-    return {
-        "id": category_id,
-        "category_name": category_data.category_name,
-        "category_active": category_data.category_active
-    }
-
-
-def update_expense_category(client_id: str, id: int, category_data):
-    conn, placeholder = get_or_create_client_db(client_id)
-    cursor = conn.cursor()
-
-    query_update = f"""
-        UPDATE expense_categories
-        SET category_name = {placeholder}, category_active = {placeholder}
-        WHERE id = {placeholder}
-    """
-    cursor.execute(query_update, (
-        category_data.category_name,
-        category_data.category_active,
-        id
-        
-    ))
-    conn.commit()
-    conn.close()
-
-    return {
-        "id": id,
-        "category_name": category_data.category_name,
-        "category_active": category_data.category_active
-    }
-
-
-def delete_expense_category(client_id: str, category_id: int):
-    conn, placeholder = get_or_create_client_db(client_id)
-    cursor = conn.cursor()
-
-    query_delete = f"""
-        DELETE FROM expense_categories WHERE id = {placeholder}
-    """
-    cursor.execute(query_delete, (category_id,))
-    conn.commit()
-    conn.close()
-
-    return {"message": "Expense category deleted"}
-
-#------------ Expense Items
-
-def create_expense_item(client_id: str, item_data):
-    conn, placeholder = get_or_create_client_db(client_id)
-    cursor = conn.cursor()
-
-    query_insert = f"""
-        INSERT INTO expense_items (category_id, expense_name, default_price, unit, is_activated, created)
-        VALUES ({placeholder}, {placeholder}, {placeholder}, {placeholder}, {placeholder}, {placeholder})
-    """
-    now = datetime.now().isoformat()
-    cursor.execute(query_insert, (
-        item_data.category_id,
-        item_data.expense_name,
-        item_data.default_price,
-        item_data.unit,
-        item_data.is_activated,
-        now
-    ))
-    conn.commit()
-    item_id = cursor.lastrowid
-    conn.close()
-
-    return {
-        "expense_item_id": item_id,
-        "category_id": item_data.category_id,
-        "expense_name": item_data.expense_name,
-        "default_price": item_data.default_price,
-        "unit": item_data.unit,
-        "is_activated": item_data.is_activated,
-        "created": now
-    }
-
-def get_all_expense_items(client_id: str):
-    conn, _ = get_or_create_client_db(client_id)
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM expense_items")
-    rows = cursor.fetchall()
-    conn.close()
-
-    return [
-        {
-            "expense_item_id": row[0],
-            "category_id": row[1],
-            "expense_name": row[2],
-            "default_price": row[3],
-            "unit": row[4],
-            "is_activated": bool(row[5]),
-            "created": row[6]
-        }
-        for row in rows
-    ]
-
-def get_expense_items_by_category(client_id: str, category_id: int):
-    conn, _ = get_or_create_client_db(client_id)
-    cursor = conn.cursor()
-    print("IN CRUD get_expense_items_by_category")
-    cursor.execute(
-        "SELECT * FROM expense_items WHERE category_id = ?", (category_id,)
-    )
-    rows = cursor.fetchall()
-    conn.close()
-
-    return [
-        {
-            "expense_item_id": row[0],
-            "category_id": row[1],
-            "expense_name": row[2],
-            "default_price": row[3],
-            "unit": row[4],
-            "is_activated": bool(row[5]),
-            "created": row[6]
-        }
-        for row in rows
-    ]
-
-
-def get_expense_item_by_id(client_id: str, item_id: int):
-    conn, placeholder = get_or_create_client_db(client_id)
-    cursor = conn.cursor()
-    query = f"SELECT * FROM expense_items WHERE expense_item_id = {placeholder}"
-    cursor.execute(query, (item_id,))
-    row = cursor.fetchone()
-    conn.close()
-
-    if not row:
-        raise HTTPException(status_code=404, detail="Expense item not found")
-
-    return {
-        "expense_item_id": row[0],
-        "category_id": row[1],
-        "expense_name": row[2],
-        "default_price": row[3],
-        "unit": row[4],
-        "is_activated": bool(row[5]),
-        "created": row[6]
-    }
-
-def update_expense_item(client_id: str, item_id: int, item_data):
-    conn, placeholder = get_or_create_client_db(client_id)
-    cursor = conn.cursor()
-
-    query = f"""
-        UPDATE expense_items
-        SET category_id = {placeholder}, expense_name = {placeholder},
-            default_price = {placeholder}, unit = {placeholder},
-            is_activated = {placeholder}
-        WHERE expense_item_id = {placeholder}
-    """
-    cursor.execute(query, (
-        item_data.category_id,
-        item_data.expense_name,
-        item_data.default_price,
-        item_data.unit,
-        item_data.is_activated,
-        item_id
-    ))
-    conn.commit()
-    conn.close()
-
-    return {
-        "expense_item_id": item_id,
-        "category_id": item_data.category_id,
-        "expense_name": item_data.expense_name,
-        "default_price": item_data.default_price,
-        "unit": item_data.unit,
-        "is_activated": item_data.is_activated,
-        "created": datetime.now().isoformat()
-    }
-
-def delete_expense_item(client_id: str, item_id: int):
-    conn, placeholder = get_or_create_client_db(client_id)
-    cursor = conn.cursor()
-    query = f"DELETE FROM expense_items WHERE expense_item_id = {placeholder}"
-    cursor.execute(query, (item_id,))
-    conn.commit()
-    conn.close()
-    return {"message": "Expense item deleted"}
-
-
-
-
-
 # ---------- ROOMS ----------
 
 def get_vacant_rooms(client_id: str):
@@ -281,19 +45,6 @@ def get_vacant_rooms(client_id: str):
         {"room_number": r[0], "type": r[1], "price": r[2], "status": r[3], "notes": r[4]}
         for r in rooms
     ]
-
-
-def get_checkedin_rooms(client_id: str):
-    conn, _ = get_or_create_client_db(client_id)
-    cursor = conn.cursor()
-    cursor.execute("SELECT room_number, type, price, status, notes FROM rooms WHERE status = 'checked_in'")
-    rooms = cursor.fetchall()
-    conn.close()
-    return [
-        {"room_number": r[0], "type": r[1], "price": r[2], "status": r[3], "notes": r[4]}
-        for r in rooms
-    ]
-
 
 def create_room(client_id: str, room_data):
     conn, placeholder = get_or_create_client_db(client_id)  # ✅ UPDATED
@@ -370,7 +121,13 @@ def update_room(client_id: str, room_number, room_data):
     ))
     conn.commit()
     
-    query_fetch = f"SELECT * FROM rooms WHERE room_number = {placeholder}"  
+#    cursor.execute("""
+#        UPDATE rooms SET room_number=?, type=?, price=?, status=?, notes=?
+#        WHERE room_number=?
+#    """, (room_data.room_number, room_data.type, room_data.price, room_data.status, room_data.notes, room_number))
+#    conn.commit()
+    # Fetch the updated room
+    query_fetch = f"SELECT * FROM rooms WHERE room_number = {placeholder}"  # ✅ Dynamic placeholder
     cursor.execute(query_fetch, (str(room_data.room_number),))
     row = cursor.fetchone()
     conn.close()
@@ -387,10 +144,10 @@ def update_room(client_id: str, room_number, room_data):
         return None
 
 def delete_room(client_id: str, room_number):
-    conn, placeholder = get_or_create_client_db(client_id)  
+    conn, placeholder = get_or_create_client_db(client_id)  # ✅ UPDATED    print("IN DELETE ROOM", room_number)
     cursor = conn.cursor()
     
-    query = f"DELETE FROM rooms WHERE room_number = {placeholder}"  
+    query = f"DELETE FROM rooms WHERE room_number = {placeholder}"  # ✅ Dynamic placeholder
     cursor.execute(query, (str(room_number),))
     
     deleted = cursor.rowcount
@@ -434,14 +191,12 @@ def create_guest(client_id: str, data: GuestIn):
     cursor = conn.cursor()
     try:
         query = f"""
-            INSERT INTO guests (nic_passport_number, name, contact, email, address, nationality, emergency_contact, guest_type, corporate_name, corporate_contact_person, corporate_address)
-            VALUES ({placeholder}, {placeholder}, {placeholder}, {placeholder}, {placeholder}, {placeholder}, {placeholder}, {placeholder}, {placeholder}, {placeholder}, {placeholder})
+            INSERT INTO guests (nic_passport_number, name, contact, email, address, nationality, emergency_contact, guest_type)
+            VALUES ({placeholder}, {placeholder}, {placeholder}, {placeholder}, {placeholder}, {placeholder}, {placeholder}, {placeholder})
         """  # ✅ Dynamic placeholders
         cursor.execute(query, (
             data.nic_passport_number, data.name, data.contact, data.email,
-            data.address, data.nationality, data.emergency_contact, data.guest_type,
-            data.corporate_name, data.corporate_contact_person, data.corporate_address
-            
+            data.address, data.nationality, data.emergency_contact, data.guest_type
         ))
         conn.commit()
         conn.close()
@@ -456,12 +211,9 @@ def get_guest(client_id: str, nic: str):
     query = f"SELECT * FROM guests WHERE nic_passport_number = {placeholder}"  # ✅ Dynamic placeholder
     cursor.execute(query, (nic,))
     row = cursor.fetchone()
-    print("ROWS = ", row)
     conn.close()
     if row:
-        keys = ["nic_passport_number", "name", "contact", "email", "address", "nationality", "emergency_contact", "guest_type",
-                "corporate_name", "corporate_contact_person", "corporate_address"]
-        
+        keys = ["nic_passport_number", "name", "contact", "email", "address", "nationality", "emergency_contact", "guest_type"]
         return dict(zip(keys, row))
     return None
 
@@ -472,14 +224,12 @@ def update_guest(client_id: str, nic: str, data: dict):
     query = f"""
         UPDATE guests
         SET name = {placeholder}, contact = {placeholder}, email = {placeholder}, address = {placeholder},
-            nationality = {placeholder}, emergency_contact = {placeholder}, guest_type = {placeholder},
-            corporate_name = {placeholder}, corporate_contact_person = {placeholder}, corporate_address = {placeholder}
+            nationality = {placeholder}, emergency_contact = {placeholder}, guest_type = {placeholder}
         WHERE nic_passport_number = {placeholder}
     """  # ✅ Dynamic placeholders
     cursor.execute(query, (
         data["name"], data["contact"], data["email"], data["address"],
-        data.get("nationality"), data.get("emergency_contact"), data.get("guest_type"),
-        data.get("corporate_name"), data.get("corporate_contact_person"), data.get("corporate_address"), nic
+        data.get("nationality"), data.get("emergency_contact"), data.get("guest_type"), nic
     ))
     conn.commit()
     conn.close()
@@ -500,8 +250,7 @@ def get_all_guests(client_id: str):
     cursor.execute("SELECT * FROM guests")  # ✅ No placeholder needed
     rows = cursor.fetchall()
     conn.close()
-    keys = ["nic_passport_number", "name", "contact", "email", "address", "nationality", "emergency_contact", "guest_type",
-            "corporate_name", "corporate_contact_person", "corporate_address"]
+    keys = ["nic_passport_number", "name", "contact", "email", "address", "nationality", "emergency_contact", "guest_type"]
     return [dict(zip(keys, row)) for row in rows]
 
 # ---------- BOOKINGS ----------
@@ -548,16 +297,15 @@ def create_booking(client_id: str, data: dict):
         query = f"""
             INSERT INTO bookings (
                 nic_passport_number, room_number, checkin_date, checkout_date,
-                status, notes, advance_payment, total_payment, corporate_name
+                status, notes, advance_payment, total_payment
             )
             VALUES ({placeholder}, {placeholder}, {placeholder}, {placeholder},
-                    {placeholder}, {placeholder}, {placeholder}, {placeholder},
-                    {placeholder})
+                    {placeholder}, {placeholder}, {placeholder}, {placeholder})
         """  # ✅ Dynamic placeholders
         cursor.execute(query, (
             data["nic_passport_number"], data["room_number"], data["checkin_date"],
-            data["checkout_date"], data["status"], data.get("notes"), 
-            data.get("advance_payment"), data.get("total_payment"), data.get("corporate_name")
+            data["checkout_date"], data["status"], data.get("notes"),
+            data.get("advance_payment"), data.get("total_payment")
         ))
         
         conn.commit()
@@ -619,7 +367,7 @@ def get_booking(client_id: str, booking_id: int):
     row = cursor.fetchone()
     conn.close()
     if row:
-        keys = ["nic_passport_number", "room_number", "check_in_date", "check_out_date", "status", "notes", "corporate_name"]
+        keys = ["nic_passport_number", "room_number", "check_in_date", "check_out_date", "status", "notes"]
         return dict(zip(keys, row))
     return None
 
@@ -633,11 +381,18 @@ def cancel_booking(client_id: str, booking_id: int, room_number: str):
     booking_updated = cursor.rowcount
     print("booking_updated =", booking_updated)  # ✅ DEBUG
 
+    #query_room = f"UPDATE rooms SET status = 'vacant' WHERE room_number = {placeholder}"  # ✅ Dynamic placeholder
+    #cursor.execute(query_room, (str(room_number),))
+    #room_updated = cursor.rowcount
+    # print("room_updated =", room_updated)  # ✅ DEBUG
+
+    # print("AFTER UPDATE ROOM")
     conn.commit()
     conn.close()
 
     return booking_updated > 0
-
+#    return booking_updated > 0 and room_updated > 0
+    # return cursor.rowcount > 0
 
 def get_upcoming_bookings(client_id: str):
     today = datetime.today().strftime('%Y-%m-%d')
@@ -650,14 +405,11 @@ def get_upcoming_bookings(client_id: str):
     """  # ✅ Dynamic placeholder
     cursor.execute(query, (today,))
     rows = cursor.fetchall()
-    print("ROWN IN CRUD.Get_Upcoming_Bookint === ", rows)
-    # keys = ["booking_id", "nic_passport_number", "checkin_date", "checkout_date", "status", "corporate_name"]
+    keys = ["booking_id", "nic_passport_number", "room_number", "checkin_date", "checkout_date", "status", "notes"]
         
-    # return [dict(zip(keys, row)) for row in rows]
-    keys = [description[0] for description in cursor.description]
     return [dict(zip(keys, row)) for row in rows]
 
-
+    
 #---------- Get Bokkings by NIC for Guest Report ---------
 
 def get_bookings_by_nic(client_id: str, nic_passport_number: str):
@@ -680,20 +432,14 @@ def checkin_booking(client_id: str, booking_id: int, data):
     conn, placeholder = get_or_create_client_db(client_id)  # ✅ UPDATED
     cursor = conn.cursor()
     print("✅ Received check-in payload:", data)
-    print("MODE OF PAYMENT -- ",data.mode_of_payment)
-    print("PROFESSIONN -- ", data.profession)
-    print("PURPOSE OF VISIT --- ", data.purpose_of_visit)
     
     # Extract each field from the CheckinData object
     room_number = str(data.room_number)
     room_type = str(data.room_type)
     room_rate = int(data.room_rate) 
-    companions = int(data.companions)
-    mode_of_payment = str(data.mode_of_payment)
-    profession = str(data.profession)
-    purpose_of_visit = str(data.purpose_of_visit)
-    actual_checkin_time = str(data.actual_checkin_time)
     checkout_date = str(data.checkout_date)
+    actual_checkin_time = str(data.actual_checkin_time)
+    companions = int(data.companions)
     advance_payment = float(data.advance_payment)
     status = str(data.status)
 
@@ -703,12 +449,9 @@ def checkin_booking(client_id: str, booking_id: int, data):
         room_number = {placeholder},
         room_type = {placeholder},
         room_rate = {placeholder},
-        companions = {placeholder},
-        mode_of_payment = {placeholder},
-        profession = {placeholder},
-        purpose_of_visit = {placeholder},
-        actual_checkin_time = {placeholder},
         checkout_date = {placeholder},
+        actual_checkin_time = {placeholder},
+        companions = {placeholder},
         advance_payment = {placeholder},
         status = {placeholder}
         WHERE booking_id = {placeholder}
@@ -717,12 +460,9 @@ def checkin_booking(client_id: str, booking_id: int, data):
         room_number,
         room_type,
         room_rate,
-        companions,
-        mode_of_payment,
-        profession,
-        purpose_of_visit,
-        actual_checkin_time,
         checkout_date,
+        actual_checkin_time,
+        companions,
         advance_payment,
         status,
         booking_id
@@ -789,21 +529,12 @@ def get_room_by_number(client_id: str, room_number: str):
 def get_guest_name_by_nic(client_id: str, nic: str):
     conn, placeholder = get_or_create_client_db(client_id)  # ✅ UPDATED
     cursor = conn.cursor()
-    query = f"SELECT name, nic_passport_number, address, corporate_name, nationality, contact, emergency_contact, email  FROM guests WHERE nic_passport_number = {placeholder}"  # ✅ Dynamic placeholder
+    query = f"SELECT name FROM guests WHERE nic_passport_number = {placeholder}"  # ✅ Dynamic placeholder
     cursor.execute(query, (nic,))
     row = cursor.fetchone()
     conn.close()
     if row:
-        return {
-            "name": row[0],
-            "nic_passport_number": row[1],
-            "address": row[2],
-            "corporate_name": row[3],
-            "nationality": row[4],
-            "contact": row[5],
-            "emergency_contact": row[6],
-            "email": row[7]
-          }
+        return {"name": row[0]}
     return None
     
 # ---------- BILLING / INVOICES ----------
@@ -840,8 +571,8 @@ def create_invoice(client_id: str, invoice_data: InvoiceCreate):
             invoice_data.total_amount,
             invoice_data.booking_id
         ))
-        invoice_id = cursor.fetchone()[0]
         conn.commit()
+        invoice_id = cursor.fetchone()[0]
         print("IN CRUD - CREATE_INVOICE = ", invoice_id)
         conn.close()
         return {**invoice_data.dict(), "id": invoice_id}  # returns BillingOut
@@ -880,118 +611,92 @@ def delete_invoice(client_id: str, invoice_id: int):
 
 # ---------- EXPENSES ---------------
 
+def add_expense(client_id: str, expense):
+    conn, placeholder = get_or_create_client_db(client_id)
+    cursor = conn.cursor()
+    query = f"""
+        INSERT INTO expenses (title, amount, category, notes, date)
+        VALUES ({placeholder}, {placeholder}, {placeholder}, {placeholder}, {placeholder})
+    """  # ✅ Dynamic placeholders
+    # cursor = conn.cursor()
+    cursor.execute(query, (expense.title, expense.amount, expense.category, expense.notes, expense.date))
+    conn.commit()
+    expense_id = cursor.lastrowid
+    return {
+        "id": expense_id,
+        "title": expense.title,
+        "amount": expense.amount,
+        "category": expense.category,
+        "notes": expense.notes,
+        "date": expense.date
+        
+    }
+
 def get_all_expenses(client_id: str):
     conn, _ = get_or_create_client_db(client_id)
     cursor = conn.cursor()
 
     query = f"""
-        SELECT 
-            e.expense_id AS expense_id,
-            e.category_id,
-            c.category_name,
-            e.expense_item_id,
-            i.expense_name,
-            e.amount,
-            e.notes,
-            e.timestamp,
-            e.date
-        FROM expenses e
-        JOIN expense_categories c ON e.category_id = c.id
-        JOIN expense_items i ON e.expense_item_id = i.expense_item_id
-        ORDER BY e.date DESC
+        SELECT id, title, amount, category, notes, timestamp, date
+        FROM expenses
+        ORDER BY date DESC
     """
-
     cursor.execute(query)
     rows = cursor.fetchall()
+    print("GET_ALL_EXPENSES ROWS =", rows)
     conn.close()
 
     return [
         {
-            "expense_id": row[0],
-            "category_id": row[1],
-            "category_name": row[2],
-            "expense_item_id": row[3],
-            "expense_name": row[4],
-            "amount": row[5],
-            "notes": row[6],
-            "timestamp": row[7],
-            "date": row[8],
+            "id": row[0],
+            "title": row[1],
+            "amount": row[2],
+            "category": row[3],
+            "notes": row[4],
+            "timestamp": row[5],
+            "date": row[6],
         }
         for row in rows
     ]
 
 
 
-
 def update_expense(client_id: str, expense_id: int, expense):
-    conn, placeholder = get_or_create_client_db(client_id)
+    conn, placeholder = get_or_create_client_db(client_id)  # ✅ UPDATED
     cursor = conn.cursor()
-
     query = f"""
-        UPDATE expenses SET
-            amount = {placeholder},
-            notes = {placeholder},
-            timestamp = {placeholder},
-            date = {placeholder}
-        WHERE expense_id = {placeholder}
-    """
-    cursor.execute(query, (
-        expense.amount,
-        expense.notes,
-        expense.timestamp,
-        expense.date,
-        expense_id
-    ))
+        UPDATE expenses SET title={placeholder}, amount={placeholder}, category={placeholder}, notes={placeholder}, date={placeholder}
+        WHERE id={placeholder}
+    """  # ✅ Dynamic placeholders
+    cursor.execute(query, (expense.title, expense.amount, expense.category, expense.notes, expense.date, expense_id))
     conn.commit()
-
-    # ✅ Fetch full updated record with joins
-    query_fetch = """
-        SELECT 
-            e.expense_id,
-            e.category_id,
-            c.category_name,
-            e.expense_item_id,
-            i.expense_name,
-            e.amount,
-            e.notes,
-            e.timestamp,
-            e.date
-        FROM expenses e
-        JOIN expense_categories c ON e.category_id = c.id
-        JOIN expense_items i ON e.expense_item_id = i.expense_item_id
-        WHERE e.expense_id = ?
-    """
-    cursor.execute(query_fetch, (expense_id,))
-    row = cursor.fetchone()
     conn.close()
-
     return {
-        "expense_id": row[0],
-        "category_id": row[1],
-        "category_name": row[2],
-        "expense_item_id": row[3],
-        "expense_name": row[4],
-        "amount": row[5],
-        "notes": row[6],
-        "timestamp": row[7],
-        "date": row[8],
+        "id": expense_id,
+        "title": expense.title,
+        "amount": expense.amount,
+        "category": expense.category,
+        "notes": expense.notes,
+        "date": expense.date
     }
 
-
-# expense.category_id,
-#        expense.expense_item_id,
-
 def delete_expense(client_id: str, expense_id: int):
-    conn, placeholder = get_or_create_client_db(client_id)
+    conn, placeholder = get_or_create_client_db(client_id)  # ✅ UPDATED
     cursor = conn.cursor()
-    query = f"DELETE FROM expenses WHERE expense_id={placeholder}"
+    query = f"DELETE FROM expenses WHERE id={placeholder}"  # ✅ Dynamic placeholder
     cursor.execute(query, (expense_id,))
     conn.commit()
     conn.close()
 
-
 # ---------- USERS ----------
 
+
+#    try:
+#        decrypted = decrypt_password(encrypted_password)
+#        return decrypted == plain_password
+#    except Exception as e:
+#        print("Password decryption failed:", e)
+#        return False
 def verify_password(plain_password: str, encrypted_password: str) -> bool:
     try:
         decrypted = decrypt_password(encrypted_password)
@@ -1000,7 +705,18 @@ def verify_password(plain_password: str, encrypted_password: str) -> bool:
         print("Password decryption failed:", e)
         return False
 
+#---------------------
 
+#def add_user(client_id: str, data):
+#    conn, placeholder = get_or_create_client_db(client_id)
+#    password_encrypted = encrypt_password(data["password"])
+#    query = f"INSERT INTO users (name, username, password, role) VALUES ({placeholder}, {placeholder}, {placeholder}, {placeholder})"
+#    cursor = conn.cursor()
+#    cursor.execute(query, (data["name"], data["username"], password_encrypted, data["role"]))
+#    conn.commit()
+#    conn.close()
+
+#---------------
 def login_user(client_id: str, user: UserLogin):
     conn, placeholder = get_or_create_client_db(client_id)  # ✅ UPDATED
     cursor = conn.cursor()
@@ -1080,13 +796,18 @@ def update_user(client_id: str, user_id: int, data, conn):
         f"UPDATE users SET name = {placeholder}, role = {placeholder}, password = {placeholder} WHERE user_id = {placeholder}",
         (data.name, data.role, encrypted_password, user_id)
         
+        # query = f"UPDATE users SET name={placeholder}, role={placeholder}, password={placeholder} WHERE user_id={placeholder}"
+    # else:  # Password is not being updated
+    #    cursor.execute(
+    #        "UPDATE users SET name = ?, role = ? WHERE user_id = ?",
+    #        (data.name, data.role, user_id)
         )
 
     conn.commit()
     return {"message": "User updated successfully"}
 
 
-
+#------------------
 
 
 
@@ -1096,110 +817,4 @@ def delete_user(client_id: str, user_id, conn):
     conn.commit()
     return {"message": "User deleted"}
 
-# ----------- Room Service ----------------------------
 
-def get_checkedin_bookings_with_guest(client_id: str):
-    conn, _ = get_or_create_client_db(client_id)
-    cursor = conn.cursor()
-
-    cursor.execute("""
-        SELECT b.booking_id, b.room_number, b.nic_passport_number, g.name
-        FROM bookings b
-        JOIN guests g ON b.nic_passport_number = g.nic_passport_number
-        WHERE b.status = 'checked_in'
-    """)
-    rows = cursor.fetchall()
-    print("GET_CHECKEDIN_BOOKINGS_WITH_GUEST ----- ROWS = ", rows)
-
-    columns = [column[0] for column in cursor.description]
-    conn.close()
-    return [dict(zip(columns, row)) for row in rows]
-
-#---------- Room Service ------------
-
-def create_room_service_request(client_id: str, data: RoomServiceRequestIn):
-    conn, _ = get_or_create_client_db(client_id)
-    cursor = conn.cursor()
-
-    now = datetime.now().isoformat()
-    total_price = data.quantity * data.unit_price
-
-    print("IN CRUD CREATE_ROOM_SERVICE_REQUEST")
-    cursor.execute("""
-        INSERT INTO room_service (
-            room_id, nic_passport_number, category_id, expense_item_id, quantity, unit_price, total_price,
-            requested_at, notes, booking_id
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    """, (
-        data.room_id, data.nic_passport_number, data.category_id, data.expense_item_id, data.quantity, data.unit_price,
-        total_price, now, data.notes, data.booking_id
-    ))
-
-    conn.commit()
-    item_id = cursor.lastrowid
-    conn.close()
-
-    return {
-        "id": item_id,
-        "room_id": data.room_id,
-        "nic_passport_number": data.nic_passport_number,
-        "category_id": data.category_id,
-        "expense_item_id": data.expense_item_id,
-        "quantity": data.quantity,
-        "unit_price": data.unit_price,
-        "total_price": total_price,
-        "requested_at": now,
-        "notes": data.notes
-    }
-
-# 🔄 NEW FUNCTION: Group room service by category for a booking
-
-def get_roomservice_summary_by_booking(client_id: str, booking_id: int):
-    conn, _ = get_or_create_client_db(client_id)
-    cursor = conn.cursor()
-
-    cursor.execute("""
-        SELECT ec.category_name, SUM(rs.total_price) as total_amount
-        FROM room_service rs
-        JOIN expense_categories ec ON rs.category_id = ec.id
-        WHERE rs.booking_id = ?
-        GROUP BY rs.category_id
-    """, (booking_id,))
-
-    rows = cursor.fetchall()
-    conn.close()
-
-    return [{"category_name": row[0], "total_amount": row[1]} for row in rows]
-
-def get_roomservice_items_by_booking(client_id: str, booking_id: int):
-    conn, _ = get_or_create_client_db(client_id)
-    cursor = conn.cursor()
-
-    cursor.execute("""
-        SELECT 
-            DATE(rs.requested_at) as service_date,
-            ec.category_name,
-            ei.expense_name,
-            rs.total_price
-        FROM room_service rs
-        JOIN expense_categories ec ON rs.category_id = ec.id
-        JOIN expense_items ei ON rs.expense_item_id = ei.expense_item_id
-        WHERE rs.booking_id = ?
-        ORDER BY DATE(rs.requested_at), ec.category_name
-    """, (booking_id,))
-
-    rows = cursor.fetchall()
-    conn.close()
-
-    # Group by date
-    grouped = {}
-    for date, category, item, amount in rows:
-        if date not in grouped:
-            grouped[date] = []
-        grouped[date].append({
-            "category_name": category,
-            "expense_name": item,
-            "total_price": amount
-        })
-
-    return [{"date": date, "items": grouped[date]} for date in grouped]

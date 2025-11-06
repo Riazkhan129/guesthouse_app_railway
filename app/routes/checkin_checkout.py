@@ -44,7 +44,6 @@ def checkin_guest(request: Request, booking_id: int, data: CheckinData):
 def get_checkedin_bookings(request: Request):
     client_id = get_client_id(request)
     bookings = crud.get_checkedin_bookings(client_id)
-    print("BOOKINGS = ", bookings)
     return bookings
 
 @router.post("/checkout/{booking_id}")
