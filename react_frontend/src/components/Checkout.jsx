@@ -1,4 +1,4 @@
-import { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext } from "react";
 // import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import Billing from "./Billing";
@@ -60,7 +60,9 @@ function Checkout() {
   const fetchRoomServiceSummary = async (bookingId) => {
   try {
     const res = await API.get(`/roomservice/summary/by_booking/${bookingId}`, {
-      headers: { Authorization: `Bearer ${token}` }
+      headers: { Authorization: `Bearer ${token}`
+      //"X-Client-ID": "demo" 
+    }
     });
     if (res.status === 200) setRoomServiceSummary(res.data);
   } catch (err) {
@@ -74,6 +76,7 @@ const fetchRoomServiceItems = async (bookingId) => {
       headers: { Authorization: `Bearer ${token}` }
     });
     if (res.status === 200) setRoomServiceItemsByDate(res.data);
+    console.log("RoomServiceItemsByDate = ", RoomServiceItemsByDate)
   } catch (err) {
     console.error("❌ Failed to fetch room service items", err);
   }

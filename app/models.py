@@ -121,6 +121,7 @@ class RoomServiceRequestIn(BaseModel):
     total_price: int
     notes: Optional[str] = None
     requested_at: Optional[str] = None
+    Status: str
     booking_id: int
     
     

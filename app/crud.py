@@ -9,7 +9,7 @@ from datetime import datetime, date
 #from datetime import datetime
 from .models import InvoiceCreate, GuestIn
 from passlib.context import CryptContext
-from .models import UserCreate, UserLogin, UserOut, Client_keysGet, RoomServiceRequestIn, RoomServiceRequestOut
+from .models import UserCreate, UserLogin, UserOut, Client_keysGet, RoomServiceRequestIn, RoomServiceRequestOut, RoomServiceSummaryOut
 import hashlib
 import sqlite3
 from cryptography.fernet import Fernet
@@ -63,6 +63,7 @@ def create_expense_category(client_id: str, category_data):
     # Check if category already exists
     query_check = f"SELECT * FROM expense_categories WHERE category_name = {placeholder}"
     cursor.execute(query_check, (category_data.category_name,))
+    print("Received category_data in CRUD: AFTER SELECT")
     existing = cursor.fetchone()
     if existing:
         raise HTTPException(status_code=400, detail="Expense category already exists")
@@ -76,6 +77,7 @@ def create_expense_category(client_id: str, category_data):
         category_data.category_name,
         category_data.category_active
     ))
+    print("Received category_data in CRUD: AFTER INSERT")
     conn.commit()
     category_id = cursor.lastrowid
     conn.close()
@@ -746,7 +748,7 @@ def get_checkedin_bookings(client_id: str):
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM bookings WHERE status = 'checked_in'")
     rows = cursor.fetchall()
-    print("GET_CHECKEDIN_BOOKINGS ----- ROWS = ", rows)
+    print("From get_checkedin_bookings GET_CHECKEDIN_BOOKINGS ----- ROWS = ", rows)
     columns = [column[0] for column in cursor.description]
     conn.close()
     return [dict(zip(columns, row)) for row in rows]
@@ -1086,10 +1088,6 @@ def update_user(client_id: str, user_id: int, data, conn):
     return {"message": "User updated successfully"}
 
 
-
-
-
-
 def delete_user(client_id: str, user_id, conn):
     cursor = conn.cursor()
     cursor.execute("DELETE FROM users WHERE user_id = ?", (user_id,))
@@ -1101,6 +1099,7 @@ def delete_user(client_id: str, user_id, conn):
 def get_checkedin_bookings_with_guest(client_id: str):
     conn, _ = get_or_create_client_db(client_id)
     cursor = conn.cursor()
+    print("IN GET_CHECKEDIN_BOOKING_WITH_GUEST")
 
     cursor.execute("""
         SELECT b.booking_id, b.room_number, b.nic_passport_number, g.name
@@ -1152,6 +1151,53 @@ def create_room_service_request(client_id: str, data: RoomServiceRequestIn):
         "notes": data.notes
     }
 
+
+def get_open_roomservice_requests(client_id: str):
+    conn, _ = get_or_create_client_db(client_id)
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT 
+            rs.id,
+            rs.booking_id,
+            rs.room_id,
+            rs.nic_passport_number,
+            rs.category_id,
+            rs.expense_item_id,
+            rs.quantity,
+            rs.unit_price,
+            rs.total_price,
+            rs.notes,
+            rs.requested_at
+        FROM room_service rs
+        WHERE rs.status IS NULL OR rs.status = 'Open'
+        ORDER BY rs.requested_at DESC
+    """)
+
+    rows = cursor.fetchall()
+    print("CRUD get_open_roomservice_requests rows = ", rows)
+    columns = [column[0] for column in cursor.description]
+    conn.close()
+
+    return [dict(zip(columns, row)) for row in rows]
+
+def update_room_service_status(client_id: str, service_id: int, status: str) -> bool:
+    conn, _ = get_or_create_client_db(client_id)
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        UPDATE room_service
+        SET status = ?
+        WHERE id = ?
+    """, (status, service_id))
+
+    conn.commit()
+    updated = cursor.rowcount
+    conn.close()
+
+    return updated > 0
+
+
 # 🔄 NEW FUNCTION: Group room service by category for a booking
 
 def get_roomservice_summary_by_booking(client_id: str, booking_id: int):
@@ -1162,7 +1208,7 @@ def get_roomservice_summary_by_booking(client_id: str, booking_id: int):
         SELECT ec.category_name, SUM(rs.total_price) as total_amount
         FROM room_service rs
         JOIN expense_categories ec ON rs.category_id = ec.id
-        WHERE rs.booking_id = ?
+        WHERE rs.booking_id = ? AND (rs.status IS NULL OR rs.status != 'Canceled')
         GROUP BY rs.category_id
     """, (booking_id,))
 
@@ -1184,7 +1230,7 @@ def get_roomservice_items_by_booking(client_id: str, booking_id: int):
         FROM room_service rs
         JOIN expense_categories ec ON rs.category_id = ec.id
         JOIN expense_items ei ON rs.expense_item_id = ei.expense_item_id
-        WHERE rs.booking_id = ?
+        WHERE rs.booking_id = ? AND (rs.status IS NULL OR rs.status != 'Canceled')
         ORDER BY DATE(rs.requested_at), ec.category_name
     """, (booking_id,))
 

@@ -239,6 +239,7 @@ def initialize_database(db_path_or_conn, client_id):
             unit_price INTEGER NOT NULL,
             total_price INTEGER NOT NULL,
             notes TEXT,
+            status TEXT,
             requested_at TEXT,
             booking_id Integer,
             FOREIGN KEY(booking_id) REFERENCES bookings(booking_id),

@@ -21,7 +21,7 @@ import Billing from "./components/Billing";
 import Guestreport from "./components/guestreport";
 import Gueststayreport from "./components/Gusetstayreport";
 import PerformanceReport from "./components/Performancereport";
-import Expensecategories from "./components/Expensecatogaries";
+import Expensecategories from "./components/Expensecategories";
 import Expenseitems from "./components/Expenseitems";
 import Roomservice from "./components/Roomservice";
 import Contactus from "./components/Contactus";  
