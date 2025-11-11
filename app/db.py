@@ -207,7 +207,7 @@ def initialize_database(db_path_or_conn, client_id):
         )
     """)
 
-    # print("✅ 'expense categories' table creation executed")  # ✅ ADDED: Debug log
+     print("✅ 'expense categories' table creation executed")  # ✅ ADDED: Debug log
 
     expense_id_column = "expense_item_id PRIMARY KEY" if DB_MODE == "multi-tenant" else "expense_item_id INTEGER PRIMARY KEY AUTOINCREMENT"
     cursor.execute(f"""
@@ -223,7 +223,7 @@ def initialize_database(db_path_or_conn, client_id):
 )
 """)
 
-    # print("✅ 'expense items' table creation executed")  # ✅ ADDED: Debug log
+     print("✅ 'expense items' table creation executed")  # ✅ ADDED: Debug log
 
 
     id_column = "id SERIAL PRIMARY KEY" if DB_MODE == "multi-tenant" else "id INTEGER PRIMARY KEY AUTOINCREMENT"
