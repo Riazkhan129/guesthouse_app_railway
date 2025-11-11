@@ -61,7 +61,7 @@ def get_or_create_client_db(client_id):
             
             if not result:
                 raise RuntimeError(f"❌ No DB URL found for client '{client_id}'")  # ✅ ADDED: Error if missing
-            # print("In get_or_create_client_db - fb_url = ", db_url)
+            
             
             db_url = result[0]  # ✅ ADDED: Extract actual DB URL
             print("✅ Retrieved DB URL from config table:", db_url)
@@ -69,13 +69,10 @@ def get_or_create_client_db(client_id):
             conn = psycopg2.connect(db_url)
             conn.autocommit = True
             placeholder = "%s"  # ✅ PostgreSQL placeholder
-            # print(f"✅ Connected to PostgreSQL DB for client: {client_id}")
-            # print(f"🔧 DB_MODE: {DB_MODE}")
-            # print(f"🔧 Initializing DB for client: {client_id}")
+            
         else:
             ghms_folder = find_or_create_ghms_folder()
             db_path = os.path.join(ghms_folder, "smarthost.sqlite")
-            # db_path = os.path.join(ghms_folder, f"{client_id}.sqlite")
             if not os.path.exists(db_path):
                 print(f"⚠️ Local DB for client '{client_id}' not found. Creating...")
             conn = sqlite3.connect(db_path)
@@ -203,13 +200,15 @@ def initialize_database(db_path_or_conn, client_id):
         CREATE TABLE IF NOT EXISTS expense_categories (
             {category_id_column},
             category_name TEXT NOT NULL UNIQUE,
-            category_active bool
+            category_active BOOLEAN
+
         )
     """)
 
-     print("✅ 'expense categories' table creation executed")  # ✅ ADDED: Debug log
+    print("✅ 'expense categories' table creation executed")  # ✅ ADDED: Debug log
 
-    expense_id_column = "expense_item_id PRIMARY KEY" if DB_MODE == "multi-tenant" else "expense_item_id INTEGER PRIMARY KEY AUTOINCREMENT"
+
+    expense_id_column = "expense_item_id SERIAL PRIMARY KEY" if DB_MODE == "multi-tenant" else "expense_item_id INTEGER PRIMARY KEY AUTOINCREMENT"
     cursor.execute(f"""
     CREATE TABLE IF NOT EXISTS expense_items (
         {expense_id_column},
@@ -217,13 +216,13 @@ def initialize_database(db_path_or_conn, client_id):
         expense_name TEXT NOT NULL UNIQUE,
         default_price INTEGER,
         unit TEXT,
-        is_activated REAL,
+        is_activated BOOLEAN,
         requested_on TEXT,
         FOREIGN KEY(category_id) REFERENCES expense_categories(id)
 )
 """)
 
-     print("✅ 'expense items' table creation executed")  # ✅ ADDED: Debug log
+    print("✅ 'expense items' table creation executed")  # ✅ ADDED: Debug log
 
 
     id_column = "id SERIAL PRIMARY KEY" if DB_MODE == "multi-tenant" else "id INTEGER PRIMARY KEY AUTOINCREMENT"
@@ -241,16 +240,16 @@ def initialize_database(db_path_or_conn, client_id):
             notes TEXT,
             status TEXT,
             requested_at TEXT,
-            booking_id Integer,
+            booking_id INTEGER,
             FOREIGN KEY(booking_id) REFERENCES bookings(booking_id),
-            FOREIGN KEY(expense_item_id) REFERENCES expense_items(expense_item_id)
-            FOREIGN KEY("room_id") REFERENCES rooms("room_number")
+            FOREIGN KEY(expense_item_id) REFERENCES expense_items(expense_item_id),
+            FOREIGN KEY(room_id) REFERENCES rooms(room_number)
             )
     """)
 
 
 
-    id_column = "expense_id SERIAL PRIMARY KEY" if DB_MODE == "multi-tenant" else "expeense_id INTEGER PRIMARY KEY AUTOINCREMENT"
+    id_column = "expense_id SERIAL PRIMARY KEY" if DB_MODE == "multi-tenant" else "expense_id INTEGER PRIMARY KEY AUTOINCREMENT"
     
     cursor.execute(f"""
     CREATE TABLE IF NOT EXISTS expenses (
