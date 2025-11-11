@@ -53,17 +53,17 @@ export default function ExpenseCategories() {
 
     let res;
     if (mode === "add") {
-      res = await API.post("/expense_categories/categories", form, {
+      res = await API.post("/expensecategories/categories", form, {
         headers: { Authorization: `Bearer ${token}` }
       });
       alert("✅ Category added successfully!");
     } else if (mode === "update") {
-      res = await API.put(`/expense_categories/categories/${selectedId}`, form, {
+      res = await API.put(`/expensecategories/categories/${selectedId}`, form, {
         headers: { Authorization: `Bearer ${token}` }
       });
       alert("✏️ Category updated successfully!");
     } else if (mode === "delete") {
-      res = await API.delete(`/expense_categories/categories/${selectedId}`, {
+      res = await API.delete(`/expensecategories/categories/${selectedId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       alert("🗑️ Category deleted successfully!");

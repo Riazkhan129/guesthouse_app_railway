@@ -4,8 +4,8 @@ from .. import crud
 
 
 router = APIRouter(
-    prefix="/expense_categories",
-    tags=["Expense_categories"]
+    prefix="/expensecategories",
+    tags=["Expensecategories"]
 )
 
 def get_client_id(request: Request) -> str:
