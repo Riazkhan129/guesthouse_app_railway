@@ -40,7 +40,7 @@ export default function ExpenseCategories() {
 
 
   const fetchCategories = () => {
-    API.get("/expense_categories/categories", {
+    API.get("/expensecategories/categories", {
       headers: { Authorization: `Bearer ${token}` }
     }).then(res => setCategories(res.data));
   };
