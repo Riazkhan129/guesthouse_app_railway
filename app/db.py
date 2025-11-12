@@ -51,11 +51,12 @@ def get_or_create_client_db(client_id):
     try:
         if DB_MODE == "multi-tenant":
             config_url = os.getenv("CONFIG_DB_URL")
+            print("CONFIG_URL FROM DB.PY = ", config_url)
             config_conn = psycopg2.connect(config_url)
             config_cursor = config_conn.cursor()
             config_cursor.execute("SELECT db_url, client_name FROM client_databases WHERE client_id = %s", (client_id,))
             result = config_cursor.fetchone()
-            # print("Config_cursor.fetchone = ", result)
+            print("Config_cursor.fetchone = ", result)
             config_conn.close()  # ✅ ADDED: Close config DB connection
             
             

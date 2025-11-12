@@ -87,6 +87,7 @@ def read_root():
 def get_guesthouse_name(client_id: str):
     if DB_MODE == "multi-tenant":
         config_url = os.getenv("CONFIG_DB_URL")
+        print("CONFIG_URL FROM FASTAPI_MAIN.PY = ", config_url)
         config_conn = psycopg2.connect(config_url)
         config_cursor = config_conn.cursor()
         config_cursor.execute(
