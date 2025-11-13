@@ -1124,14 +1124,16 @@ def create_room_service_request(client_id: str, data: RoomServiceRequestIn):
     total_price = data.quantity * data.unit_price  
 
     print("IN CRUD CREATE_ROOM_SERVICE_REQUEST")
-    cursor.execute("""
+    query_insert = f"""
         INSERT INTO room_service (
             room_id, nic_passport_number, category_id, expense_item_id, quantity, unit_price, total_price,
             requested_at, notes, status, booking_id
-        ) VALUES (placeholder, placeholder, placeholder, placeholder,
-                    placeholder, placeholder, placeholder,
-                    placeholder, placeholder, placeholder, placeholder)
-    """, (
+        ) VALUES ({placeholder}, {placeholder}, {placeholder}, {placeholder},
+                    {placeholder}, {placeholder}, {placeholder},
+                    {placeholder}, {placeholder}, {placeholder}, {placeholder})
+
+    """
+    cursor.execute(query_insert, (
         data.room_id, data.nic_passport_number, data.category_id, data.expense_item_id, data.quantity, data.unit_price,
         total_price, now, data.notes, data.status, data.booking_id
     ))
@@ -1140,9 +1142,19 @@ def create_room_service_request(client_id: str, data: RoomServiceRequestIn):
     item_id = cursor.lastrowid
     conn.close()
 
-#VALUES ({placeholder}, {placeholder}, {placeholder}, {placeholder},
+
+#cursor.execute("""
+#        INSERT INTO room_service (
+#            room_id, nic_passport_number, category_id, expense_item_id, quantity, unit_price, total_price,
+#            requested_at, notes, status, booking_id
+#        ) VALUES ({placeholder}, {placeholder}, {placeholder}, {placeholder},
 #                    {placeholder}, {placeholder}, {placeholder},
 #                    {placeholder}, {placeholder}, {placeholder}, {placeholder})
+#
+#    """, (
+#        data.room_id, data.nic_passport_number, data.category_id, data.expense_item_id, data.quantity, data.unit_price,
+#        total_price, now, data.notes, data.status, data.booking_id
+#    ))
 
     return {
         "id": item_id,
