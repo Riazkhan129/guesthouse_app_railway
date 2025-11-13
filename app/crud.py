@@ -1177,7 +1177,7 @@ def get_open_roomservice_requests(client_id: str):
         FROM room_service rs
         WHERE rs.status IS NULL OR rs.status = 'Open'
         ORDER BY rs.requested_at DESC
-    """)
+    """
 
     cursor.execute(query)
     rows = cursor.fetchall()
