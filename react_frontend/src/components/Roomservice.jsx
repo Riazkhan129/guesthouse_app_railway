@@ -67,7 +67,7 @@ export default function RoomService() {
         quantity: selected.quantity,
         unit_price: selected.unit_price,
         notes: selected.notes,
-        status: "Open"
+        status: "Open",
       });
     } else {
       console.warn("⚠️ No matching open request found for ID:", id); // ✅ Fallback log
