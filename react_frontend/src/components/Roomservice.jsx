@@ -21,7 +21,7 @@ export default function RoomService() {
     quantity: 1,
     unit_price: 0,
     notes: "",
-    status: ""
+    status: "Open"
   });
 
   const [serviceId, setServiceId] = useState(null); // ✅ Track selected service record
@@ -67,7 +67,7 @@ export default function RoomService() {
         quantity: selected.quantity,
         unit_price: selected.unit_price,
         notes: selected.notes,
-        status: "Open",
+        status: selected.status,
       });
     } else {
       console.warn("⚠️ No matching open request found for ID:", id); // ✅ Fallback log
