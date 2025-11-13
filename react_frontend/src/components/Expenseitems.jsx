@@ -312,7 +312,7 @@ export default function ExpenseItems() {
           <strong>Default Price:</strong> {i.default_price}<br />
           <strong>Unit:</strong> {i.unit}<br />
           <strong>Active:</strong> {i.is_activated ? "Yes" : "No"}<br />
-          <strong>Created:</strong> {i.created}
+          {/* <strong>Created:</strong> {i.created}*/}
         </li>
       ))}
     </ul>
