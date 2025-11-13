@@ -57,6 +57,9 @@ export default function ExpenseCategories() {
         headers: { Authorization: `Bearer ${token}` }
       });
       alert("✅ Category added successfully!");
+      fetchCategories();
+      setSelectedId("");
+      setFormSubmitted(false);
     } else if (mode === "update") {
       res = await API.put(`/expensecategories/categories/${selectedId}`, form, {
         headers: { Authorization: `Bearer ${token}` }
