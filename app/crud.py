@@ -1127,11 +1127,11 @@ def create_room_service_request(client_id: str, data: RoomServiceRequestIn):
     cursor.execute("""
         INSERT INTO room_service (
             room_id, nic_passport_number, category_id, expense_item_id, quantity, unit_price, total_price,
-            requested_at, notes, booking_id
-        ) VALUES (?, ?, ?, ?, ?, ?, ?)
+            requested_at, notes, status, booking_id
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, (
         data.room_id, data.nic_passport_number, data.category_id, data.expense_item_id, data.quantity, data.unit_price,
-        total_price, now, data.notes, data.booking_id
+        total_price, now, data.notes, data.status, data.booking_id
     ))
 
     conn.commit()
@@ -1148,7 +1148,8 @@ def create_room_service_request(client_id: str, data: RoomServiceRequestIn):
         "unit_price": data.unit_price,
         "total_price": total_price,
         "requested_at": now,
-        "notes": data.notes
+        "notes": data.notes,
+        "status": data.status
     }
 
 
