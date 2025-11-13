@@ -218,6 +218,7 @@ def initialize_database(db_path_or_conn, client_id):
         default_price INTEGER,
         unit TEXT,
         is_activated BOOLEAN,
+        created TEXT,
         FOREIGN KEY(category_id) REFERENCES expense_categories(id)
 )
 """)
