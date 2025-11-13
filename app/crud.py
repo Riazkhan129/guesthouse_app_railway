@@ -1117,13 +1117,11 @@ def get_checkedin_bookings_with_guest(client_id: str):
 #---------- Room Service ------------
 
 def create_room_service_request(client_id: str, data: RoomServiceRequestIn):
-    conn, _ = get_or_create_client_db(client_id)
+    conn, placeholder = get_or_create_client_db(client_id)
     cursor = conn.cursor()
 
     now = datetime.now().isoformat()
-    total_price = data.quantity * data.unit_price
-
-    
+    total_price = data.quantity * data.unit_price  
 
     print("IN CRUD CREATE_ROOM_SERVICE_REQUEST")
     cursor.execute("""
