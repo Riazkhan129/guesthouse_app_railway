@@ -1128,9 +1128,9 @@ def create_room_service_request(client_id: str, data: RoomServiceRequestIn):
         INSERT INTO room_service (
             room_id, nic_passport_number, category_id, expense_item_id, quantity, unit_price, total_price,
             requested_at, notes, status, booking_id
-        ) VALUES ({placeholder}, {placeholder}, {placeholder}, {placeholder},
-                    {placeholder}, {placeholder}, {placeholder},
-                    {placeholder}, {placeholder}, {placeholder}, {placeholder})
+        ) VALUES (placeholder, placeholder, placeholder, placeholder,
+                    placeholder, placeholder, placeholder,
+                    placeholder, placeholder, placeholder, placeholder)
     """, (
         data.room_id, data.nic_passport_number, data.category_id, data.expense_item_id, data.quantity, data.unit_price,
         total_price, now, data.notes, data.status, data.booking_id
@@ -1139,6 +1139,10 @@ def create_room_service_request(client_id: str, data: RoomServiceRequestIn):
     conn.commit()
     item_id = cursor.lastrowid
     conn.close()
+
+#VALUES ({placeholder}, {placeholder}, {placeholder}, {placeholder},
+#                    {placeholder}, {placeholder}, {placeholder},
+#                    {placeholder}, {placeholder}, {placeholder}, {placeholder})
 
     return {
         "id": item_id,
