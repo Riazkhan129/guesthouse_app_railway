@@ -1142,20 +1142,6 @@ def create_room_service_request(client_id: str, data: RoomServiceRequestIn):
     item_id = cursor.lastrowid
     conn.close()
 
-
-#cursor.execute("""
-#        INSERT INTO room_service (
-#            room_id, nic_passport_number, category_id, expense_item_id, quantity, unit_price, total_price,
-#            requested_at, notes, status, booking_id
-#        ) VALUES ({placeholder}, {placeholder}, {placeholder}, {placeholder},
-#                    {placeholder}, {placeholder}, {placeholder},
-#                    {placeholder}, {placeholder}, {placeholder}, {placeholder})
-#
-#    """, (
-#        data.room_id, data.nic_passport_number, data.category_id, data.expense_item_id, data.quantity, data.unit_price,
-#        total_price, now, data.notes, data.status, data.booking_id
-#    ))
-
     return {
         "id": item_id,
         "room_id": data.room_id,
@@ -1175,7 +1161,7 @@ def get_open_roomservice_requests(client_id: str):
     conn, _ = get_or_create_client_db(client_id)
     cursor = conn.cursor()
 
-    cursor.execute("""
+    query = f"""
         SELECT 
             rs.id,
             rs.booking_id,
@@ -1193,12 +1179,31 @@ def get_open_roomservice_requests(client_id: str):
         ORDER BY rs.requested_at DESC
     """)
 
+    cursor.execute(query)
     rows = cursor.fetchall()
     print("CRUD get_open_roomservice_requests rows = ", rows)
     columns = [column[0] for column in cursor.description]
     conn.close()
 
     return [dict(zip(columns, row)) for row in rows]
+
+#cursor.execute("""
+#        SELECT 
+#            rs.id,
+#            rs.booking_id,
+#            rs.room_id,
+#            rs.nic_passport_number,
+#            rs.category_id,
+#            rs.expense_item_id,
+#            rs.quantity,
+#            rs.unit_price,
+#            rs.total_price,
+#            rs.notes,
+#            rs.requested_at
+#        FROM room_service rs
+#        WHERE rs.status IS NULL OR rs.status = 'Open'
+#        ORDER BY rs.requested_at DESC
+#    """)
 
 def update_room_service_status(client_id: str, service_id: int, status: str) -> bool:
     conn, _ = get_or_create_client_db(client_id)
