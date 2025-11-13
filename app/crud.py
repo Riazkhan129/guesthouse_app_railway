@@ -1132,8 +1132,7 @@ def create_room_service_request(client_id: str, data: RoomServiceRequestIn):
             requested_at, notes, status, booking_id
         ) VALUES ({placeholder}, {placeholder}, {placeholder}, {placeholder},
                     {placeholder}, {placeholder}, {placeholder},
-                    {placeholder}, {placeholder}, {placeholder}, {placeholder},
-                    {placeholder})
+                    {placeholder}, {placeholder}, {placeholder}, {placeholder}}
     """, (
         data.room_id, data.nic_passport_number, data.category_id, data.expense_item_id, data.quantity, data.unit_price,
         total_price, now, data.notes, data.status, data.booking_id
