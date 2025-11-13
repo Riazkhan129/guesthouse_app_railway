@@ -1213,14 +1213,14 @@ def update_room_service_status(client_id: str, service_id: int, status: str) -> 
 # 🔄 NEW FUNCTION: Group room service by category for a booking
 
 def get_roomservice_summary_by_booking(client_id: str, booking_id: int):
-    conn, _ = get_or_create_client_db(client_id)
+    conn, placeholder = get_or_create_client_db(client_id)
     cursor = conn.cursor()
 
     query = f"""
         SELECT ec.category_name, SUM(rs.total_price) as total_amount
         FROM room_service rs
         JOIN expense_categories ec ON rs.category_id = ec.id
-        WHERE rs.booking_id = ? AND (rs.status IS NULL OR rs.status != 'Canceled')
+        WHERE rs.booking_id = {placeholder} AND (rs.status IS NULL OR rs.status != 'Canceled')
         GROUP BY rs.category_id
     """
     cursor.execute(query, (booking_id,))
@@ -1231,7 +1231,7 @@ def get_roomservice_summary_by_booking(client_id: str, booking_id: int):
     return [{"category_name": row[0], "total_amount": row[1]} for row in rows]
 
 def get_roomservice_items_by_booking(client_id: str, booking_id: int):
-    conn, _ = get_or_create_client_db(client_id)
+    conn, placeholder = get_or_create_client_db(client_id)
     cursor = conn.cursor()
 
     roomservice_query = f"""
@@ -1243,7 +1243,7 @@ def get_roomservice_items_by_booking(client_id: str, booking_id: int):
         FROM room_service rs
         JOIN expense_categories ec ON rs.category_id = ec.id
         JOIN expense_items ei ON rs.expense_item_id = ei.expense_item_id
-        WHERE rs.booking_id = ? AND (rs.status IS NULL OR rs.status != 'Canceled')
+        WHERE rs.booking_id = {placeholder} AND (rs.status IS NULL OR rs.status != 'Canceled')
         ORDER BY DATE(rs.requested_at), ec.category_name
     """
     cursor.execute(roomservice_query, (booking_id,))
