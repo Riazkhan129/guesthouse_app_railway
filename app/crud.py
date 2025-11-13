@@ -1187,33 +1187,21 @@ def get_open_roomservice_requests(client_id: str):
 
     return [dict(zip(columns, row)) for row in rows]
 
-#cursor.execute("""
-#        SELECT 
-#            rs.id,
-#            rs.booking_id,
-#            rs.room_id,
-#            rs.nic_passport_number,
-#            rs.category_id,
-#            rs.expense_item_id,
-#            rs.quantity,
-#            rs.unit_price,
-#            rs.total_price,
-#            rs.notes,
-#            rs.requested_at
-#        FROM room_service rs
-#        WHERE rs.status IS NULL OR rs.status = 'Open'
-#        ORDER BY rs.requested_at DESC
-#    """)
+
 
 def update_room_service_status(client_id: str, service_id: int, status: str) -> bool:
     conn, _ = get_or_create_client_db(client_id)
     cursor = conn.cursor()
 
-    cursor.execute("""
+    query_update = f"""
         UPDATE room_service
-        SET status = ?
-        WHERE id = ?
-    """, (status, service_id))
+        SET status = {placeholder}
+        WHERE id = {placeholder}
+    """
+    cursor.execute(query_update, (
+        status,
+        service_id
+    ))
 
     conn.commit()
     updated = cursor.rowcount
@@ -1228,13 +1216,14 @@ def get_roomservice_summary_by_booking(client_id: str, booking_id: int):
     conn, _ = get_or_create_client_db(client_id)
     cursor = conn.cursor()
 
-    cursor.execute("""
+    query = f"""
         SELECT ec.category_name, SUM(rs.total_price) as total_amount
         FROM room_service rs
         JOIN expense_categories ec ON rs.category_id = ec.id
         WHERE rs.booking_id = ? AND (rs.status IS NULL OR rs.status != 'Canceled')
         GROUP BY rs.category_id
-    """, (booking_id,))
+    """
+    cursor.execute(query, (booking_id,))
 
     rows = cursor.fetchall()
     conn.close()
@@ -1245,7 +1234,7 @@ def get_roomservice_items_by_booking(client_id: str, booking_id: int):
     conn, _ = get_or_create_client_db(client_id)
     cursor = conn.cursor()
 
-    cursor.execute("""
+    roomservice_query = f"""
         SELECT 
             DATE(rs.requested_at) as service_date,
             ec.category_name,
@@ -1256,7 +1245,9 @@ def get_roomservice_items_by_booking(client_id: str, booking_id: int):
         JOIN expense_items ei ON rs.expense_item_id = ei.expense_item_id
         WHERE rs.booking_id = ? AND (rs.status IS NULL OR rs.status != 'Canceled')
         ORDER BY DATE(rs.requested_at), ec.category_name
-    """, (booking_id,))
+    """
+    cursor.execute(roomservice_query, (booking_id,))
+
 
     rows = cursor.fetchall()
     conn.close()
