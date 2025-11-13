@@ -1221,7 +1221,7 @@ def get_roomservice_summary_by_booking(client_id: str, booking_id: int):
         FROM room_service rs
         JOIN expense_categories ec ON rs.category_id = ec.id
         WHERE rs.booking_id = {placeholder} AND (rs.status IS NULL OR rs.status != 'Canceled')
-        GROUP BY rs.category_id
+        GROUP BY rs.category_id, ec.category_name
     """
     cursor.execute(query, (booking_id,))
 
