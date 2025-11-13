@@ -1123,12 +1123,17 @@ def create_room_service_request(client_id: str, data: RoomServiceRequestIn):
     now = datetime.now().isoformat()
     total_price = data.quantity * data.unit_price
 
+    
+
     print("IN CRUD CREATE_ROOM_SERVICE_REQUEST")
     cursor.execute("""
         INSERT INTO room_service (
             room_id, nic_passport_number, category_id, expense_item_id, quantity, unit_price, total_price,
             requested_at, notes, status, booking_id
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES ({placeholder}, {placeholder}, {placeholder}, {placeholder},
+                    {placeholder}, {placeholder}, {placeholder},
+                    {placeholder}, {placeholder}, {placeholder}, {placeholder},
+                    {placeholder})
     """, (
         data.room_id, data.nic_passport_number, data.category_id, data.expense_item_id, data.quantity, data.unit_price,
         total_price, now, data.notes, data.status, data.booking_id
