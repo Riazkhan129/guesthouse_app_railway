@@ -1128,7 +1128,7 @@ def create_room_service_request(client_id: str, data: RoomServiceRequestIn):
         INSERT INTO room_service (
             room_id, nic_passport_number, category_id, expense_item_id, quantity, unit_price, total_price,
             requested_at, notes, booking_id
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?)
     """, (
         data.room_id, data.nic_passport_number, data.category_id, data.expense_item_id, data.quantity, data.unit_price,
         total_price, now, data.notes, data.booking_id
