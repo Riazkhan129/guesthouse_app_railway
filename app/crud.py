@@ -1190,7 +1190,7 @@ def get_open_roomservice_requests(client_id: str):
 
 
 def update_room_service_status(client_id: str, service_id: int, status: str) -> bool:
-    conn, _ = get_or_create_client_db(client_id)
+    conn, placeholder = get_or_create_client_db(client_id)
     cursor = conn.cursor()
 
     query_update = f"""
