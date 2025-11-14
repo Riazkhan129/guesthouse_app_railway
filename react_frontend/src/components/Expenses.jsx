@@ -55,7 +55,7 @@ function Expenses() {
 
   const fetchExpenseItems = async (categoryId) => {
     try {
-      const res = await API.get(`/expenseitems/by_category/${categoryId}`, { headers });
+      const res = await API.get(`/expenseitems/expense_categories/items/by_category/${categoryId}`, { headers });
       if (res.status === 200) setExpenseItems(res.data);
     } catch {
       alert("❌ Failed to load items");
