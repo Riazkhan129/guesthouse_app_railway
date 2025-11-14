@@ -46,7 +46,7 @@ function Expenses() {
 
   const fetchExpenseCategories = async () => {
     try {
-      const res = await API.get("/expense_categories/categories", { headers });
+      const res = await API.get("/expensecategories/categories", { headers });
       if (res.status === 200) setExpenseCategories(res.data);
     } catch {
       alert("❌ Failed to load categories");
@@ -55,7 +55,7 @@ function Expenses() {
 
   const fetchExpenseItems = async (categoryId) => {
     try {
-      const res = await API.get(`/expense_items/by_category/${categoryId}`, { headers });
+      const res = await API.get(`/expenseitems/by_category/${categoryId}`, { headers });
       if (res.status === 200) setExpenseItems(res.data);
     } catch {
       alert("❌ Failed to load items");
