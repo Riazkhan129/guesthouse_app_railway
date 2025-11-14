@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Request, HTTPException
 from pydantic import BaseModel
 from datetime import datetime
+from .. import crud
 #from utils.db import get_or_create_client_db
 #from utils.auth import get_client_id
 
@@ -38,7 +39,7 @@ def get_all_items(request: Request):
 @router.get("/expense_categories/items/by_category/{category_id}")
 def get_items_by_category(category_id: int, request: Request):
     client_id = get_client_id(request)
-    // from app.crud import get_expense_items_by_category
+    # from app.crud import get_expense_items_by_category
     return crud.get_expense_items_by_category(client_id, category_id)
 
 @router.get("/expense_categories/items/{item_id}")
