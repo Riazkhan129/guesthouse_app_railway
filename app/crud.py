@@ -181,11 +181,11 @@ def get_all_expense_items(client_id: str):
     ]
 
 def get_expense_items_by_category(client_id: str, category_id: int):
-    conn, _ = get_or_create_client_db(client_id)
+    conn, placeholder = get_or_create_client_db(client_id)
     cursor = conn.cursor()
     print("IN CRUD get_expense_items_by_category", (category_id))
     cursor.execute(
-        "SELECT * FROM expense_items WHERE category_id = ?", (category_id)
+        "SELECT * FROM expense_items WHERE category_id = {placeholder}", (category_id)
     )
     rows = cursor.fetchall()
     print("ROWS = ", rows)
