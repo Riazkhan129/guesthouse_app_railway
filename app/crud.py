@@ -4,12 +4,9 @@ from fastapi import HTTPException
 from .db import get_or_create_client_db
 from sqlalchemy.orm import Session
 from datetime import datetime, date
-# from .crypto_utils import encrypt_password
-# from .crypto_utils import decrypt_password
-#from datetime import datetime
 from .models import InvoiceCreate, GuestIn
 from passlib.context import CryptContext
-from .models import UserCreate, UserLogin, UserOut, Client_keysGet, RoomServiceRequestIn, RoomServiceRequestOut, RoomServiceSummaryOut, ExpenseCreate, ExpenseOut
+from .models import UserCreate, UserLogin, UserOut, Client_keysGet, RoomServiceRequestIn, RoomServiceRequestOut, RoomServiceSummaryOut, ExpenseCreate, ExpenseOut, ExpenseUpdate
 
 import hashlib
 import sqlite3
