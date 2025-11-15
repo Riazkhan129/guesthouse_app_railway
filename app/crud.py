@@ -185,10 +185,7 @@ def get_expense_items_by_category(client_id: str, category_id: int):
     cursor = conn.cursor()
     print("IN CRUD get_expense_items_by_category", (category_id))
     query = f"SELECT * FROM expense_items WHERE category_id = {placeholder}"
-    cursor.execute(query, (category_id,))
-   #  cursor.execute(
-   #     "SELECT * FROM expense_items WHERE category_id = {placeholder}", (category_id)
-    # )
+   
     rows = cursor.fetchall()
     print("ROWS = ", rows)
     conn.close()
@@ -884,6 +881,59 @@ def delete_invoice(client_id: str, invoice_id: int):
     return affected > 0
 
 # ---------- EXPENSES ---------------
+
+def add_expense(client_id: str, expense: ExpenseCreate):
+    conn, placeholder = get_or_create_client_db(client_id)
+    cursor = conn.cursor()
+
+    # Insert new expense
+    query = f"""
+        INSERT INTO expenses (
+            category_id,
+            expense_item_id,
+            amount,
+            notes,
+            timestamp,
+            date
+        )
+        VALUES ({placeholder}, {placeholder}, {placeholder}, {placeholder}, {placeholder}, {placeholder})
+        RETURNING expense_id
+    """
+    cursor.execute(query, (
+        expense.category_id,
+        expense.expense_item_id,
+        expense.amount,
+        expense.notes,
+        expense.timestamp,
+        expense.date
+    ))
+
+    expense_id = cursor.fetchone()[0]
+    conn.commit()
+
+    # Fetch category_name and expense_name for response
+    cursor.execute("SELECT category_name FROM expense_categories WHERE id = %s", (expense.category_id,))
+    category_row = cursor.fetchone()
+    category_name = category_row[0] if category_row else None
+
+    cursor.execute("SELECT expense_name FROM expense_items WHERE expense_item_id = %s", (expense.expense_item_id,))
+    item_row = cursor.fetchone()
+    expense_name = item_row[0] if item_row else None
+
+    conn.close()
+
+    return {
+        "expense_id": expense_id,
+        "category_id": expense.category_id,
+        "category_name": category_name,
+        "expense_item_id": expense.expense_item_id,
+        "expense_name": expense_name,
+        "amount": expense.amount,
+        "notes": expense.notes,
+        "timestamp": expense.timestamp,
+        "date": expense.date
+    }
+
 
 def get_all_expenses(client_id: str):
     conn, _ = get_or_create_client_db(client_id)

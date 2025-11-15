@@ -365,6 +365,7 @@ class ExpenseCreate(ExpenseBase):
     timestamp: str
     date: str
 
+        
 class ExpenseOut(ExpenseBase):
     expense_id: int
     category_id: int
