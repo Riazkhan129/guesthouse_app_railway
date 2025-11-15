@@ -2,10 +2,10 @@ import axios from "axios";
 
 // ✅ Detect environment
 // API for Production
-// const API_BASE_URL = process.env.REACT_APP_API_URL || "https://ghmsbackend-production.up.railway.app";
+ const API_BASE_URL = process.env.REACT_APP_API_URL || "https://ghmsbackend-production.up.railway.app";
 
 // API for Development
- const API_BASE_URL = process.env.REACT_APP_API_URL || "https://backend-dev-production-3264.up.railway.app";
+// const API_BASE_URL = process.env.REACT_APP_API_URL || "https://backend-dev-production-3264.up.railway.app";
 
 // const API_BASE_URL =
 //  import.meta.env.VITE_API_BASE_URL || "https://ghmsbackend-production.up.railway.app"; // 🔧 UPDATED: fallback added
