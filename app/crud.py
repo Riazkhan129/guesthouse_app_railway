@@ -1002,7 +1002,7 @@ def update_expense(client_id: str, expense_id: int, expense):
     conn.commit()
 
     # ✅ Fetch full updated record with joins
-    query_fetch = """
+    query_fetch = f"""
         SELECT 
             e.expense_id,
             e.category_id,
