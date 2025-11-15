@@ -9,7 +9,8 @@ from datetime import datetime, date
 #from datetime import datetime
 from .models import InvoiceCreate, GuestIn
 from passlib.context import CryptContext
-from .models import UserCreate, UserLogin, UserOut, Client_keysGet, RoomServiceRequestIn, RoomServiceRequestOut, RoomServiceSummaryOut
+from .models import UserCreate, UserLogin, UserOut, Client_keysGet, RoomServiceRequestIn, RoomServiceRequestOut, RoomServiceSummaryOut, ExpenseCreate, ExpenseOut
+
 import hashlib
 import sqlite3
 from cryptography.fernet import Fernet
