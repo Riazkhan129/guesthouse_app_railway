@@ -185,7 +185,7 @@ def get_expense_items_by_category(client_id: str, category_id: int):
     cursor = conn.cursor()
     print("IN CRUD get_expense_items_by_category", (category_id))
     cursor.execute(
-        "SELECT * FROM expense_items WHERE category_id = ?", (category_id,)
+        "SELECT * FROM expense_items WHERE category_id = ?", (category_id)
     )
     rows = cursor.fetchall()
     print("ROWS = ", rows)
