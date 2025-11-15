@@ -1013,7 +1013,7 @@ def update_expense(client_id: str, expense_id: int, expense):
         FROM expenses e
         JOIN expense_categories c ON e.category_id = c.id
         JOIN expense_items i ON e.expense_item_id = i.expense_item_id
-        WHERE e.expense_id = ?
+        WHERE e.expense_id = {placeholder}
     """
     cursor.execute(query_fetch, (expense_id,))
     row = cursor.fetchone()
