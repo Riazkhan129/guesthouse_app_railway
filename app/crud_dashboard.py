@@ -96,9 +96,9 @@ def get_dashboard_data(client_id: str):
             "meals": meals,
             "laundry": laundry,
             "damages": damages,
-            "invoice_total": total_amount,
-            "roomservice_income": roomservice_income,   # 🔴 NEW
-            "total_income": total_income,               # 🔴 NEW
+           # "invoice_total": total_amount,
+            "roomservice_income": roomservice_income,   
+            "total_income": total_income,               
             "expenses": expenses,
             "total_expenses": total_expenses,
             "profit_loss": profit_loss
