@@ -50,7 +50,7 @@ def get_dashboard_data(client_id: str):
         """  # ✅ PostgreSQL vs SQLite switch
 
         cursor.execute(query_income, (month_str,))
-        room_charges, meals, laundry, damages, total_amount = cursor.fetchone()
+        room_charges, meals, laundry, damages, invoice_total = cursor.fetchone()
 
          # 🔴 NEW: Room service income
         query_roomservice = f"""
@@ -96,7 +96,7 @@ def get_dashboard_data(client_id: str):
             "meals": meals,
             "laundry": laundry,
             "damages": damages,
-           # "invoice_total": total_amount,
+            "invoice_total": total_amount,
             "roomservice_income": roomservice_income,   
             "total_income": total_income,               
             "expenses": expenses,
