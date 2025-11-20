@@ -105,4 +105,4 @@ def get_dashboard_data(client_id: str):
         })
 
     conn.close()
-    return results[::-1]  # most recent last
+    return results[::-1]  # most recent
