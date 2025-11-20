@@ -87,7 +87,7 @@ def get_dashboard_data(client_id: str):
         total_expenses = sum(expenses.values())
 
         total_income = invoice_total + roomservice_income
-        profit_loss = total_amount - total_expenses
+        profit_loss = total_income - total_expenses
 
         results.append({
             "month": month_str,
