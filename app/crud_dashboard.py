@@ -79,7 +79,7 @@ def get_dashboard_data(client_id: str):
             FROM expenses
             WHERE strftime('%Y-%m', date) = {placeholder}
             GROUP BY category_id
-        """  # ✅ PostgreSQL vs SQLite switch
+        """  
 
         cursor.execute(query_expenses, (month_str,))
         expenses_data = cursor.fetchall()
