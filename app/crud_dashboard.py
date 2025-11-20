@@ -52,6 +52,22 @@ def get_dashboard_data(client_id: str):
         cursor.execute(query_income, (month_str,))
         room_charges, meals, laundry, damages, total_amount = cursor.fetchone()
 
+         # 🔴 NEW: Room service income
+        query_roomservice = f"""
+            SELECT COALESCE(SUM(total_price), 0)
+            FROM room_service
+            WHERE status IN ('Open','Delivered')
+              AND TO_CHAR(requested_at::DATE, 'YYYY-MM') = {placeholder}
+        """ if conn.__class__.__name__ == "connection" else f"""
+            SELECT IFNULL(SUM(total_price), 0)
+            FROM room_service
+            WHERE status IN ('Open','Delivered')
+              AND strftime('%Y-%m', requested_at) = {placeholder}
+        """
+
+        cursor.execute(query_roomservice, (month_str,))
+        roomservice_income = cursor.fetchone()[0]
+
         # ✅ FIXED: Expenses per category
         query_expenses = f"""
             SELECT category_id, SUM(amount)
@@ -70,6 +86,7 @@ def get_dashboard_data(client_id: str):
         expenses = {cat: amt for cat, amt in expenses_data}
         total_expenses = sum(expenses.values())
 
+        total_income = invoice_total + roomservice_income
         profit_loss = total_amount - total_expenses
 
         results.append({
@@ -80,6 +97,8 @@ def get_dashboard_data(client_id: str):
             "laundry": laundry,
             "damages": damages,
             "invoice_total": total_amount,
+            "roomservice_income": roomservice_income,   # 🔴 NEW
+            "total_income": total_income,               # 🔴 NEW
             "expenses": expenses,
             "total_expenses": total_expenses,
             "profit_loss": profit_loss
