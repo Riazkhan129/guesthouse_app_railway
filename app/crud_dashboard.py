@@ -2,14 +2,7 @@
 from .db import get_or_create_client_db
 from datetime import datetime, timedelta
 from collections import defaultdict
-#from fastapi import HTTPException
 
-# ✅ ADDED: Helper to extract client_id from headers
-#def get_client_id(request: Request) -> str:
-#    client_id = request.headers.get("X-Client-ID")
-#    if not client_id:
-#        raise HTTPException(status_code=400, detail="Missing client_id")
-#    return client_id
 
 def get_dashboard_data(client_id: str):
     conn, placeholder = get_or_create_client_db(client_id)
@@ -61,15 +54,15 @@ def get_dashboard_data(client_id: str):
 
         # ✅ FIXED: Expenses per category
         query_expenses = f"""
-            SELECT category, SUM(amount)
+            SELECT category_id, SUM(amount)
             FROM expenses
             WHERE TO_CHAR(date::DATE, 'YYYY-MM') = {placeholder}
-            GROUP BY category
+            GROUP BY category_id
         """ if conn.__class__.__name__ == "connection" else f"""
-            SELECT category, SUM(amount)
+            SELECT category_id, SUM(amount)
             FROM expenses
             WHERE strftime('%Y-%m', date) = {placeholder}
-            GROUP BY category
+            GROUP BY category_id
         """  # ✅ PostgreSQL vs SQLite switch
 
         cursor.execute(query_expenses, (month_str,))
