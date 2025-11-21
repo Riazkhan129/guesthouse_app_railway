@@ -96,7 +96,7 @@ def get_dashboard_data(client_id: str):
             "meals": meals,
             "laundry": laundry,
             "damages": damages,
-            "invoice_total": total_amount,
+            "invoice_total": invoice_total,
             "roomservice_income": roomservice_income,   
             "total_income": total_income,               
             "expenses": expenses,
@@ -105,4 +105,4 @@ def get_dashboard_data(client_id: str):
         })
 
     conn.close()
-    return results[::-1]  # most recent result
+    return results[::-1]  # most recent
