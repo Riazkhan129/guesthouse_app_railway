@@ -52,6 +52,7 @@ def get_dashboard_data(client_id: str):
         cursor.execute(query_income, (month_str,))
         room_charges, meals, laundry, damages, invoice_total = cursor.fetchone()
 
+        print("In CURD_DASHBOARD INVOICE_TOTAL =", invoice_total)
          # 🔴 NEW: Room service income
         query_roomservice = f"""
             SELECT COALESCE(SUM(total_price), 0)
@@ -86,6 +87,7 @@ def get_dashboard_data(client_id: str):
         expenses = {cat: amt for cat, amt in expenses_data}
         total_expenses = sum(expenses.values())
 
+        print("In CURD_DASHBOARD ROOMSERVICE_INCOME =", roomservice_income)
         total_income = invoice_total + roomservice_income
         profit_loss = total_income - total_expenses
 
