@@ -56,7 +56,9 @@ const Dashboard = () => {
       </div>
 
       {dashboardData.map((row, idx) => {
-        const income = row.room_charges || 0;
+        // const income = row.room_charges || 0;
+        const income = row.total_income || 0;
+        
         const expenses = categories.reduce(
           (sum, cat) => sum + (row.expenses?.[cat] || 0),
           0

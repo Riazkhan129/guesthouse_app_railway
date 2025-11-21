@@ -87,6 +87,7 @@ def get_dashboard_data(client_id: str):
         expenses = {cat: amt for cat, amt in expenses_data}
         total_expenses = sum(expenses.values())
 
+        print("In CURD_DASHBOARD TOTAL_EXPENSES =", total_expenses)
         print("In CURD_DASHBOARD ROOMSERVICE_INCOME =", roomservice_income)
         total_income = invoice_total + roomservice_income
         profit_loss = total_income - total_expenses
